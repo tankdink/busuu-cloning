@@ -35,7 +35,29 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// Model Mapper
 	implementation 'org.modelmapper:modelmapper:2.1.1'
+
+	// Validation
+	implementation 'jakarta.validation:jakarta.validation-api:3.1.0'
+
+	// Gson
+	implementation 'com.google.code.gson:gson:2.11.0'
+
+	// JJWT API
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+
+	// JJWT IMPL
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+
+	// JJWT Jackson
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+	// HTTP Client5
+	implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
+
+
+
 
 }
 

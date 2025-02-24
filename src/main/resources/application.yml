@@ -1,3 +1,24 @@
 spring:
   application:
     name: Busuu
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/website_timevo_ecommerce?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: ${MYSQL_ROOT_PASSWORD:Timevo@230523}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+
+api:
+  prefix: /api/v1
+jwt:
+  expiration: 2592000 #30 days
+  expiration-refresh-token: 5184000 #60 days
+  secretKey: jtc6zcRYQr5lZj4UCIwkIbLjpP/AhDbSiZhUHa5VoGw=
