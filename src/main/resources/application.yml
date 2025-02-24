@@ -2,10 +2,10 @@ spring:
   application:
     name: Busuu
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/website_timevo_ecommerce?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/busuu-learn-language?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: ${MYSQL_ROOT_PASSWORD:Timevo@230523}
+    password: ${MYSQL_ROOT_PASSWORD:Busuu@230523}
   jpa:
     show-sql: true
     hibernate:
