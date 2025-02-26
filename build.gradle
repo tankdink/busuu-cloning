@@ -53,8 +53,8 @@ dependencies {
 	// JJWT Jackson
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
-	// HTTP Client5
-	implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
+	// HTTP Client 5
+	implementation 'org.apache.httpcomponents.client5:httpclient5:5.4.1'
 
 
 
