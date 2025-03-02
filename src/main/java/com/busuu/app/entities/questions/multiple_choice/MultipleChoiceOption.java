@@ -18,10 +18,6 @@ public class MultipleChoiceOption {
     @Column(name = "multiple_choice_option_id")
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "question_id")
-    private QuestionMultipleChoice question;
-
     @Column(name = "option_text", nullable = false)
     private String optionText;
 

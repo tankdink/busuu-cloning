@@ -46,14 +46,7 @@ public class Question extends BaseEntity {
     @Column(name = "question_order", nullable = false)
     private Integer questionOrder;
 
-    @Column(name = "is_completed", columnDefinition = "false")
-    private Boolean isCompleted;
-
     @ManyToOne
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
 }

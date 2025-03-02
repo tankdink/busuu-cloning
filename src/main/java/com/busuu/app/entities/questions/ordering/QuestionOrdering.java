@@ -13,10 +13,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class QuestionOrdering extends Question {
-
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "questionOrdering", cascade = CascadeType.ALL)
     private List<OrderingPart> parts;
 }
 

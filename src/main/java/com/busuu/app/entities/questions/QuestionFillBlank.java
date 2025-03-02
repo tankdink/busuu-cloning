@@ -13,7 +13,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class QuestionFillBlank extends Question{
 
     @Column(name = "correct_answer")

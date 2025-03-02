@@ -13,9 +13,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class QuestionMultipleChoice extends Question {
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "questionMultipleChoice", cascade = CascadeType.ALL)
     private List<MultipleChoiceOption> options;
 }

@@ -13,7 +13,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class QuestionTrueFalse extends Question{
     @Column(name = "correct_answer")
     private Boolean correctAnswer;

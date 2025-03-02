@@ -35,12 +35,4 @@ public class Level {
 
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLevel> courseLevels = new ArrayList<>();
-
-    @Transient
-    private Double progress;
-
-    public void calculateProgress() {
-        double totalProgress = chapters.stream().mapToDouble(Chapter::getProgress).sum();
-        this.progress = chapters.size() > 0 ? totalProgress / chapters.size() : 0;
-    }
 }

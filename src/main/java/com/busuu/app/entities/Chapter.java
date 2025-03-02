@@ -40,12 +40,4 @@ public class Chapter extends BaseEntity {
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Lesson> lessons = new ArrayList<>();
-
-    @Transient
-    private Double progress;
-
-    public void calculateProgress() {
-        double totalProgress = lessons.stream().mapToDouble(Lesson::getProgress).sum();
-        this.progress = lessons.size() > 0 ? totalProgress / lessons.size() : 0;
-    }
 }

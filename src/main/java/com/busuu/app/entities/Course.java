@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class Course extends BaseEntity{
-
     @Id
     @Column(name = "course_id")
     private String id;
@@ -38,14 +37,4 @@ public class Course extends BaseEntity{
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLevel> courseLevels = new ArrayList<>();
-
-    @Transient
-    private Double progress;
-
-    public void calculateProgress() {
-        double totalProgress = courseLevels.stream()
-                .mapToDouble(courseLevel -> courseLevel.getLevel().getProgress())
-                .sum();
-        this.progress = courseLevels.size() > 0 ? totalProgress / courseLevels.size() : 0;
-    }
 }

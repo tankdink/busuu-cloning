@@ -13,8 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class QuestionMatching extends Question {
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "questionMatching", cascade = CascadeType.ALL)
     private List<MatchingPair> pairs;
 }

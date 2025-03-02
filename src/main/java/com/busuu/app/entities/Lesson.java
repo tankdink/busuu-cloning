@@ -38,18 +38,9 @@ public class Lesson extends BaseEntity{
     @JoinColumn(name = "chapter_id", nullable = false)
     private Chapter chapter;
 
-    @OneToMany(mappedBy = "grammar", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrammarSection> grammarSections;
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
-
-    @Transient
-    private Double progress;
-
-    public void calculateProgress() {
-        long totalQuestions = questions.size();
-        long completedQuestions = questions.stream().filter(Question::isCompleted).count();
-        this.progress = totalQuestions > 0 ? (double) completedQuestions / totalQuestions * 100 : 0;
-    }
 }

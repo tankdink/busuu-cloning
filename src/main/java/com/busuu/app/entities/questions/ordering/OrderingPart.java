@@ -12,12 +12,9 @@ import lombok.Data;
 @Builder
 public class OrderingPart {
 
+    @Id
     @Column(name = "ordering_part_id")
     private String id;
-
-    @ManyToOne
-    @JoinColumn(name = "question_id", nullable = false)
-    private QuestionOrdering question;
 
     @Column(name = "sentence_part", nullable = false)
     private String sentencePart;
