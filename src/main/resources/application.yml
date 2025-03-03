@@ -14,6 +14,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    default-locale: en
 
 
 api:
@@ -22,3 +26,9 @@ jwt:
   expiration: 2592000 #30 days
   expiration-refresh-token: 5184000 #60 days
   secretKey: jtc6zcRYQr5lZj4UCIwkIbLjpP/AhDbSiZhUHa5VoGw=
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
