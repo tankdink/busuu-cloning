@@ -56,8 +56,10 @@ dependencies {
 	// HTTP Client 5
 	implementation 'org.apache.httpcomponents.client5:httpclient5:5.4.1'
 
+	// Logging
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
 
-
+	implementation 'ch.qos.logback:logback-classic'
 
 }
 
