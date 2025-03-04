@@ -456,3 +456,380 @@ Caused by: java.net.ConnectException: Connection refused: no further information
 	at com.mysql.cj.protocol.StandardSocketFactory.connect(StandardSocketFactory.java:144)
 	at com.mysql.cj.protocol.a.NativeSocketConnection.connect(NativeSocketConnection.java:53)
 	... 154 common frames omitted
+2025-03-05 00:43:16.723 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17.0.8.1 with PID 280 (D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu\build\classes\java\main started by Mr Tan in D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu)
+2025-03-05 00:43:16.729 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-03-05 00:43:16.913 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-03-05 00:43:16.913 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-03-05 00:43:19.320 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-03-05 00:43:19.770 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 406 ms. Found 4 JPA repository interfaces.
+2025-03-05 00:43:23.591 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-03-05 00:43:24.912 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-03-05 00:43:25.136 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-03-05 00:43:25.138 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-03-05 00:43:25.297 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] -Initializing Spring embedded WebApplicationContext
+2025-03-05 00:43:25.300 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 8383 ms
+2025-03-05 00:43:25.741 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-03-05 00:43:25.920 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-03-05 00:43:26.038 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-03-05 00:43:27.324 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-03-05 00:43:27.405 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-03-05 00:43:28.354 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@26f7030e
+2025-03-05 00:43:28.359 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-03-05 00:43:28.876 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-03-05 00:43:28.879 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-03-05 00:43:28.935 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-03-05 00:43:31.796 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
+2025-03-05 00:43:32.806 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-03-05 00:43:44.041 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-03-05 00:43:45.524 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-03-05 00:43:45.983 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-03-05 00:43:45.984 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-03-05 00:43:46.759 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-03-05 00:43:46.852 [restartedMain] INFO  o.s.v.b.OptionalValidatorFactoryBean -Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-03-05 00:43:47.787 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
+2025-03-05 00:43:47.822 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
+2025-03-05 00:43:47.930 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/'
+2025-03-05 00:43:47.947 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 32.427 seconds (process running for 34.866)
+2025-03-05 00:57:01.626 [http-nio-8080-exec-3] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] -Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-03-05 00:57:01.655 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet -Initializing Servlet 'dispatcherServlet'
+2025-03-05 00:57:01.874 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 219 ms
+2025-03-05 00:57:02.521 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing GET /level/getAllLevel
+2025-03-05 00:57:02.689 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 00:57:02.728 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 00:57:03.022 [http-nio-8080-exec-3] WARN  o.a.c.util.SessionIdGeneratorBase -Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [201] milliseconds.
+2025-03-05 00:57:03.036 [http-nio-8080-exec-3] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 00:57:03.036 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 00:57:44.420 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /level/
+2025-03-05 00:57:44.479 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 00:57:44.484 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 00:57:44.517 [http-nio-8080-exec-2] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 00:57:44.520 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 00:57:47.933 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Securing GET /level
+2025-03-05 00:57:47.939 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 00:57:47.941 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 00:57:47.943 [http-nio-8080-exec-4] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 00:57:47.944 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 00:58:36.229 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 00:58:36.498 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 00:58:36.500 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 00:58:36.507 [http-nio-8080-exec-5] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 00:58:36.507 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:01:30.716 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/roles
+2025-03-05 01:01:35.136 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:01:35.137 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:01:35.143 [http-nio-8080-exec-8] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:01:35.143 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:02:38.942 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/register
+2025-03-05 01:02:38.948 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/register
+2025-03-05 01:02:39.126 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:02:39.154 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:02:39.155 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:02:39.158 [http-nio-8080-exec-10] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:02:39.158 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:03:10.402 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/register
+2025-03-05 01:03:10.412 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/register
+2025-03-05 01:03:10.512 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:03:10.515 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:03:10.516 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:03:10.517 [http-nio-8080-exec-3] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:03:10.517 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:03:37.729 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/register
+2025-03-05 01:03:37.730 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/register
+2025-03-05 01:03:37.735 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:03:37.736 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:03:37.740 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:03:37.743 [http-nio-8080-exec-2] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:03:37.743 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:05:57.145 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/login
+2025-03-05 01:05:57.167 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/login
+2025-03-05 01:05:57.244 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:05:57.249 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:05:57.251 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:05:57.267 [http-nio-8080-exec-6] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:05:57.268 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:06:11.898 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/login
+2025-03-05 01:06:11.901 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/login
+2025-03-05 01:06:11.908 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:06:11.911 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:06:11.913 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:06:11.916 [http-nio-8080-exec-7] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:06:11.916 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:09:09.961 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/register
+2025-03-05 01:09:10.005 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/register
+2025-03-05 01:09:10.143 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:09:10.163 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:09:10.165 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:09:10.175 [http-nio-8080-exec-1] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:09:10.175 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:09:31.352 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error?continue
+2025-03-05 01:09:31.379 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error?continue
+2025-03-05 01:09:33.425 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:09:34.337 [http-nio-8080-exec-2] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:09:34.337 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:09:57.167 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/register
+2025-03-05 01:09:57.171 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/register
+2025-03-05 01:09:57.273 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:09:57.274 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:09:57.276 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:09:57.282 [http-nio-8080-exec-5] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:09:57.282 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:12:05.206 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 01:12:05.340 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:12:05.368 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:12:05.461 [http-nio-8080-exec-8] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:12:05.462 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:12:39.571 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy -Securing GET /level
+2025-03-05 01:12:39.585 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:12:39.587 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:12:39.591 [http-nio-8080-exec-9] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:12:39.591 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:15:34.379 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17.0.8.1 with PID 13904 (D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu\build\classes\java\main started by Mr Tan in D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu)
+2025-03-05 01:15:34.392 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-03-05 01:15:34.598 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-03-05 01:15:34.600 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-03-05 01:15:38.188 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-03-05 01:15:38.411 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 199 ms. Found 4 JPA repository interfaces.
+2025-03-05 01:15:42.166 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-03-05 01:15:42.201 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-03-05 01:15:42.218 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-03-05 01:15:42.220 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-03-05 01:15:42.485 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] -Initializing Spring embedded WebApplicationContext
+2025-03-05 01:15:42.500 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 7890 ms
+2025-03-05 01:15:43.207 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-03-05 01:15:43.961 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-03-05 01:15:44.272 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-03-05 01:15:45.651 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-03-05 01:15:45.845 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-03-05 01:15:46.764 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@666d546
+2025-03-05 01:15:46.770 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-03-05 01:15:47.008 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-03-05 01:15:47.010 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-03-05 01:15:47.072 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-03-05 01:15:49.641 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
+2025-03-05 01:15:50.395 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-03-05 01:15:51.409 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-03-05 01:15:53.641 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-03-05 01:15:54.273 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-03-05 01:15:54.274 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-03-05 01:15:59.176 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-03-05 01:16:00.007 [restartedMain] INFO  o.s.v.b.OptionalValidatorFactoryBean -Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-03-05 01:16:04.069 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
+2025-03-05 01:16:04.105 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
+2025-03-05 01:16:04.198 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/'
+2025-03-05 01:16:04.213 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 31.69 seconds (process running for 33.795)
+2025-03-05 01:18:02.541 [http-nio-8080-exec-2] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] -Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-03-05 01:18:02.551 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet -Initializing Servlet 'dispatcherServlet'
+2025-03-05 01:18:02.639 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 88 ms
+2025-03-05 01:18:02.707 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 01:18:02.824 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:18:02.859 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:18:03.117 [http-nio-8080-exec-2] WARN  o.a.c.util.SessionIdGeneratorBase -Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [169] milliseconds.
+2025-03-05 01:18:03.125 [http-nio-8080-exec-2] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:18:03.125 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:19:05.856 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 01:19:05.859 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:19:05.860 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:19:05.862 [http-nio-8080-exec-5] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:19:05.863 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:19:31.100 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/login
+2025-03-05 01:19:31.107 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/login
+2025-03-05 01:19:31.302 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:19:31.308 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:19:31.310 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:19:31.315 [http-nio-8080-exec-6] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:19:31.316 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:20:33.603 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 01:20:33.680 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:20:33.684 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:20:33.720 [http-nio-8080-exec-8] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:20:33.721 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:20:42.215 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/levelsss
+2025-03-05 01:20:42.219 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:20:42.221 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:20:42.223 [http-nio-8080-exec-10] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:20:42.224 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:20:57.463 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 01:20:57.466 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:20:57.468 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:20:57.470 [http-nio-8080-exec-1] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:20:57.471 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:21:34.163 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /user/getAllUser?pageNo=3&pageSize=3
+2025-03-05 01:21:34.194 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error?pageNo=3&pageSize=3
+2025-03-05 01:21:34.713 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:21:34.801 [http-nio-8080-exec-2] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?pageNo=3&pageSize=3&continue to session
+2025-03-05 01:21:34.801 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:21:51.409 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing GET /level
+2025-03-05 01:21:51.412 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:21:51.413 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:21:51.415 [http-nio-8080-exec-3] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:21:51.415 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:27:31.691 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/leveldwdwqd
+2025-03-05 01:27:31.830 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:27:31.846 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:27:31.909 [http-nio-8080-exec-6] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:27:31.914 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:27:40.061 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/leveldwdwqd
+2025-03-05 01:27:40.066 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:27:40.066 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:27:40.070 [http-nio-8080-exec-7] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:27:40.071 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:27:53.635 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 01:27:53.639 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:27:53.646 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:27:53.648 [http-nio-8080-exec-9] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:27:53.649 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:33:03.795 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/login
+2025-03-05 01:33:03.805 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/login
+2025-03-05 01:33:03.988 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:33:03.994 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:33:03.995 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:33:03.997 [http-nio-8080-exec-10] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:33:03.997 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:33:42.655 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/login
+2025-03-05 01:33:42.661 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/login
+2025-03-05 01:33:42.677 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:33:42.678 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:33:42.680 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:33:42.683 [http-nio-8080-exec-2] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:33:42.683 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:34:23.576 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing POST /api/v1/users/login
+2025-03-05 01:34:23.581 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Secured POST /api/v1/users/login
+2025-03-05 01:34:23.591 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:34:23.594 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-05 01:34:23.598 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:34:23.602 [http-nio-8080-exec-3] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:34:23.602 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:40:24.450 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17.0.8.1 with PID 9072 (D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu\build\classes\java\main started by Mr Tan in D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu)
+2025-03-05 01:40:24.458 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-03-05 01:40:24.599 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-03-05 01:40:24.600 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-03-05 01:40:26.829 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-03-05 01:40:27.026 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 174 ms. Found 4 JPA repository interfaces.
+2025-03-05 01:40:30.668 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-03-05 01:40:30.875 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-03-05 01:40:30.884 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-03-05 01:40:30.886 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-03-05 01:40:31.257 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] -Initializing Spring embedded WebApplicationContext
+2025-03-05 01:40:31.260 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 6656 ms
+2025-03-05 01:40:31.766 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-03-05 01:40:32.047 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-03-05 01:40:32.173 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-03-05 01:40:33.209 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-03-05 01:40:33.310 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-03-05 01:40:33.922 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c23dc43
+2025-03-05 01:40:33.927 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-03-05 01:40:34.165 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-03-05 01:40:34.168 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-03-05 01:40:34.225 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-03-05 01:40:37.197 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
+2025-03-05 01:40:37.884 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-03-05 01:40:38.804 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-03-05 01:40:39.923 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-03-05 01:40:40.216 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-03-05 01:40:40.218 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-03-05 01:40:42.049 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-03-05 01:40:42.125 [restartedMain] INFO  o.s.v.b.OptionalValidatorFactoryBean -Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-03-05 01:40:42.873 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
+2025-03-05 01:40:42.899 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
+2025-03-05 01:40:42.964 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/'
+2025-03-05 01:40:42.987 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 19.719 seconds (process running for 21.339)
+2025-03-05 01:43:42.809 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] -Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-03-05 01:43:42.847 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet -Initializing Servlet 'dispatcherServlet'
+2025-03-05 01:43:43.068 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 220 ms
+2025-03-05 01:43:43.307 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 01:43:43.502 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:43:43.550 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:43:43.839 [http-nio-8080-exec-1] WARN  o.a.c.util.SessionIdGeneratorBase -Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [186] milliseconds.
+2025-03-05 01:43:43.851 [http-nio-8080-exec-1] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:43:43.852 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:43:59.210 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing GET /level
+2025-03-05 01:43:59.222 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:43:59.223 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:43:59.228 [http-nio-8080-exec-3] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:43:59.229 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:44:24.036 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Securing GET /level
+2025-03-05 01:44:24.054 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:44:24.055 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:44:24.057 [http-nio-8080-exec-4] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:44:24.058 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:49:33.713 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17.0.8.1 with PID 13224 (D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu\build\classes\java\main started by Mr Tan in D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu)
+2025-03-05 01:49:33.719 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-03-05 01:49:33.909 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-03-05 01:49:33.910 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-03-05 01:49:36.565 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-03-05 01:49:36.738 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 154 ms. Found 4 JPA repository interfaces.
+2025-03-05 01:49:38.733 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-03-05 01:49:38.761 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-03-05 01:49:38.767 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-03-05 01:49:38.767 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-03-05 01:49:38.895 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] -Initializing Spring embedded WebApplicationContext
+2025-03-05 01:49:38.901 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 4984 ms
+2025-03-05 01:49:39.391 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-03-05 01:49:39.545 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-03-05 01:49:39.630 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-03-05 01:49:40.959 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-03-05 01:49:41.165 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-03-05 01:49:42.821 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@52cdb5aa
+2025-03-05 01:49:42.837 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-03-05 01:49:43.430 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-03-05 01:49:43.434 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-03-05 01:49:43.597 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-03-05 01:49:47.164 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
+2025-03-05 01:49:48.887 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-03-05 01:49:51.792 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-03-05 01:49:53.766 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-03-05 01:49:54.088 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-03-05 01:49:54.089 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-03-05 01:49:55.150 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-03-05 01:49:55.243 [restartedMain] INFO  o.s.v.b.OptionalValidatorFactoryBean -Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-03-05 01:49:56.147 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
+2025-03-05 01:49:56.177 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
+2025-03-05 01:49:56.252 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/'
+2025-03-05 01:49:56.269 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 23.853 seconds (process running for 26.849)
+2025-03-05 01:53:19.082 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] -Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-03-05 01:53:19.094 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet -Initializing Servlet 'dispatcherServlet'
+2025-03-05 01:53:19.190 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 94 ms
+2025-03-05 01:53:19.340 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level/getAll
+2025-03-05 01:53:19.445 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:53:19.473 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:53:19.696 [http-nio-8080-exec-1] WARN  o.a.c.util.SessionIdGeneratorBase -Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [127] milliseconds.
+2025-03-05 01:53:19.705 [http-nio-8080-exec-1] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:53:19.706 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:57:21.169 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level/getAll
+2025-03-05 01:57:21.428 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:57:21.442 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:57:21.499 [http-nio-8080-exec-4] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:57:21.500 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-05 01:57:25.445 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing GET /api/v1/level
+2025-03-05 01:57:25.473 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
+2025-03-05 01:57:25.475 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-05 01:57:25.487 [http-nio-8080-exec-6] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/error?continue to session
+2025-03-05 01:57:25.488 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
