@@ -12,7 +12,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Date;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -58,6 +60,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "google_account_id")
     private String googleAccountId;
 
+    @Column(name = "last_login")
+    private Date lastLogin;
+
     @Column(name = "active_code")
     private String activeCode;
 
@@ -66,6 +71,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "is_active")
     private boolean isActive;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserLanguage> userLanguages = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {

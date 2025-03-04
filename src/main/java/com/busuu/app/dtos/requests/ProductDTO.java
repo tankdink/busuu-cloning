@@ -1,4 +1,4 @@
-package com.busuu.app.dtos;
+package com.busuu.app.dtos.requests;
 
 import lombok.*;
 

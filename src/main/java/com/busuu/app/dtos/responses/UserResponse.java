@@ -1,4 +1,4 @@
-package com.busuu.app.responses;
+package com.busuu.app.dtos.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
