@@ -41,6 +41,9 @@ public class WebSecurityConfig {
                                     String.format("%s/users/details", apiPrefix),
                                     String.format("%s/users/email-unique", apiPrefix),
                                     String.format("%s/users/active-account", apiPrefix),
+                                    String.format("%s/level", apiPrefix),
+                                    String.format("%s/level/**", apiPrefix),
+
 
                                     //swagger
                                     //"/v3/api-docs",
