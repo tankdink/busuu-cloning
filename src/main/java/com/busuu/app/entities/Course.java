@@ -23,7 +23,7 @@ public class Course extends BaseEntity{
     @Column(name = "title")
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "flag_icon_url")

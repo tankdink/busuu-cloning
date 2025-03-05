@@ -3,7 +3,7 @@ package com.busuu.app.configs.constant;
 public class Constants {
     public static final String USER = "/users";
     public static final String ROLE = "/roles";
-    public static final String LEVEL = "/level";
+    public static final String LEVEL = "/levels";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
@@ -28,7 +28,6 @@ public class Constants {
         public static final String ERR_GET_LEVEL_BY_ID = "ERR_GET_LEVEL_BY_ID";
         public static final String ERR_UPDATE_LEVEL_BY_ID = "ERR_UPDATE_LEVEL_BY_ID";
         public static final String ERR_DELETE_LEVEL_BY_ID = "ERR_DELETE_LEVEL_BY_ID";
-        public static final String ERR_DELETE_ALL_LEVEL = "ERR_DELETE_ALL_LEVEL";
     }
 
 

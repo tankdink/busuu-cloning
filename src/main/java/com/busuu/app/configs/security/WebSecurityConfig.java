@@ -57,6 +57,9 @@ public class WebSecurityConfig {
                             )
                             .permitAll()
 
+                            .requestMatchers(GET, "/levels").permitAll()
+                            .requestMatchers(GET, "/levels/**").permitAll()
+
                             .requestMatchers(GET,
                                     "/actuator/**").permitAll()
                             .anyRequest()

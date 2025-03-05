@@ -21,7 +21,7 @@ public class GrammarSection extends BaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)

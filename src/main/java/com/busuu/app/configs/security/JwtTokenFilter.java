@@ -70,6 +70,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of("/users/email-unique", "GET"),
                 Pair.of("/users/active-account", "GET"),
 
+                Pair.of("/levels", "GET"),
+                Pair.of("/levels/**", "GET"),
+
                 // Swagger
                 Pair.of("/api-docs","GET"),
                 Pair.of("/api-docs/**","GET"),

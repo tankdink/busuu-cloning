@@ -18,29 +18,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LevelDTO implements Serializable
+public class LevelDTO
 {
-
-    @NotBlank(message = "Level ID is required!")
-    @Size(min = 1, max = 255, message = "Invalid ID length (minimum length is 1 and maximum length is 255!")
-    private String id;
-
     @NotBlank(message = "Level code is required!")
-    @Size(min = 1, max = 255, message = "Invalid ID length (minimum length is 1 and maximum length is 255!")
+    @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
     private String code;
 
     @NotBlank(message = "Level name is required!")
-    @Size(min = 1, max = 255, message = "Invalid ID length (minimum length is 1 and maximum length is 255!")
+    @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
     private String name;
 
     @NotBlank(message = "Level description is required!")
-    @Size(min = 1, max = 255)
+    @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
     private String description;
-
-    @NotEmpty(message = "Chapter list is required!")
-    private List<ChapterDTO> chapters = new ArrayList<>();
-
-    @NotEmpty(message = "Course level is required!")
-    private List<CourseLevelDTO> courseLevels = new ArrayList<>();
-
 }
