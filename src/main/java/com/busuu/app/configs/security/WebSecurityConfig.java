@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,8 +27,6 @@ import static org.springframework.http.HttpMethod.GET;
 public class WebSecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
 
-    @Value("${api.prefix}")
-    private String apiPrefix;
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
         http
@@ -35,12 +34,12 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(requests -> {
                     requests
                             .requestMatchers(
-                                    String.format("%s/users/register", apiPrefix),
-                                    String.format("%s/users/login", apiPrefix),
-                                    String.format("%s/users/refresh-token", apiPrefix),
-                                    String.format("%s/users/details", apiPrefix),
-                                    String.format("%s/users/email-unique", apiPrefix),
-                                    String.format("%s/users/active-account", apiPrefix),
+                                    "/users/register",
+                                    "/users/login",
+                                    "/users/refresh-token",
+                                    "/users/details",
+                                    "/users/email-unique",
+                                    "/users/active-account",
 
                                     //swagger
                                     //"/v3/api-docs",
@@ -59,7 +58,7 @@ public class WebSecurityConfig {
                             .permitAll()
 
                             .requestMatchers(GET,
-                                    String.format("%s/actuator/**", apiPrefix)).permitAll()
+                                    "/actuator/**").permitAll()
                             .anyRequest()
                             .authenticated();
                 })

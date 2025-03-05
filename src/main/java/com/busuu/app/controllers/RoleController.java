@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +29,11 @@ public class RoleController {
     private final LocalizationUtils localizationUtils;
 
     @PostMapping()
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertRole (@RequestParam(value = "req-id", required = false) String requestId,
                                                 @Valid @RequestBody RoleDTO roleDTO,
                                                 BindingResult result) {
         try {
-
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -72,6 +73,7 @@ public class RoleController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getRoles (@RequestParam(value = "req-id", required = false) String requestId) {
         try {
             if (requestId == null || requestId.isEmpty()) {
@@ -98,6 +100,7 @@ public class RoleController {
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getRole (@RequestParam(value = "req-id", required = false) String requestId,
                                              @PathVariable("id") String roleId) {
         try {
@@ -125,6 +128,7 @@ public class RoleController {
     }
 
     @PutMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateRole (@RequestParam(value = "req-id", required = false) String requestId,
                                          @PathVariable("id") String roleId,
                                          @Valid @RequestBody RoleDTO roleDTO,
@@ -170,6 +174,7 @@ public class RoleController {
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteRole (@RequestParam(value = "req-id", required = false) String requestId,
                                                 @PathVariable("id") String roleId) {
         try {
