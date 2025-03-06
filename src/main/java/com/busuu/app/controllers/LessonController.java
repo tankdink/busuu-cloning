@@ -1,10 +1,11 @@
 package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.requests.course.CourseDTO;
+import com.busuu.app.dtos.requests.lesson.LessonDTO;
 import com.busuu.app.dtos.responses.CourseResponse;
+import com.busuu.app.dtos.responses.LessonResponse;
 import com.busuu.app.dtos.responses.Response;
-import com.busuu.app.services.course.ICourseService;
+import com.busuu.app.services.lesson.ILessonService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import jakarta.validation.Valid;
@@ -24,18 +25,17 @@ import java.util.UUID;
 
 @Controller
 @RestController
-@RequestMapping(Constants.COURSE)
+@RequestMapping(Constants.LESSON)
 @RequiredArgsConstructor
 @Slf4j
-public class CourseController {
-
-    private final ICourseService courseService;
+public class LessonController {
+    private final ILessonService lessonService;
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> insertCourse (@RequestParam(value = "req-id", required = false) String requestId,
-                                                  @Valid @ModelAttribute CourseDTO courseDTO,
+    public ResponseEntity<Response> insertLesson (@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @Valid @ModelAttribute LessonDTO lessonDTO,
                                                   BindingResult result) {
         try {
             if (requestId == null || requestId.isEmpty()) {
@@ -57,16 +57,16 @@ public class CourseController {
                                 .build()
                 );
             }
-            CourseResponse course = courseService.insertCourse(requestId, courseDTO);
+            LessonResponse lessonResponse = lessonService.insertLesson(requestId, lessonDTO);
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
-                            .data(course)
+                            .data(lessonResponse)
                             .status(HttpStatus.CREATED)
                             .build()
             );
         } catch (Exception e) {
-            log.error("Error when create course, " + e.getMessage());
+            log.error("Error when create lesson, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) + ": " + e.getMessage())
@@ -77,22 +77,22 @@ public class CourseController {
     }
 
     @GetMapping()
-    public ResponseEntity<Response> getCourses (@RequestParam(value = "req-id", required = false) String requestId) {
+    public ResponseEntity<Response> getLesson (@RequestParam(value = "req-id", required = false) String requestId) {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            List<CourseResponse> courses = courseService.getCourses(requestId);
+            List<LessonResponse> lessonResponses = lessonService.getLessons(requestId);
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .data(courses)
-                            .status(HttpStatus.OK)
+                            .data(lessonResponses)
+                            .status(HttpStatus.CREATED)
                             .build()
             );
         } catch (Exception e) {
-            log.error("Error when get courses, " + e.getMessage());
+            log.error("Error when get lesson, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
@@ -103,23 +103,23 @@ public class CourseController {
     }
 
     @GetMapping(value = Constants.PATH_PARAM_ID)
-    public ResponseEntity<Response> getCourse (@RequestParam(value = "req-id", required = false) String requestId,
-                                                @PathVariable("id") String courseId) {
+    public ResponseEntity<Response> getLesson (@RequestParam(value = "req-id", required = false) String requestId,
+                                               @PathVariable("id") String lessonId) {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            CourseResponse course = courseService.getCourse(requestId, courseId);
+            LessonResponse lessonResponse = lessonService.getLesson(requestId, lessonId);
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .data(course)
-                            .status(HttpStatus.OK)
+                            .data(lessonResponse)
+                            .status(HttpStatus.CREATED)
                             .build()
             );
         } catch (Exception e) {
-            log.error("Error when get course, " + e.getMessage());
+            log.error("Error when get lessons, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
@@ -129,11 +129,10 @@ public class CourseController {
         }
     }
 
-    @PutMapping(value = Constants.PATH_PARAM_ID, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> updateCourse (@RequestParam(value = "req-id", required = false) String requestId,
-                                                  @PathVariable("id") String courseId,
-                                                  @Valid @ModelAttribute CourseDTO courseDTO,
+    @PutMapping(value = Constants.PATH_PARAM_ID)
+    public ResponseEntity<Response> updateLesson (@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @PathVariable("id") String lessonId,
+                                                  @Valid @ModelAttribute LessonDTO lessonDTO,
                                                   BindingResult result) {
         try {
             if (requestId == null || requestId.isEmpty()) {
@@ -156,16 +155,16 @@ public class CourseController {
                 );
             }
 
-            CourseResponse course = courseService.updateCourse(requestId, courseId, courseDTO);
+            LessonResponse lessonResponse = lessonService.updateLesson(requestId, lessonId, lessonDTO);
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
-                            .data(course)
-                            .status(HttpStatus.OK)
+                            .data(lessonResponse)
+                            .status(HttpStatus.CREATED)
                             .build()
             );
         } catch (Exception e) {
-            log.error("Error when update course, " + e.getMessage());
+            log.error("Error when update lesson, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) + ": " + e.getMessage())
@@ -176,23 +175,23 @@ public class CourseController {
     }
 
     @DeleteMapping(value = Constants.PATH_PARAM_ID)
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Response> deleteCourse (@RequestParam(value = "req-id", required = false) String requestId,
-                                               @PathVariable("id") String courseId) {
+    public ResponseEntity<Response> deleteLesson (@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @PathVariable("id") String lessonId) {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            courseService.deleteCourse(requestId, courseId);
+
+            lessonService.deleteLesson(requestId, lessonId);
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.CREATED)
                             .build()
             );
         } catch (Exception e) {
-            log.error("Error when delete course, " + e.getMessage());
+            log.error("Error when delete lesson, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())

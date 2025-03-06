@@ -5,6 +5,7 @@ public class Constants {
     public static final String ROLE = "/roles";
     public static final String LEVEL = "/levels";
     public static final String COURSE = "/courses";
+    public static final String LESSON = "/lessons";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
@@ -30,6 +31,12 @@ public class Constants {
         public static final String ERR_GET_COURSE = "ERR_GET_COURSE";
         public static final String ERR_UPDATE_COURSE = "ERR_UPDATE_COURSE";
         public static final String ERR_DELETE_COURSE = "ERR_DELETE_COURSE";
+
+        // Lesson
+        public static final String ERR_CREATE_LESSON = "ERR_CREATE_LESSON";
+        public static final String ERR_GET_LESSON = "ERR_GET_LESSON";
+        public static final String ERR_UPDATE_LESSON = "ERR_UPDATE_LESSON";
+        public static final String ERR_DELETE_LESSON = "ERR_DELETE_LESSON";
 
         // Level
         public static final String ERR_CREATE_NEW_LEVEL = "ERR_CREATE_NEW_LEVEL";

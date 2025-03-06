@@ -64,7 +64,7 @@ public class LevelController
             log.error("Error when adding new level: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
@@ -97,7 +97,7 @@ public class LevelController
             log.error("Error when getting level list: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
@@ -121,7 +121,7 @@ public class LevelController
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY) + ":" + levelId)
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
                             .data(gettedLevel)
                             .build()
@@ -131,7 +131,7 @@ public class LevelController
             log.error("Error when getting level with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
@@ -167,7 +167,7 @@ public class LevelController
             log.error("Error when updating level with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
@@ -201,7 +201,7 @@ public class LevelController
             log.error("Error when getting level list: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );

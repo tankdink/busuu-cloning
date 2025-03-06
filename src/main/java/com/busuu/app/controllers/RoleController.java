@@ -65,7 +65,7 @@ public class RoleController {
             log.error("Error when create role, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
@@ -92,7 +92,7 @@ public class RoleController {
             log.error("Error when get roles, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
@@ -120,7 +120,7 @@ public class RoleController {
             log.error("Error when get role, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
@@ -166,7 +166,7 @@ public class RoleController {
             log.error("Error when update role, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
@@ -193,7 +193,7 @@ public class RoleController {
             log.error("Error when delete role, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build()
             );

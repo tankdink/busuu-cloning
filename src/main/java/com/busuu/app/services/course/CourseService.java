@@ -146,6 +146,7 @@ public class CourseService implements ICourseService {
     }
 
     @Override
+    @Transactional
     public CourseResponse updateCourse(String requestId, String courseId, CourseDTO courseDTO) {
         try {
             Course existingCourse = courseRepository.findById(courseId)
@@ -215,6 +216,7 @@ public class CourseService implements ICourseService {
     }
 
     @Override
+    @Transactional
     public void deleteCourse(String requestId, String courseId) {
         try {
             Course existingCourse = courseRepository.findById(courseId)
