@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@Controller
+
 @RestController
 @RequestMapping(Constants.LEVEL)
 @RequiredArgsConstructor
