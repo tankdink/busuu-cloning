@@ -29,6 +29,9 @@ public class Course extends BaseEntity{
     @Column(name = "flag_icon_url")
     private String flagIconUrl;
 
+    @Column(name = "flag_icon_name")
+    private String flagIconName;
+
     @Column(name = "course_order")
     private Integer courseOrder;
 

@@ -37,11 +37,20 @@ public class Question extends BaseEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "image_name")
+    private String imageName;
+
     @Column(name = "video_url")
     private String videoUrl;
 
+    @Column(name = "video_name")
+    private String videoName;
+
     @Column(name = "audio_url")
     private String audioUrl;
+
+    @Column(name = "audio_name")
+    private String audioName;
 
     @Column(name = "question_order", nullable = false)
     private Integer questionOrder;
