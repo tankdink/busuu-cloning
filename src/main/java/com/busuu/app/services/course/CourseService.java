@@ -71,6 +71,10 @@ public class CourseService implements ICourseService {
                     Level existingLevel = levelRepository.findById(levelId)
                             .orElseThrow(() -> new DataNotFoundException("Cannot find Level with ID = " + levelId));
 
+                    if (courseLevelRepository.existsByCourseIdAndLevelId(course.getId(), existingLevel.getId())) {
+                        continue;
+                    }
+
                     CourseLevel courseLevel = CourseLevel.builder()
                             .id(UUID.randomUUID().toString())
                             .course(course)
@@ -182,6 +186,10 @@ public class CourseService implements ICourseService {
                 try {
                     Level existingLevel = levelRepository.findById(levelId)
                             .orElseThrow(() -> new DataNotFoundException("Cannot find Level with ID = " + levelId));
+
+                    if (courseLevelRepository.existsByCourseIdAndLevelId(existingCourse.getId(), existingLevel.getId())) {
+                        continue;
+                    }
 
                     CourseLevel courseLevel = CourseLevel.builder()
                             .id(UUID.randomUUID().toString())

@@ -11,4 +11,6 @@ public interface CourseLevelRepository extends JpaRepository<CourseLevel, String
     List<CourseLevel> findByCourseId (String courseId);
 
     void deleteByCourseId (String courseId);
+
+    boolean existsByCourseIdAndLevelId (String courseId, String levelId);
 }
