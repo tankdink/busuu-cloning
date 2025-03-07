@@ -1798,11 +1798,11 @@ Caused by: org.springframework.util.PlaceholderResolutionException: Could not re
 2025-03-05 13:42:43.853 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing POST /level
 2025-03-05 13:42:44.020 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Secured POST /level
 2025-03-05 13:42:44.142 [http-nio-8080-exec-8] ERROR c.b.a.e.GlobalExceptionsHandler -Invalid error: name: Invalid ID length (minimum length is 1)!
-2025-03-05 13:42:44.177 [http-nio-8080-exec-8] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver -Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [1] in public org.springframework.http.ResponseEntity<com.busuu.app.dtos.responses.Response> com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO) with 2 errors: [Field error in object 'levelDTO' on field 'name': rejected value []; codes [NotBlank.levelDTO.name,NotBlank.name,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [levelDTO.name,name]; arguments []; default message [name]]; default message [Level name is required!]] [Field error in object 'levelDTO' on field 'name': rejected value []; codes [Size.levelDTO.name,Size.name,Size.java.lang.String,Size]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [levelDTO.name,name]; arguments []; default message [name],2147483647,1]; default message [Invalid ID length (minimum length is 1)!]] ]
+2025-03-05 13:42:44.177 [http-nio-8080-exec-8] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver -Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [1] in public org.springframework.http.ResponseEntity<com.busuu.app.dtos.responses.Response> com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO) with 2 errors: [Field error in object 'levelDTO' on field 'name': rejected value []; codes [NotBlank.levelDTO.name,NotBlank.name,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [levelDTO.name,name]; arguments []; default message [name]]; default message [Level name is required!]] [Field error in object 'levelDTO' on field 'name': rejected value []; codes [Size.levelDTO.name,Size.name,Size.java.lang.String,Size]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [levelDTO.name,name]; arguments []; default message [name],2147483647,1]; default message [Invalid ID length (minimum length is 1)!]] ]
 2025-03-05 13:43:03.467 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /level
 2025-03-05 13:43:03.509 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Secured POST /level
-2025-03-05 13:43:03.517 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 13:43:03.587 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:43:03.517 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:43:03.587 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 13:43:08.238 [http-nio-8080-exec-2] WARN  o.h.e.jdbc.spi.SqlExceptionHelper -SQL Error: 1406, SQLState: 22001
 2025-03-05 13:43:08.241 [http-nio-8080-exec-2] ERROR o.h.e.jdbc.spi.SqlExceptionHelper -Data truncation: Data too long for column 'description' at row 1
 2025-03-05 13:43:08.262 [http-nio-8080-exec-2] ERROR c.b.app.controllers.LevelController -Error when adding new level: could not execute statement [Data truncation: Data too long for column 'description' at row 1] [insert into level (code,description,name,level_id) values (?,?,?,?)]; SQL [insert into level (code,description,name,level_id) values (?,?,?,?)]
@@ -1859,15 +1859,15 @@ Caused by: org.springframework.util.PlaceholderResolutionException: Could not re
 2025-03-05 13:47:44.531 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
 2025-03-05 13:47:53.260 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing POST /levels
 2025-03-05 13:47:53.432 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Secured POST /levels
-2025-03-05 13:47:53.773 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 13:47:53.817 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:47:53.773 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:47:53.817 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 13:47:54.120 [http-nio-8080-exec-3] WARN  o.h.e.jdbc.spi.SqlExceptionHelper -SQL Error: 1406, SQLState: 22001
 2025-03-05 13:47:54.122 [http-nio-8080-exec-3] ERROR o.h.e.jdbc.spi.SqlExceptionHelper -Data truncation: Data too long for column 'description' at row 1
 2025-03-05 13:47:54.216 [http-nio-8080-exec-3] ERROR c.b.app.controllers.LevelController -Error when adding new level: could not execute statement [Data truncation: Data too long for column 'description' at row 1] [insert into level (code,description,name,level_id) values (?,?,?,?)]; SQL [insert into level (code,description,name,level_id) values (?,?,?,?)]
 2025-03-05 13:50:03.769 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Securing POST /levels
 2025-03-05 13:50:03.950 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Secured POST /levels
-2025-03-05 13:50:03.982 [http-nio-8080-exec-4] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 13:50:03.987 [http-nio-8080-exec-4] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:50:03.982 [http-nio-8080-exec-4] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:50:03.987 [http-nio-8080-exec-4] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 13:51:08.709 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
 2025-03-05 13:51:08.857 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17 with PID 12640 (D:\Busuu Project\busuu\build\classes\java\main started by ADMIN in D:\Busuu Project\busuu)
 2025-03-05 13:51:08.859 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
@@ -1915,20 +1915,20 @@ Caused by: org.springframework.util.PlaceholderResolutionException: Could not re
 2025-03-05 13:53:00.301 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 5 ms
 2025-03-05 13:53:00.366 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing POST /levels
 2025-03-05 13:53:01.336 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Secured POST /levels
-2025-03-05 13:53:01.767 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 13:53:01.810 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:53:01.767 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:53:01.810 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 13:56:30.236 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing POST /levels
 2025-03-05 13:56:30.968 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Secured POST /levels
-2025-03-05 13:56:31.108 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 13:56:31.140 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:56:31.108 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:56:31.140 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 13:58:35.724 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing POST /levels
 2025-03-05 13:58:35.861 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Secured POST /levels
-2025-03-05 13:58:35.868 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 13:58:35.869 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:58:35.868 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 13:58:35.869 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 14:00:03.882 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /levels
 2025-03-05 14:00:03.947 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Secured POST /levels
-2025-03-05 14:00:03.951 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 14:00:03.951 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:00:03.951 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:00:03.951 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.insertLevel(java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 14:00:12.580 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /levels
 2025-03-05 14:00:13.165 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /error
 2025-03-05 14:00:13.171 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
@@ -1986,8 +1986,8 @@ Caused by: org.springframework.util.PlaceholderResolutionException: Could not re
 2025-03-05 14:39:27.796 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 4 ms
 2025-03-05 14:39:27.850 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing PUT /levels/8a4f8572-02fc-4352-b434-019d6d43f202
 2025-03-05 14:39:28.654 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Secured PUT /levels/8a4f8572-02fc-4352-b434-019d6d43f202
-2025-03-05 14:39:28.909 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 14:39:28.941 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:39:28.909 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:39:28.941 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 14:39:29.104 [http-nio-8080-exec-1] ERROR c.b.app.controllers.LevelController -Error when updating level with ID: Level Code has been used!
 2025-03-05 14:48:00.361 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
 2025-03-05 14:48:00.507 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17 with PID 11052 (D:\Busuu Project\busuu\build\classes\java\main started by ADMIN in D:\Busuu Project\busuu)
@@ -2036,8 +2036,8 @@ Caused by: org.springframework.util.PlaceholderResolutionException: Could not re
 2025-03-05 14:48:31.839 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 2 ms
 2025-03-05 14:48:31.915 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing PUT /levels/8a4f8572-02fc-4352-b434-019d6d43f202
 2025-03-05 14:48:32.998 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Secured PUT /levels/8a4f8572-02fc-4352-b434-019d6d43f202
-2025-03-05 14:48:33.321 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 14:48:33.341 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:48:33.321 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:48:33.341 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 14:51:09.749 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
 2025-03-05 14:51:09.914 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17 with PID 20368 (D:\Busuu Project\busuu\build\classes\java\main started by ADMIN in D:\Busuu Project\busuu)
 2025-03-05 14:51:09.917 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
@@ -2085,18 +2085,19 @@ Caused by: org.springframework.util.PlaceholderResolutionException: Could not re
 2025-03-05 14:58:30.424 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 104 ms
 2025-03-05 14:58:30.608 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing PUT /levels/c3deca24-b9e2-4591-98a0-0f0dcc264b6d
 2025-03-05 14:58:32.438 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Secured PUT /levels/c3deca24-b9e2-4591-98a0-0f0dcc264b6d
-2025-03-05 14:58:32.883 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 14:58:32.931 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:58:32.883 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:58:32.931 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 14:59:45.137 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing PUT /levels/560269ef-81f9-4e20-b441-fec41b1c443a
 2025-03-05 14:59:45.200 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Secured PUT /levels/560269ef-81f9-4e20-b441-fec41b1c443a
-2025-03-05 14:59:45.208 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 14:59:45.210 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:59:45.208 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 14:59:45.210 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 15:00:47.925 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing PUT /levels/b373dbe0-87c4-41cf-9725-1d2af3051471
 2025-03-05 15:00:48.010 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Secured PUT /levels/b373dbe0-87c4-41cf-9725-1d2af3051471
-2025-03-05 15:00:48.015 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
-2025-03-05 15:00:48.017 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 15:00:48.015 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
+2025-03-05 15:00:48.017 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.level.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 15:02:45.241 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Securing PUT /levels/da17eecf-dcf7-4f39-9458-6fb0890f0ea4
 2025-03-05 15:02:46.057 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Secured PUT /levels/da17eecf-dcf7-4f39-9458-6fb0890f0ea4
+
 2025-03-05 15:02:46.153 [http-nio-8080-exec-10] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-05 15:02:46.166 [http-nio-8080-exec-10] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.LevelController.updateLevel(java.lang.String,java.lang.String,com.busuu.app.dtos.requests.LevelDTO); target is of class [com.busuu.app.controllers.LevelController]
 2025-03-06 00:14:23.360 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
@@ -2129,75 +2130,149 @@ Caused by: org.springframework.util.PlaceholderResolutionException: Could not re
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2025-03-06 00:14:36.864 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
-2025-03-06 00:14:37.551 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-03-06 00:14:39.102 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-03-06 00:14:40.428 [restartedMain] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext -Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'courseController' defined in file [D:\Busuu Project\busuu\build\classes\java\main\com\busuu\app\controllers\CourseController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'courseService' defined in file [D:\Busuu Project\busuu\build\classes\java\main\com\busuu\app\services\course\CourseService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'courseRepository' defined in com.busuu.app.repositories.CourseRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); Reason: Failed to create query for method public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); No property 'existByTitle' found for type 'Course'
-2025-03-06 00:14:40.430 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-03-06 00:14:40.444 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Shutdown initiated...
-2025-03-06 00:14:40.459 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Shutdown completed.
-2025-03-06 00:14:40.467 [restartedMain] INFO  o.a.catalina.core.StandardService -Stopping service [Tomcat]
-2025-03-06 00:14:40.511 [restartedMain] INFO  o.s.b.a.l.ConditionEvaluationReportLogger -
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.modelmapper.ModelMapper]: Factory method 'modelMapper' threw exception with message: ModelMapper configuration errors:
 
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2025-03-06 00:14:40.575 [restartedMain] ERROR o.s.boot.SpringApplication -Application run failed
-org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'courseController' defined in file [D:\Busuu Project\busuu\build\classes\java\main\com\busuu\app\controllers\CourseController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'courseService' defined in file [D:\Busuu Project\busuu\build\classes\java\main\com\busuu\app\services\course\CourseService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'courseRepository' defined in com.busuu.app.repositories.CourseRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); Reason: Failed to create query for method public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); No property 'existByTitle' found for type 'Course'
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804)
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1381)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1218)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1155)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1121)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1056)
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
-	at com.busuu.app.BusuuApplication.main(BusuuApplication.java:10)
+1) Failed to instantiate proxied instance of com.busuu.app.entities.Chapter. Ensure that com.busuu.app.entities.Chapter has a non-private constructor.
+
+1 error
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:199)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:88)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:168)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653)
+	... 52 common frames omitted
+Caused by: org.modelmapper.ConfigurationException: ModelMapper configuration errors:
+
+1) Failed to instantiate proxied instance of com.busuu.app.entities.Chapter. Ensure that com.busuu.app.entities.Chapter has a non-private constructor.
+
+1 error
+	at org.modelmapper.internal.Errors.toConfigurationException(Errors.java:250)
+	at org.modelmapper.internal.ReferenceMapExpressionImpl.map(ReferenceMapExpressionImpl.java:63)
+	at org.modelmapper.internal.ConfigurableMapExpressionImpl.map(ConfigurableMapExpressionImpl.java:68)
+	at com.busuu.app.configs.ModelMapperConfig.lambda$modelMapper$2(ModelMapperConfig.java:20)
+	at org.modelmapper.internal.TypeMapImpl.addMappings(TypeMapImpl.java:265)
+	at com.busuu.app.configs.ModelMapperConfig.modelMapper(ModelMapperConfig.java:19)
+	at com.busuu.app.configs.ModelMapperConfig$$SpringCGLIB$$0.CGLIB$modelMapper$0(<generated>)
+	at com.busuu.app.configs.ModelMapperConfig$$SpringCGLIB$$FastClass$$1.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:258)
+	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:372)
+	at com.busuu.app.configs.ModelMapperConfig$$SpringCGLIB$$0.modelMapper(<generated>)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
-	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50)
-Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'courseService' defined in file [D:\Busuu Project\busuu\build\classes\java\main\com\busuu\app\services\course\CourseService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'courseRepository' defined in com.busuu.app.repositories.CourseRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); Reason: Failed to create query for method public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); No property 'existByTitle' found for type 'Course'
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804)
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1381)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1218)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1606)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1552)
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
-	... 26 common frames omitted
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'courseRepository' defined in com.busuu.app.repositories.CourseRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); Reason: Failed to create query for method public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); No property 'existByTitle' found for type 'Course'
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1812)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1606)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1552)
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
-	... 39 common frames omitted
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:171)
+	... 55 common frames omitted
+Caused by: java.lang.IllegalStateException: size = 2
+	at org.modelmapper.internal.bytebuddy.matcher.FilterableList$AbstractBase.getOnly(FilterableList.java:108)
+	at org.modelmapper.internal.bytebuddy.implementation.InvocationHandlerAdapter.apply(InvocationHandlerAdapter.java:187)
+	at org.modelmapper.internal.bytebuddy.implementation.InvocationHandlerAdapter$ForInstance$Appender.apply(InvocationHandlerAdapter.java:287)
+	at org.modelmapper.internal.bytebuddy.dynamic.scaffold.TypeWriter$MethodPool$Record$ForDefinedMethod$WithBody.applyCode(TypeWriter.java:620)
+	at org.modelmapper.internal.bytebuddy.dynamic.scaffold.TypeWriter$MethodPool$Record$ForDefinedMethod$WithBody.applyBody(TypeWriter.java:609)
+	at org.modelmapper.internal.bytebuddy.dynamic.scaffold.TypeWriter$MethodPool$Record$ForDefinedMethod.apply(TypeWriter.java:526)
+	at org.modelmapper.internal.bytebuddy.dynamic.scaffold.TypeWriter$Default$ForCreation.create(TypeWriter.java:4157)
+	at org.modelmapper.internal.bytebuddy.dynamic.scaffold.TypeWriter$Default.make(TypeWriter.java:1633)
+	at org.modelmapper.internal.bytebuddy.dynamic.scaffold.subclass.SubclassDynamicTypeBuilder.make(SubclassDynamicTypeBuilder.java:174)
+	at org.modelmapper.internal.bytebuddy.dynamic.scaffold.subclass.SubclassDynamicTypeBuilder.make(SubclassDynamicTypeBuilder.java:155)
+	at org.modelmapper.internal.bytebuddy.dynamic.DynamicType$Builder$AbstractBase.make(DynamicType.java:2669)
+	at org.modelmapper.internal.bytebuddy.dynamic.DynamicType$Builder$AbstractBase$Delegator.make(DynamicType.java:2771)
+	at org.modelmapper.internal.ProxyFactory.proxyFor(ProxyFactory.java:69)
+	at org.modelmapper.internal.ProxyFactory.proxyFor(ProxyFactory.java:48)
+	at org.modelmapper.internal.ReferenceMapExpressionImpl.map(ReferenceMapExpressionImpl.java:52)
+	... 69 common frames omitted
+2025-03-06 07:22:11.788 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
+2025-03-06 07:22:11.956 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17.0.8.1 with PID 11556 (D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu\build\classes\java\main started by Mr Tan in D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu)
+2025-03-06 07:22:11.957 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-03-06 07:22:12.168 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-03-06 07:22:12.169 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-03-06 07:22:16.497 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-03-06 07:22:16.688 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 161 ms. Found 6 JPA repository interfaces.
+2025-03-06 07:22:20.723 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-03-06 07:22:20.846 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-03-06 07:22:20.861 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-03-06 07:22:20.863 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-03-06 07:22:21.313 [restartedMain] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring embedded WebApplicationContext
+2025-03-06 07:22:21.317 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 9143 ms
+2025-03-06 07:22:22.541 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-03-06 07:22:22.858 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-03-06 07:22:23.022 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-03-06 07:22:24.497 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-03-06 07:22:24.599 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-03-06 07:22:25.709 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7dda100a
+2025-03-06 07:22:25.715 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-03-06 07:22:25.940 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-03-06 07:22:25.943 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-03-06 07:22:26.002 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-03-06 07:22:28.600 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
+2025-03-06 07:22:29.421 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-03-06 07:22:30.420 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-03-06 07:22:32.294 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver -Exposing 2 endpoints beneath base path '/api/v1/actuator'
+2025-03-06 07:22:32.520 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-03-06 07:22:33.019 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-03-06 07:22:33.021 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-03-06 07:22:33.886 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-03-06 07:22:35.508 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
+2025-03-06 07:22:36.144 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
+2025-03-06 07:22:36.745 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/api/v1'
+2025-03-06 07:22:36.829 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 26.088 seconds (process running for 28.997)
+2025-03-06 07:24:05.463 [http-nio-8080-exec-2] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-03-06 07:24:05.471 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet -Initializing Servlet 'dispatcherServlet'
+2025-03-06 07:24:05.557 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 84 ms
+2025-03-06 07:24:05.741 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing GET /levels
+2025-03-06 07:24:05.884 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Secured GET /levels
+2025-03-06 07:24:08.112 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-06 07:24:21.930 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Securing GET /chapters
+2025-03-06 07:24:21.940 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy -Secured GET /chapters
+2025-03-06 07:24:22.299 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-06 07:25:35.707 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing GET /chapters/21312321
+2025-03-06 07:25:35.726 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Secured GET /chapters/21312321
+2025-03-06 07:25:35.968 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-06 07:25:41.632 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Securing GET /chapters/2131232
+2025-03-06 07:25:41.641 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy -Secured GET /chapters/2131232
+2025-03-06 07:25:41.696 [http-nio-8080-exec-8] ERROR c.b.a.s.chapter.ChapterService -requestId=9d38d7b4-5149-4530-b1f1-f4edc950486e,failed to get chapter with ID 2131232, err=Cannot find chapter with ID 2131232
+2025-03-06 07:25:41.698 [http-nio-8080-exec-8] ERROR c.b.a.controllers.ChapterController -Error when getting chapter with ID: Cannot find chapter with ID 2131232
+2025-03-06 07:25:41.703 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-06 07:26:13.691 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Securing POST /users/login
+2025-03-06 07:26:13.705 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy -Secured POST /users/login
+2025-03-06 07:26:17.077 [http-nio-8080-exec-10] DEBUG o.s.s.a.d.DaoAuthenticationProvider -Authenticated user
+2025-03-06 07:26:20.080 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-06 07:27:55.325 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /chapters
+2025-03-06 07:28:09.253 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Secured POST /chapters
+2025-03-06 07:28:12.278 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /error
+2025-03-06 07:28:12.287 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-03-06 07:28:14.809 [http-nio-8080-exec-2] WARN  o.a.c.util.SessionIdGeneratorBase -Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [1,232] milliseconds.
+2025-03-06 07:28:14.972 [http-nio-8080-exec-2] DEBUG o.s.s.w.s.HttpSessionRequestCache -Saved request http://localhost:8080/api/v1/error?continue to session
+2025-03-06 07:28:14.978 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint -Pre-authenticated entry point called. Rejecting access
+2025-03-06 07:29:58.067 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
+2025-03-06 07:29:58.230 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17.0.8.1 with PID 10076 (D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu\build\classes\java\main started by Mr Tan in D:\__LAPTRINH__\WEBSITE\Bussu Project\Busuu)
+2025-03-06 07:29:58.232 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-03-06 07:29:58.393 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-03-06 07:29:58.393 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-03-06 07:30:02.532 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-03-06 07:30:03.137 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 565 ms. Found 6 JPA repository interfaces.
+2025-03-06 07:30:07.264 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-03-06 07:30:07.326 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-03-06 07:30:07.333 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-03-06 07:30:07.334 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-03-06 07:30:07.617 [restartedMain] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring embedded WebApplicationContext
+2025-03-06 07:30:07.622 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 9224 ms
+2025-03-06 07:30:09.404 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-03-06 07:30:09.712 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-03-06 07:30:09.873 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-03-06 07:30:11.408 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-03-06 07:30:11.537 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-03-06 07:30:12.564 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6ca0d485
+2025-03-06 07:30:12.577 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-03-06 07:30:12.873 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-03-06 07:30:12.878 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-03-06 07:30:12.998 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+=======
 Caused by: org.springframework.data.repository.query.QueryCreationException: Could not create query for public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); Reason: Failed to create query for method public abstract boolean com.busuu.app.repositories.CourseRepository.existByTitle(java.lang.String); No property 'existByTitle' found for type 'Course'
 	at org.springframework.data.repository.query.QueryCreationException.create(QueryCreationException.java:101)
 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lookupQuery(QueryExecutorMethodInterceptor.java:120)
@@ -2283,61 +2358,6 @@ Caused by: org.springframework.data.mapping.PropertyReferenceException: No prope
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2025-03-06 00:17:09.519 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
-2025-03-06 00:17:10.083 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-03-06 00:17:10.458 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-03-06 00:17:11.796 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver -Exposing 2 endpoints beneath base path '/api/v1/actuator'
-2025-03-06 00:17:11.913 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2025-03-06 00:17:12.178 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
-2025-03-06 00:17:12.179 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
-2025-03-06 00:17:12.781 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
-2025-03-06 00:17:13.705 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
-2025-03-06 00:17:13.788 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
-2025-03-06 00:17:13.844 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/api/v1'
-2025-03-06 00:17:13.870 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 14.065 seconds (process running for 15.359)
-2025-03-06 00:17:35.549 [http-nio-8080-exec-3] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-03-06 00:17:35.549 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet -Initializing Servlet 'dispatcherServlet'
-2025-03-06 00:17:35.551 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 2 ms
-2025-03-06 00:17:35.585 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing POST /courses
-2025-03-06 00:17:36.159 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Secured POST /courses
-2025-03-06 00:17:36.356 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.CourseController.insertCourse(java.lang.String,com.busuu.app.dtos.requests.course.CourseDTO,org.springframework.validation.BindingResult); target is of class [com.busuu.app.controllers.CourseController]
-2025-03-06 00:17:36.379 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.CourseController.insertCourse(java.lang.String,com.busuu.app.dtos.requests.course.CourseDTO,org.springframework.validation.BindingResult); target is of class [com.busuu.app.controllers.CourseController]
-2025-03-06 00:17:36.389 [http-nio-8080-exec-3] ERROR c.b.app.controllers.CourseController -Invalid error: [Course order is required]
-2025-03-06 00:18:22.319 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Securing POST /courses
-2025-03-06 00:18:22.356 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy -Secured POST /courses
-2025-03-06 00:18:22.376 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.CourseController.insertCourse(java.lang.String,com.busuu.app.dtos.requests.course.CourseDTO,org.springframework.validation.BindingResult); target is of class [com.busuu.app.controllers.CourseController]
-2025-03-06 00:18:22.377 [http-nio-8080-exec-2] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor -Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.busuu.app.controllers.CourseController.insertCourse(java.lang.String,com.busuu.app.dtos.requests.course.CourseDTO,org.springframework.validation.BindingResult); target is of class [com.busuu.app.controllers.CourseController]
-2025-03-06 00:18:23.036 [http-nio-8080-exec-2] INFO  o.a.http.impl.execchain.RetryExec -I/O exception (java.net.SocketException) caught when processing request to {s}->https://api.cloudinary.com:443: Network is unreachable: connect
-2025-03-06 00:18:23.036 [http-nio-8080-exec-2] INFO  o.a.http.impl.execchain.RetryExec -Retrying request to {s}->https://api.cloudinary.com:443
-2025-03-06 00:18:23.038 [http-nio-8080-exec-2] INFO  o.a.http.impl.execchain.RetryExec -I/O exception (java.net.SocketException) caught when processing request to {s}->https://api.cloudinary.com:443: Network is unreachable: connect
-2025-03-06 00:18:23.038 [http-nio-8080-exec-2] INFO  o.a.http.impl.execchain.RetryExec -Retrying request to {s}->https://api.cloudinary.com:443
-2025-03-06 00:18:23.040 [http-nio-8080-exec-2] INFO  o.a.http.impl.execchain.RetryExec -I/O exception (java.net.SocketException) caught when processing request to {s}->https://api.cloudinary.com:443: Network is unreachable: connect
-2025-03-06 00:18:23.040 [http-nio-8080-exec-2] INFO  o.a.http.impl.execchain.RetryExec -Retrying request to {s}->https://api.cloudinary.com:443
-2025-03-06 00:18:23.042 [http-nio-8080-exec-2] ERROR c.b.a.services.course.CourseService -requestId=8c8377d1-6899-4498-9511-36f8bc951e3b,failed to create course, err=Failed to upload file
-2025-03-06 00:18:23.050 [http-nio-8080-exec-2] ERROR c.b.app.controllers.CourseController -Error when create course, Failed to upload file
-2025-03-06 00:25:36.999 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
-2025-03-06 00:25:37.103 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17 with PID 7040 (D:\Busuu Project\busuu\build\classes\java\main started by ADMIN in D:\Busuu Project\busuu)
-2025-03-06 00:25:37.105 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
-2025-03-06 00:25:37.183 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2025-03-06 00:25:37.183 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2025-03-06 00:25:40.226 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-03-06 00:25:40.377 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 136 ms. Found 5 JPA repository interfaces.
-2025-03-06 00:25:42.305 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
-2025-03-06 00:25:42.324 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
-2025-03-06 00:25:42.327 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
-2025-03-06 00:25:42.328 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
-2025-03-06 00:25:42.443 [restartedMain] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring embedded WebApplicationContext
-2025-03-06 00:25:42.445 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 5259 ms
-2025-03-06 00:25:43.070 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-03-06 00:25:43.227 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
-2025-03-06 00:25:43.316 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
-2025-03-06 00:25:43.868 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-03-06 00:25:43.918 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
-2025-03-06 00:25:44.234 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4a62386f
-2025-03-06 00:25:44.238 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
-2025-03-06 00:25:44.327 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-03-06 00:25:44.328 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
-2025-03-06 00:25:44.357 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 8.0
@@ -2666,7 +2686,7 @@ Caused by: org.springframework.data.mapping.PropertyReferenceException: No prope
 2025-03-06 09:45:38.548 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
 2025-03-06 09:45:38.550 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
 2025-03-06 09:45:38.658 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
-	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 8.0
 	Autocommit mode: undefined/unknown

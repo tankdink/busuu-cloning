@@ -1,8 +1,7 @@
 package com.busuu.app.services.level;
 
-import com.busuu.app.dtos.requests.LevelDTO;
+import com.busuu.app.dtos.requests.level.LevelDTO;
 import com.busuu.app.entities.Level;
-import com.busuu.app.exceptions.DataNotFoundException;
 
 import java.util.List;
 

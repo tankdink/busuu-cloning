@@ -1,10 +1,10 @@
 package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.requests.level.LevelDTO;
+import com.busuu.app.dtos.requests.chapter.ChapterDTO;
+import com.busuu.app.dtos.responses.ChapterResponse;
 import com.busuu.app.dtos.responses.Response;
-import com.busuu.app.entities.Level;
-import com.busuu.app.services.level.ILevelService;
+import com.busuu.app.services.chapter.IChapterService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import jakarta.validation.Valid;
@@ -21,20 +21,19 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping(Constants.LEVEL)
+@RequestMapping(Constants.CHAPTER)
 @RequiredArgsConstructor
 @Slf4j
-public class LevelController
+public class ChapterController
 {
-
-    private final ILevelService levelService;
+    private final IChapterService chapterService;
 
     private final LocalizationUtils localizationUtils;
 
     @PostMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> insertLevel(@RequestParam(value = "req-id", required = false) String requestId,
-                                                @Valid @RequestBody LevelDTO newLevelDTO)
+    public ResponseEntity<Response> insertChapter(@RequestParam(value = "req-id", required = false) String requestId,
+                                                @Valid @RequestBody ChapterDTO newChapterDTO)
     {
         try {
 
@@ -42,20 +41,20 @@ public class LevelController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call add level service
-            Level addedLevel = levelService.insertLevel(requestId, newLevelDTO);
+            //Call add chapter service
+            ChapterResponse addedChapter = chapterService.insertChapter(requestId, newChapterDTO);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
                             .status(HttpStatus.CREATED)
-                            .data(addedLevel)
+                            .data(addedChapter)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when adding new level: " + e.getMessage());
+            log.error("Error when adding new chapter: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) +": "+ e.getMessage())
@@ -66,7 +65,7 @@ public class LevelController
     }
 
     @GetMapping()
-    public ResponseEntity<Response> getLevels(@RequestParam(value = "req-id", required = false) String requestId)
+    public ResponseEntity<Response> getChapters(@RequestParam(value = "req-id", required = false) String requestId)
     {
 
         try {
@@ -75,20 +74,20 @@ public class LevelController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get all level service
-            List<Level> levelList = levelService.getLevels(requestId);
+            //Call get all chapter service
+            List<ChapterResponse> chapterList = chapterService.getChapters(requestId);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(levelList)
+                            .data(chapterList)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when getting level list: " + e.getMessage());
+            log.error("Error when getting chapter list: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": "+ e.getMessage())
@@ -99,8 +98,8 @@ public class LevelController
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
-    public ResponseEntity<Response> getLevel(@RequestParam(value = "req-id", required = false) String requestId,
-                                             @PathVariable("id") String levelId)
+    public ResponseEntity<Response> getChapter(@RequestParam(value = "req-id", required = false) String requestId,
+                                             @PathVariable("id") String chapterId)
     {
 
         try {
@@ -109,20 +108,20 @@ public class LevelController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get level by ID service
-            Level gettedLevel = levelService.getLevel(requestId, levelId);
+            //Call get chapter by ID service
+            ChapterResponse gettedChapter = chapterService.getChapter(requestId, chapterId);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(gettedLevel)
+                            .data(gettedChapter)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when getting level with ID: " + e.getMessage());
+            log.error("Error when getting chapter with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
@@ -134,9 +133,9 @@ public class LevelController
 
     @PutMapping(Constants.PATH_PARAM_ID)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> updateLevel(@RequestParam(value = "req-id", required = false) String requestId,
-                                                @PathVariable("id") String levelId,
-                                                @Valid @RequestBody LevelDTO infoUpdate)
+    public ResponseEntity<Response> updateChapter(@RequestParam(value = "req-id", required = false) String requestId,
+                                                @PathVariable("id") String chapterId,
+                                                @Valid @RequestBody ChapterDTO infoUpdate)
     {
 
         try {
@@ -145,20 +144,20 @@ public class LevelController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call update level by ID service
-            Level levelUpdated = levelService.updateLevel(requestId, levelId, infoUpdate);
+            //Call update chapter by ID service
+            ChapterResponse chapterUpdated = chapterService.updateChapter(requestId, chapterId, infoUpdate);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
-                            .data(levelUpdated)
+                            .data(chapterUpdated)
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when updating level with ID: " + e.getMessage());
+            log.error("Error when updating chapter with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) +": "+ e.getMessage())
@@ -170,8 +169,8 @@ public class LevelController
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> deleteLevel(@RequestParam(value = "req-id", required = false) String requestId,
-                                                    @PathVariable("id") String levelId)
+    public ResponseEntity<Response> deleteChapter(@RequestParam(value = "req-id", required = false) String requestId,
+                                                    @PathVariable("id") String chapterId)
     {
 
         try {
@@ -180,8 +179,8 @@ public class LevelController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call delete level by ID service
-            levelService.deleteLevel(requestId, levelId);
+            //Call delete chapter by ID service
+            chapterService.deleteChapter(requestId, chapterId);
 
             //Return response
             return ResponseEntity.ok().body(
@@ -192,7 +191,7 @@ public class LevelController
             );
 
         } catch (Exception e) {
-            log.error("Error when deleting level: " + e.getMessage());
+            log.error("Error when deleting chapter: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED)+": " + e.getMessage())
