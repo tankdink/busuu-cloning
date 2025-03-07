@@ -1,7 +1,10 @@
 package com.busuu.app.dtos.requests.chapter;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,13 +26,16 @@ public class ChapterDTO
     @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
     private String description;
 
-    @NotBlank(message = "Chapter Order is required!")
+    @NotNull(message = "Chapter Order is required!")
+    @Min(value = 1, message = "The Chapter Order must be at least 1")
     private Integer chapterOrder;
 
     @NotBlank(message = "The Course ID to which this chapter belongs is required!")
-    private String course_id;
+    @JsonProperty("course_id")
+    private String courseId;
 
     @NotBlank(message = "The Level ID to which this chapter belongs is required")
-    private String level_id;
+    @JsonProperty("level_id")
+    private String levelId;
 
 }

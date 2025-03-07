@@ -15,13 +15,6 @@ public class ModelMapperConfig {
         modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT);
 
-//        modelMapper.typeMap(Chapter.class, ChapterResponse.class)
-//                .addMappings(mapper -> {
-//                    mapper.map(src -> src.getCourse().getId(), ChapterResponse::setCourse_id);
-//                    mapper.map(src -> src.getLevel().getId(), ChapterResponse::setLevel_id);
-//                });
-
-
 
         return modelMapper;
     }

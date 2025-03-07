@@ -29,6 +29,14 @@ public class Constants {
         public static final String ERR_GET_LEVEL_BY_ID = "ERR_GET_LEVEL_BY_ID";
         public static final String ERR_UPDATE_LEVEL_BY_ID = "ERR_UPDATE_LEVEL_BY_ID";
         public static final String ERR_DELETE_LEVEL_BY_ID = "ERR_DELETE_LEVEL_BY_ID";
+
+        //Chapter entity
+        public static final String ERR_CREATE_NEW_CHAPTER = "ERR_CREATE_NEW_CHAPTER";
+        public static final String ERR_GET_ALL_CHAPTER = "ERR_GET_ALL_CHAPTER";
+        public static final String ERR_GET_CHAPTER_BY_ID = "ERR_GET_CHAPTER_BY_ID";
+        public static final String ERR_UPDATE_CHAPTER_BY_ID = "ERR_UPDATE_CHAPTER_BY_ID";
+        public static final String ERR_DELETE_CHAPTER_BY_ID = "ERR_DELETE_CHAPTER_BY_ID";
+
     }
 
 

@@ -23,9 +23,9 @@ public class ChapterResponse
     private Integer chapterOrder;
 
     @JsonProperty("course_id")
-    private String course_id;
+    private String courseId;
 
     @JsonProperty("level_id")
-    private String level_id;
+    private String levelId;
 
 }

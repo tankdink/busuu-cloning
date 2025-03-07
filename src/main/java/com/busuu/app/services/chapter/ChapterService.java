@@ -8,7 +8,6 @@ import com.busuu.app.entities.Course;
 import com.busuu.app.entities.Level;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
-import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.ChapterRepository;
 import com.busuu.app.repositories.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
@@ -16,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -45,12 +45,12 @@ public class ChapterService implements IChapterService
         try {
 
             //Check and get exists level
-            Level level = levelRepository.findById(chapterDTO.getLevel_id())
-                    .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + chapterDTO.getLevel_id()) );
+            Level level = levelRepository.findById(chapterDTO.getLevelId())
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + chapterDTO.getLevelId()) );
 
             //Check exists course
-            Course course = courseRepository.findById(chapterDTO.getCourse_id())
-                    .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + chapterDTO.getCourse_id()) );
+            Course course = courseRepository.findById(chapterDTO.getCourseId())
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + chapterDTO.getCourseId()) );
 
 
             //Convert DTO to entity
@@ -69,8 +69,8 @@ public class ChapterService implements IChapterService
 
             //Save, map + add additional properties and return new Chapter
             ChapterResponse savedChapter = modelMapper.map(chapterRepository.save(newChapter), ChapterResponse.class);
-            savedChapter.setCourse_id(course.getId());
-            savedChapter.setLevel_id(level.getId());
+            savedChapter.setCourseId(course.getId());
+            savedChapter.setLevelId(level.getId());
 
             return savedChapter;
 
@@ -78,7 +78,7 @@ public class ChapterService implements IChapterService
         } catch (Exception e) {
             log.error("requestId="+requestId+", failed to create new chapter, err= "+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_CREATE_NEW_LEVEL, requestId);
+                    Constants.ERROR_CODE.ERR_CREATE_NEW_CHAPTER, requestId);
         }
     }
 
@@ -93,8 +93,8 @@ public class ChapterService implements IChapterService
                     {
                         ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
                         // Manually set additional fields if necessary
-                        response.setCourse_id(chapter.getCourse().getId());
-                        response.setLevel_id(chapter.getLevel().getId());
+                        response.setCourseId(chapter.getCourse().getId());
+                        response.setLevelId(chapter.getLevel().getId());
 
                         return response;
                     })
@@ -104,7 +104,7 @@ public class ChapterService implements IChapterService
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get chapter list, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_GET_ALL_LEVEL, requestId);
+                    Constants.ERROR_CODE.ERR_GET_ALL_CHAPTER, requestId);
         }
     }
 
@@ -119,14 +119,14 @@ public class ChapterService implements IChapterService
 
             //Return
             ChapterResponse response = modelMapper.map(gettedChapter, ChapterResponse.class);
-            response.setCourse_id(gettedChapter.getCourse().getId());
-            response.setLevel_id(gettedChapter.getLevel().getId());
+            response.setCourseId(gettedChapter.getCourse().getId());
+            response.setLevelId(gettedChapter.getLevel().getId());
             return response;
 
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get chapter with ID " +  chapterID + ", err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_GET_LEVEL_BY_ID, requestId);
+                    Constants.ERROR_CODE.ERR_GET_CHAPTER_BY_ID, requestId);
         }
     }
 
@@ -141,11 +141,11 @@ public class ChapterService implements IChapterService
                     .orElseThrow( ()-> new DataNotFoundException("No chapter found with ID " + chapterID) );
 
             //Check exists level, course
-            Level level = levelRepository.findById(infoUpdateChapter.getLevel_id())
-                    .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + infoUpdateChapter.getLevel_id()) );
+            Level level = levelRepository.findById(infoUpdateChapter.getLevelId())
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + infoUpdateChapter.getLevelId()) );
 
-            Course course = courseRepository.findById(infoUpdateChapter.getCourse_id())
-                    .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + infoUpdateChapter.getCourse_id()) );
+            Course course = courseRepository.findById(infoUpdateChapter.getCourseId())
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + infoUpdateChapter.getCourseId()) );
 
 
 
@@ -156,15 +156,15 @@ public class ChapterService implements IChapterService
 
             //Save and return
             ChapterResponse response = modelMapper.map(chapterRepository.save(existingChapter), ChapterResponse.class);
-            response.setCourse_id(existingChapter.getCourse().getId());
-            response.setLevel_id(existingChapter.getLevel().getId());
+            response.setCourseId(existingChapter.getCourse().getId());
+            response.setLevelId(existingChapter.getLevel().getId());
 
             return response;
 
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to update chapter with ID " +  chapterID + ", err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_UPDATE_LEVEL_BY_ID, requestId);
+                    Constants.ERROR_CODE.ERR_UPDATE_CHAPTER_BY_ID, requestId);
         }
     }
 
@@ -183,7 +183,7 @@ public class ChapterService implements IChapterService
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to delete chapter with ID " +  chapterID + ", err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_DELETE_LEVEL_BY_ID, requestId);
+                    Constants.ERROR_CODE.ERR_DELETE_CHAPTER_BY_ID, requestId);
         }
     }
 }
