@@ -28,6 +28,7 @@ public class ChapterDTO
 
     @NotNull(message = "Chapter Order is required!")
     @Min(value = 1, message = "The Chapter Order must be at least 1")
+    @JsonProperty("chapter_order")
     private Integer chapterOrder;
 
     @NotBlank(message = "The Course ID to which this chapter belongs is required!")

@@ -33,7 +33,7 @@ public class CourseController {
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertCourse (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @Valid @ModelAttribute CourseDTO courseDTO,
                                                   BindingResult result) {
@@ -130,7 +130,7 @@ public class CourseController {
     }
 
     @PutMapping(value = Constants.PATH_PARAM_ID, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateCourse (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String courseId,
                                                   @Valid @ModelAttribute CourseDTO courseDTO,

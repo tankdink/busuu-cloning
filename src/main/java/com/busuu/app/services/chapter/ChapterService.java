@@ -8,6 +8,7 @@ import com.busuu.app.entities.Course;
 import com.busuu.app.entities.Level;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
+import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.ChapterRepository;
 import com.busuu.app.repositories.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,10 @@ public class ChapterService implements IChapterService
             //Check and get exists level
             Level level = levelRepository.findById(chapterDTO.getLevelId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + chapterDTO.getLevelId()) );
+
+            if (chapterRepository.existsByChapterOrderAndLevelId(chapterDTO.getChapterOrder(), level.getId())) {
+                throw new ExistDataException("Chapter's order is duplicated");
+            }
 
             //Check exists course
             Course course = courseRepository.findById(chapterDTO.getCourseId())
@@ -143,6 +149,12 @@ public class ChapterService implements IChapterService
             //Check exists level, course
             Level level = levelRepository.findById(infoUpdateChapter.getLevelId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + infoUpdateChapter.getLevelId()) );
+
+            if (!Objects.equals(existingChapter.getChapterOrder(), infoUpdateChapter.getChapterOrder())) {
+                if (chapterRepository.existsByChapterOrderAndLevelId(infoUpdateChapter.getChapterOrder(), level.getId())) {
+                    throw new ExistDataException("Chapter's order is duplicated");
+                }
+            }
 
             Course course = courseRepository.findById(infoUpdateChapter.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + infoUpdateChapter.getCourseId()) );

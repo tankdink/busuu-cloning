@@ -19,7 +19,7 @@ public class ChapterResponse
     @JsonProperty("description")
     private String description;
 
-    @JsonProperty("chapterOrder")
+    @JsonProperty("chapter_order")
     private Integer chapterOrder;
 
     @JsonProperty("course_id")
@@ -27,5 +27,4 @@ public class ChapterResponse
 
     @JsonProperty("level_id")
     private String levelId;
-
 }
