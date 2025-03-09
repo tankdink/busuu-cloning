@@ -16,4 +16,6 @@ public interface ILessonService {
     LessonResponse updateLesson (String requestId, String lessonId, LessonDTO lessonDTO);
 
     void deleteLesson (String requestId, String lessonId);
+
+    List<LessonResponse> getByChapterId (String requestId, String chapterId);
 }

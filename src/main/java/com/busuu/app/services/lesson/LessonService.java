@@ -38,18 +38,19 @@ public class LessonService implements ILessonService {
     public LessonResponse insertLesson(String requestId, LessonDTO lessonDTO) {
         try {
 
-            if (lessonRepository.existsByTitle(lessonDTO.getTitle())) {
-                throw new ExistDataException("Lesson's title is duplicated");
-            }
-
-            if (lessonRepository.existsByLessonOrder(lessonDTO.getLessonOrder())) {
-                throw new ExistDataException("Lesson's order is duplicated");
-            }
-
             Chapter existingChapter = chapterRepository.findById(lessonDTO.getChapterId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Chapter with ID = " + lessonDTO.getChapterId()));
 
+            if (lessonRepository.existsByTitleAndChapterId(lessonDTO.getTitle(), existingChapter.getId())) {
+                throw new ExistDataException("Lesson's title is duplicated");
+            }
+
+            if (lessonRepository.existsByLessonOrderAndChapterId(lessonDTO.getLessonOrder(), existingChapter.getId())) {
+                throw new ExistDataException("Lesson's order is duplicated");
+            }
+
             Lesson lesson = modelMapper.map(lessonDTO, Lesson.class);
+            lesson.setId(UUID.randomUUID().toString());
 
             if (lessonDTO.getFlagIcon() != null) {
                 CloudinaryResponse cloudinaryResponse = uploadFlagIcon(lessonDTO.getFlagIcon());
@@ -123,14 +124,14 @@ public class LessonService implements ILessonService {
             }
 
             if (!existingLesson.getTitle().equals(lessonDTO.getTitle())) {
-                if (lessonRepository.existsByTitle(lessonDTO.getTitle())) {
-                    throw new ExistDataException("Course's title is duplicated");
+                if (lessonRepository.existsByTitleAndChapterId(lessonDTO.getTitle(), existingLesson.getChapter().getId())) {
+                    throw new ExistDataException("Lesson's title is duplicated");
                 }
             }
 
             if (!Objects.equals(existingLesson.getLessonOrder(), lessonDTO.getLessonOrder())) {
-                if (lessonRepository.existsByLessonOrder(lessonDTO.getLessonOrder())) {
-                    throw new ExistDataException("Course's order is duplicated");
+                if (lessonRepository.existsByLessonOrderAndChapterId(lessonDTO.getLessonOrder(), existingLesson.getChapter().getId())) {
+                    throw new ExistDataException("Lesson's order is duplicated");
                 }
             }
 
@@ -173,6 +174,23 @@ public class LessonService implements ILessonService {
             log.error("requestId="+requestId+",failed to delete lesson, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_DELETE_LESSON, requestId);
+        }
+    }
+
+    @Override
+    public List<LessonResponse> getByChapterId(String requestId, String chapterId) {
+        try {
+            List<Lesson> lessons = lessonRepository.findByChapterId(chapterId);
+
+            return lessons.stream().map(lesson -> {
+                LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);
+                lessonResponse.setChapterId(lesson.getChapter().getId());
+                return lessonResponse;
+            }).toList();
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get lessons, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_LESSON, requestId);
         }
     }
 

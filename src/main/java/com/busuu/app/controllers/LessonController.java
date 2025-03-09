@@ -129,6 +129,33 @@ public class LessonController {
         }
     }
 
+    @GetMapping(value = Constants.CHAPTER + Constants.PATH_PARAM_ID)
+    public ResponseEntity<Response> getByChapterId (@RequestParam(value = "req-id", required = false) String requestId,
+                                               @PathVariable("id") String chapterId) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            List<LessonResponse> lessonResponse = lessonService.getByChapterId(requestId, chapterId);
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(lessonResponse)
+                            .status(HttpStatus.CREATED)
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("Error when get lessons by chapter ID, " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
+    }
+
     @PutMapping(value = Constants.PATH_PARAM_ID)
     public ResponseEntity<Response> updateLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String lessonId,
