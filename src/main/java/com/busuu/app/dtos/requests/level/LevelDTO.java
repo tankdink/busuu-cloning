@@ -1,4 +1,4 @@
-package com.busuu.app.dtos.requests;
+package com.busuu.app.dtos.requests.level;
 
 
 import lombok.AllArgsConstructor;
@@ -6,12 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.persistence.*;
+
 import jakarta.validation.constraints.*;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 @Data
