@@ -1,5 +1,6 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.progresses.ChapterProgress;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,4 +41,7 @@ public class Chapter extends BaseEntity {
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Lesson> lessons = new ArrayList<>();
+
+    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChapterProgress> chapterProgresses;
 }

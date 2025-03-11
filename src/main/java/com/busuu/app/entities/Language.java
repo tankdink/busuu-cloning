@@ -1,5 +1,6 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.progresses.CourseProgress;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,4 +33,7 @@ public class Language extends BaseEntity{
 
     @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Grammar> grammars;
+
+    @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CourseProgress> courseProgresses;
 }
