@@ -28,6 +28,9 @@ public class Language extends BaseEntity{
     @Column(name = "flag_icon_url")
     private String flagIconUrl;
 
+    @Column(name = "flag_icon_name")
+    private String flagIconName;
+
     @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserLanguage> userLanguages = new HashSet<>();
 

@@ -1,5 +1,6 @@
 package com.busuu.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,12 +28,14 @@ public class Level {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chapter> chapters = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLevel> courseLevels = new ArrayList<>();
 }

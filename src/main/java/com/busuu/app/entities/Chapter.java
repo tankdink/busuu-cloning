@@ -2,10 +2,8 @@ package com.busuu.app.entities;
 
 import com.busuu.app.entities.progresses.ChapterProgress;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.modelmapper.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,7 @@ public class Chapter extends BaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "chapter_order")

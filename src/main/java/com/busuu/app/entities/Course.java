@@ -24,11 +24,14 @@ public class Course extends BaseEntity{
     @Column(name = "title")
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "flag_icon_url")
     private String flagIconUrl;
+
+    @Column(name = "flag_icon_name")
+    private String flagIconName;
 
     @Column(name = "course_order")
     private Integer courseOrder;

@@ -24,8 +24,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
-    @Value("${api.prefix}")
-    private String apiPrefix;
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
     @Override
@@ -67,10 +65,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private boolean isBypassToken (@NotNull HttpServletRequest request) {
         final List<Pair<String, String>> bypassTokens = Arrays.asList(
-                Pair.of(String.format("%s/users/register", apiPrefix), "POST"),
-                Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
-                Pair.of(String.format("%s/users/email-unique", apiPrefix), "GET"),
-                Pair.of(String.format("%s/users/active-account", apiPrefix), "GET"),
+                Pair.of("/users/register", "POST"),
+                Pair.of("/users/login", "POST"),
+                Pair.of("/users/email-unique", "GET"),
+                Pair.of("/users/active-account", "GET"),
+
+                Pair.of("/levels", "GET"),
+                Pair.of("/levels/**", "GET"),
+
+                Pair.of("/chapters", "GET"),
+                Pair.of("/chapters/**", "GET"),
+          
+                Pair.of("/courses", "GET"),
+                Pair.of("/courses/**", "GET"),
+
+                Pair.of("/lessons", "GET"),
+                Pair.of("/lessons/**", "GET"),
+                Pair.of("/lessons/chapters/**", "GET"),
 
                 // Swagger
                 Pair.of("/api-docs","GET"),

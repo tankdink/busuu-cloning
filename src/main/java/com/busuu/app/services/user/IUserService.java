@@ -7,13 +7,13 @@ import com.busuu.app.entities.User;
 
 public interface IUserService {
 
-    UserResponse insertUser (String requestId, UserDTO userDTO) throws Exception;
+    UserResponse register (String requestId, UserDTO userDTO) throws Exception;
 
-    String login (String email, String password) throws Exception;
+    String login (String requestId, String email, String password) throws Exception;
 
-    boolean emailUnique (String email);
+    boolean emailUnique (String requestId, String email);
 
-    User getUserDetailsFromToken (String token) throws Exception;
+    User getUserDetailsFromToken (String requestId, String token) throws Exception;
 
-    UserResponse updateUser (String userId, UserUpdateDTO userUpdateDTO) throws Exception;
+    UserResponse updateUser (String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception;
 }

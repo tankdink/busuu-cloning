@@ -26,7 +26,7 @@ public class Lesson extends BaseEntity{
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "lesson_order")
@@ -34,6 +34,9 @@ public class Lesson extends BaseEntity{
 
     @Column(name = "flag_icon_url")
     private String flagIconUrl;
+
+    @Column(name = "flag_icon_name")
+    private String flagIconName;
 
     @ManyToOne
     @JoinColumn(name = "chapter_id", nullable = false)

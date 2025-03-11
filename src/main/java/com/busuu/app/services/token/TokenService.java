@@ -52,6 +52,7 @@ public class TokenService implements ITokenService {
         LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expirationInSeconds);
 
         Token newToken = Token.builder()
+                .id(UUID.randomUUID().toString())
                 .user(user)
                 .token(token)
                 .revoked(false)
