@@ -19,6 +19,7 @@ public class Constants {
 
     public static class ERROR_CODE {
         public static final String ERR_UNAUTHORIZED = "ERR_UNAUTHORIZED";
+        public static final String ERR_CREATE_USER = "ERR_CREATE_USER";
         public static final String ERR_REGISTER_USER = "ERR_REGISTER_USER";
         public static final String ERR_LOGIN_USER = "ERR_LOGIN_USER";
 

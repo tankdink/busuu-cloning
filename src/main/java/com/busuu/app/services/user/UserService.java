@@ -1,5 +1,6 @@
 package com.busuu.app.services.user;
 
+
 import com.busuu.app.components.JwtTokenUtil;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.user.UserDTO;
@@ -32,7 +33,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService implements IUserService {
-
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
