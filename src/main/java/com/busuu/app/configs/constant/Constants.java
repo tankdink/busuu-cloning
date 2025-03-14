@@ -7,7 +7,6 @@ public class Constants {
     public static final String CHAPTER = "/chapters";
     public static final String COURSE = "/courses";
     public static final String LESSON = "/lessons";
-    public static final String CHAPTER = "/chapters";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
