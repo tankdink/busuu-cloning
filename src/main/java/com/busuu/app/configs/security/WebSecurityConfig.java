@@ -69,6 +69,10 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, "/lessons/**").permitAll()
                             .requestMatchers(GET, "/lessons/chapters/**").permitAll()
 
+                            .requestMatchers(GET, "/grammars").permitAll()
+                            .requestMatchers(GET, "/grammars/**").permitAll()
+//                            .requestMatchers(GET, "/grammars/languages/**").permitAll()
+
                             .requestMatchers(GET,
                                     "/actuator/**").permitAll()
                             .anyRequest()
