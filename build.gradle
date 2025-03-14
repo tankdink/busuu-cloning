@@ -68,8 +68,8 @@ dependencies {
 	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
-    // Cloudinary
-    implementation 'com.cloudinary:cloudinary-http44:1.39.0'
+  // Cloudinary
+  implementation 'com.cloudinary:cloudinary-http44:1.39.0'
 
 	// Commons IO
 	implementation 'commons-io:commons-io:2.16.1'

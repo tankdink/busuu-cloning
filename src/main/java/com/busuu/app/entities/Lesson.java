@@ -1,5 +1,6 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.progresses.LessonProgress;
 import com.busuu.app.entities.questions.Question;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -46,4 +47,7 @@ public class Lesson extends BaseEntity{
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LessonProgress> lessonProgresses;
 }
