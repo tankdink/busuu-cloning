@@ -5,6 +5,8 @@ public class Constants {
     public static final String ROLE = "/roles";
     public static final String LEVEL = "/levels";
     public static final String CHAPTER = "/chapters";
+    public static final String GRAMMAR = "/grammars";
+    public static final String LANGUAGE = "/languages";
     public static final String COURSE = "/courses";
     public static final String LESSON = "/lessons";
     public static final String REGISTER = "/register";
@@ -47,12 +49,20 @@ public class Constants {
         public static final String ERR_UPDATE_LEVEL_BY_ID = "ERR_UPDATE_LEVEL_BY_ID";
         public static final String ERR_DELETE_LEVEL_BY_ID = "ERR_DELETE_LEVEL_BY_ID";
 
-        //Chapter entity
+        //Chapter
         public static final String ERR_CREATE_NEW_CHAPTER = "ERR_CREATE_NEW_CHAPTER";
         public static final String ERR_GET_ALL_CHAPTER = "ERR_GET_ALL_CHAPTER";
         public static final String ERR_GET_CHAPTER_BY_ID = "ERR_GET_CHAPTER_BY_ID";
         public static final String ERR_UPDATE_CHAPTER_BY_ID = "ERR_UPDATE_CHAPTER_BY_ID";
         public static final String ERR_DELETE_CHAPTER_BY_ID = "ERR_DELETE_CHAPTER_BY_ID";
+
+        //Grammar
+        public static final String ERR_CREATE_NEW_GRAMMAR = "ERR_CREATE_NEW_GRAMMAR";
+        public static final String ERR_GET_ALL_GRAMMAR = "ERR_GET_ALL_GRAMMAR";
+        public static final String ERR_GET_GRAMMAR_BY_ID = "ERR_GET_GRAMMAR_BY_ID";
+        public static final String ERR_GET_GRAMMAR_BY_LANGUAGE_ID = "ERR_GET_GRAMMAR_BY_LANGUAGE_ID";
+        public static final String ERR_UPDATE_GRAMMAR_BY_ID = "ERR_UPDATE_GRAMMAR_BY_ID";
+        public static final String ERR_DELETE_GRAMMAR_BY_ID = "ERR_DELETE_GRAMMAR_BY_ID";
 
     }
 
