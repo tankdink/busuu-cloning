@@ -98,7 +98,7 @@ public class ChapterService implements IChapterService
                     .map(chapter ->
                     {
                         ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
-                        // Manually set additional fields if necessary
+
                         response.setCourseId(chapter.getCourse().getId());
                         response.setLevelId(chapter.getLevel().getId());
 
@@ -133,6 +133,35 @@ public class ChapterService implements IChapterService
             log.error("requestId="+requestId+",failed to get chapter with ID " +  chapterID + ", err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_CHAPTER_BY_ID, requestId);
+        }
+    }
+
+    @Override
+    public List<ChapterResponse> getByCourseIdAndLevelId(String requestId, String courseID, String levelId)
+    {
+        try {
+
+            List<Chapter> gettedChapterList = chapterRepository.findByCourseIdAndLevelId(courseID, levelId);
+            if (gettedChapterList.isEmpty()) throw new DataNotFoundException("Cannot find chapter with courseID " + courseID + " and levelID " + levelId);
+
+
+            //Return
+            return (gettedChapterList.stream()
+                    .map(chapter ->
+                    {
+                        ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
+
+                        response.setCourseId(chapter.getCourse().getId());
+                        response.setLevelId(chapter.getLevel().getId());
+
+                        return response;
+                    })
+                    .collect(Collectors.toList()));
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get chapter with courseID " +  courseID + " and levelID " + levelId + ", err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_CHAPTER_BY_COURSE_ID_AND_LEVEL_ID, requestId);
         }
     }
 
