@@ -132,7 +132,7 @@ public class ChapterController
         }
     }
 
-    @GetMapping("/byCourseIdAndLevelId")
+    @GetMapping(Constants.GET_BY_COURSE_ID_AND_LEVEL)
     public ResponseEntity<Response> getByCourseIdAndLevelId(@RequestParam(value = "req-id", required = false) String requestId,
                                                             @Valid @RequestBody ChapterFindByCourseIdAndLevelIdDTO chapterFindByDTO)
     {
