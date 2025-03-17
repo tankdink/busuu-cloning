@@ -11,13 +11,10 @@ import java.util.Map;
 @Configuration
 @RequiredArgsConstructor
 public class CloudinaryConfig {
-//    private final String CLOUD_NAME = "didu61lbz";
-//    private final String API_KEY = "394597577871926";
-//    private final String API_SECRET = "_q3GGWzgGYFjylrVPf29NLRH3OU";
+    private final String CLOUD_NAME = "didu61lbz";
+    private final String API_KEY = "394597577871926";
+    private final String API_SECRET = "_q3GGWzgGYFjylrVPf29NLRH3OU";
 
-    private final String CLOUD_NAME = "dzgkfgazv";
-    private final String API_KEY = "399849271141462";
-    private final String API_SECRET = "Dri3riglIo3_dq9CNTp_TnXCyAI";
 
     @Bean
     public Cloudinary cloudinary () {

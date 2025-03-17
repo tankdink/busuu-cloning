@@ -19,14 +19,14 @@ import jakarta.validation.constraints.*;
 public class LevelDTO
 {
     @NotBlank(message = "Level code is required!")
-    @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
+    @Size(min = 1, message = "Invalid Code length (minimum length is 1)!")
     private String code;
 
     @NotBlank(message = "Level name is required!")
-    @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
+    @Size(min = 1, max = 255, message = "Invalid Name length (minimum length is 1, maximum length is 255)!")
     private String name;
 
     @NotBlank(message = "Level description is required!")
-    @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
+    @Size(min = 1, message = "Invalid Description length (minimum length is 1)!")
     private String description;
 }
