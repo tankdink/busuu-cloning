@@ -127,7 +127,7 @@ public class GrammarService implements IGrammarService
         try {
 
             List<Grammar> gettedGrammarList = grammarRepository.findByLanguageId(languageID);
-            if (gettedGrammarList == null) throw new DataNotFoundException("Cannot find grammar with languageID " + languageID);
+            if (gettedGrammarList.isEmpty()) throw new DataNotFoundException("Cannot find grammar with languageID " + languageID);
 
 
             //Return
