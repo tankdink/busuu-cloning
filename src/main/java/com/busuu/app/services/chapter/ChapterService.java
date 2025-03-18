@@ -54,10 +54,11 @@ public class ChapterService implements IChapterService
                 throw new ExistDataException("Chapter's order is duplicated");
             }
 
-            //Check exists course
+            //Check exists course, title
             Course course = courseRepository.findById(chapterDTO.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + chapterDTO.getCourseId()) );
 
+            if (chapterRepository.existsByTitle(chapterDTO.getTitle())) throw new ExistDataException("Chapter's title is duplicated");
 
             //Convert DTO to entity
             Chapter newChapter = modelMapper.map(chapterDTO, Chapter.class);
@@ -175,7 +176,7 @@ public class ChapterService implements IChapterService
             Chapter existingChapter = chapterRepository.findById(chapterID)
                     .orElseThrow( ()-> new DataNotFoundException("No chapter found with ID " + chapterID) );
 
-            //Check exists level, course
+            //Check exists level, course, title
             Level level = levelRepository.findById(infoUpdateChapter.getLevelId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + infoUpdateChapter.getLevelId()) );
 
@@ -188,6 +189,7 @@ public class ChapterService implements IChapterService
             Course course = courseRepository.findById(infoUpdateChapter.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + infoUpdateChapter.getCourseId()) );
 
+            if (chapterRepository.existsByTitle(infoUpdateChapter.getTitle())) throw new ExistDataException("Chapter's title is duplicated");
 
 
             //Update
