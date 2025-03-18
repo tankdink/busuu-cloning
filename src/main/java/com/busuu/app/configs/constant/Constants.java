@@ -9,11 +9,13 @@ public class Constants {
     public static final String LESSON = "/lessons";
     public static final String LANGUAGE = "/languages";
     public static final String GRAMMAR = "/grammars";
+    public static final String GRAMMAR_SECTION = "/grammar_sections";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
     public static final String PATH_PARAM_ID = "/{id}";
-    public static final String GET_BY_COURSE_ID_AND_LEVEL = "/byCourseIdAndLevelId";
+    public static final String GET_BY_COURSE_ID_AND_LEVEL_ID = "/byCourseIdAndLevelId";
+
 
     public static class URI {
         public static final String INDEX = "/index";
@@ -73,6 +75,13 @@ public class Constants {
         public static final String ERR_UPDATE_GRAMMAR_BY_ID = "ERR_UPDATE_GRAMMAR_BY_ID";
         public static final String ERR_DELETE_GRAMMAR_BY_ID = "ERR_DELETE_GRAMMAR_BY_ID";
 
+        //Grammar section
+        public static final String ERR_CREATE_NEW_GRAMMAR_SECTION = "ERR_CREATE_NEW_GRAMMAR_SECTION";
+        public static final String ERR_GET_ALL_GRAMMAR_SECTION = "ERR_GET_ALL_GRAMMAR_SECTION";
+        public static final String ERR_GET_GRAMMAR_SECTION_BY_ID = "ERR_GET_GRAMMAR_SECTION_BY_ID";
+        public static final String ERR_GET_GRAMMAR_SECTION_BY_GRAMMAR_ID = "ERR_GET_GRAMMAR_SECTION_BY_GRAMMAR_ID";
+        public static final String ERR_UPDATE_GRAMMAR_SECTION_BY_ID = "ERR_UPDATE_GRAMMAR_SECTION_BY_ID";
+        public static final String ERR_DELETE_GRAMMAR_SECTION_BY_ID = "ERR_DELETE_GRAMMAR_SECTION_BY_ID";
     }
 
 

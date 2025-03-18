@@ -15,7 +15,6 @@ public class CloudinaryConfig {
     private final String API_KEY = "394597577871926";
     private final String API_SECRET = "_q3GGWzgGYFjylrVPf29NLRH3OU";
 
-
     @Bean
     public Cloudinary cloudinary () {
         Map<String, String> config = new HashMap<>();

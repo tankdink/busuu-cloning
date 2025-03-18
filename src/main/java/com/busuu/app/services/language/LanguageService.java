@@ -12,6 +12,7 @@ import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -36,6 +37,7 @@ public class LanguageService implements ILanguageService
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public LanguageResponse insertLanguage(String requestId, LanguageDTO languageDTO)
     {
         try {
@@ -109,6 +111,7 @@ public class LanguageService implements ILanguageService
     }
 
     @Override
+    @Transactional
     public LanguageResponse updateLanguage(String requestId, String languageId, LanguageDTO infoUpdateLanguage)
     {
         try {
@@ -147,6 +150,7 @@ public class LanguageService implements ILanguageService
     }
 
     @Override
+    @Transactional
     public void deleteLanguage(String requestId, String languageId)
     {
         try {

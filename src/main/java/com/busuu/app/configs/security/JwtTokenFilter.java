@@ -89,6 +89,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of("/grammars", "GET"),
                 Pair.of("/grammars/**", "GET"),
 
+                Pair.of("/grammar_sections", "GET"),
+                Pair.of("/grammar_sections/**", "GET"),
+
 
                 // Swagger
                 Pair.of("/api-docs","GET"),
