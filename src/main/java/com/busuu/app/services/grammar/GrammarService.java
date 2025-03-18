@@ -44,10 +44,12 @@ public class GrammarService implements IGrammarService
             Language language = languageRepository.findById(grammarDTO.getLanguageId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + grammarDTO.getLanguageId()) );
 
-            //Check exists order
+            //Check exists order, title
             if (grammarRepository.existsByGrammarOrderAndLanguageId(grammarDTO.getGrammarOrder(), grammarDTO.getLanguageId())) {
                 throw new ExistDataException("Grammar's order is duplicated");
             }
+
+            if (grammarRepository.existsByTitle(grammarDTO.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
             
 
             //Convert DTO to entity
@@ -156,7 +158,7 @@ public class GrammarService implements IGrammarService
     {
         try {
 
-            //Check exists grammar, language/Get update grammar
+            //Check exists grammar, title, language/Get update grammar
             Grammar existingGrammar = grammarRepository.findById(grammarID)
                     .orElseThrow( ()-> new DataNotFoundException("No grammar found with ID " + grammarID) );
 
@@ -170,6 +172,7 @@ public class GrammarService implements IGrammarService
             Language language = languageRepository.findById(infoUpdateGrammar.getLanguageId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + infoUpdateGrammar.getLanguageId()) );
 
+            if (grammarRepository.existsByTitle(infoUpdateGrammar.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
 
             //Update
             modelMapper.map(infoUpdateGrammar, existingGrammar);

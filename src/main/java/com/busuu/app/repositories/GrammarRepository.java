@@ -8,6 +8,7 @@ import java.util.List;
 public interface GrammarRepository extends JpaRepository<Grammar, String>
 {
     boolean existsByGrammarOrderAndLanguageId(Integer grammarOrder, String languageId);
-
     List<Grammar> findByLanguageId(String languageId);
+    boolean existsByTitle(String title);
+
 }
