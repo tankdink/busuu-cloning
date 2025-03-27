@@ -79,6 +79,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of("/courses", "GET"),
                 Pair.of("/courses/**", "GET"),
 
+                Pair.of("/languages", "GET"),
+                Pair.of("/languages/**", "GET"),
+
                 Pair.of("/lessons", "GET"),
                 Pair.of("/lessons/**", "GET"),
                 Pair.of("/lessons/chapters/**", "GET"),
