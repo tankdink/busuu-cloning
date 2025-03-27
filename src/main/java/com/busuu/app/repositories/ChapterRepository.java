@@ -13,5 +13,4 @@ public interface ChapterRepository extends JpaRepository<Chapter, String> {
     boolean existsByChapterOrderAndLevelId (Integer chapterOrder, String levelId);
 
     List<Chapter> findByCourseIdAndLevelId(String courseId, String levelId);
-
 }

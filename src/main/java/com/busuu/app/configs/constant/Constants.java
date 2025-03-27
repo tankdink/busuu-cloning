@@ -16,7 +16,6 @@ public class Constants {
     public static final String PATH_PARAM_ID = "/{id}";
     public static final String GET_BY_COURSE_ID_AND_LEVEL_ID = "/byCourseIdAndLevelId";
 
-
     public static class URI {
         public static final String INDEX = "/index";
     }
