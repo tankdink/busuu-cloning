@@ -1,6 +1,7 @@
 package com.busuu.app.entities.questions;
 
 import com.busuu.app.entities.BaseEntity;
+import com.busuu.app.entities.GrammarSection;
 import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.progresses.QuestionProgress;
 import jakarta.persistence.*;
@@ -24,7 +25,10 @@ public class Question extends BaseEntity {
     @Column(name = "question_id")
     private String id;
 
-    @Column(name = "question_text", nullable = false)
+    @Column(name = "request", nullable = false)
+    private String request;
+
+    @Column(name = "question_text")
     private String questionText;
 
     @Enumerated(EnumType.STRING)
@@ -55,13 +59,25 @@ public class Question extends BaseEntity {
     @Column(name = "audio_name")
     private String audioName;
 
+    @Column(name = "script_audio")
+    private String scriptAudio;
+
     @Column(name = "question_order", nullable = false)
     private Integer questionOrder;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "show_type", nullable = false)
+    private ShowType showType;
+
     @ManyToOne
-    @JoinColumn(name = "lesson_id", nullable = false)
+    @JoinColumn(name = "lesson_id")
     private Lesson lesson;
+
+    @ManyToOne
+    @JoinColumn(name = "grammar_section_id")
+    private GrammarSection grammarSection;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionProgress> questionProgressList;
+
 }

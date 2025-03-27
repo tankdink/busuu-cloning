@@ -1,10 +1,14 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.questions.Question;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "grammar_section")
@@ -38,4 +42,6 @@ public class GrammarSection extends BaseEntity {
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
 
+    @OneToMany(mappedBy = "grammarSection", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Question> questions = new ArrayList<>();
 }

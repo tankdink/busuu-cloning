@@ -7,6 +7,13 @@ public class Constants {
     public static final String CHAPTER = "/chapters";
     public static final String COURSE = "/courses";
     public static final String LESSON = "/lessons";
+    public static final String QUESTION = "/questions";
+    public static final String ANSWER = "/answers";
+    public static final String FILL_BLANK = "/fill_blank";
+    public static final String TRUE_FALSE = "/true_false";
+    public static final String MATCHING_PAIR = "/matching_pair";
+    public static final String MULTIPLE_CHOICE = "/multiple_choice";
+    public static final String ORDERING_PART = "/ordering_part";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
@@ -53,6 +60,30 @@ public class Constants {
         public static final String ERR_GET_CHAPTER_BY_ID = "ERR_GET_CHAPTER_BY_ID";
         public static final String ERR_UPDATE_CHAPTER_BY_ID = "ERR_UPDATE_CHAPTER_BY_ID";
         public static final String ERR_DELETE_CHAPTER_BY_ID = "ERR_DELETE_CHAPTER_BY_ID";
+
+        // Question
+        public static final String ERR_CREATE_QUESTION = "ERR_CREATE_QUESTION";
+        public static final String ERR_GET_QUESTION = "ERR_GET_QUESTION";
+        public static final String ERR_UPDATE_QUESTION = "ERR_UPDATE_QUESTION";
+        public static final String ERR_DELETE_QUESTION = "ERR_DELETE_QUESTION";
+
+        // Matching Pair
+        public static final String ERR_CREATE_MATCHING_PAIR = "ERR_CREATE_MATCHING_PAIR";
+        public static final String ERR_GET_MATCHING_PAIR = "ERR_GET_MATCHING_PAIR";
+        public static final String ERR_UPDATE_MATCHING_PAIR = "ERR_UPDATE_MATCHING_PAIR";
+        public static final String ERR_DELETE_MATCHING_PAIR = "ERR_DELETE_MATCHING_PAIR";
+
+        // Multiple Choice
+        public static final String ERR_CREATE_MULTIPLE_CHOICE = "ERR_CREATE_MULTIPLE_CHOICE";
+        public static final String ERR_GET_MULTIPLE_CHOICE = "ERR_GET_MULTIPLE_CHOICE";
+        public static final String ERR_UPDATE_MULTIPLE_CHOICE = "ERR_UPDATE_MULTIPLE_CHOICE";
+        public static final String ERR_DELETE_MULTIPLE_CHOICE = "ERR_DELETE_MULTIPLE_CHOICE";
+
+        // Ordering Part
+        public static final String ERR_CREATE_ORDERING_PART = "ERR_CREATE_ORDERING_PART";
+        public static final String ERR_GET_ORDERING_PART = "ERR_GET_ORDERING_PART";
+        public static final String ERR_UPDATE_ORDERING_PART = "ERR_UPDATE_ORDERING_PART";
+        public static final String ERR_DELETE_ORDERING_PART = "ERR_DELETE_ORDERING_PART";
 
     }
 

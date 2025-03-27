@@ -3,6 +3,8 @@ package com.busuu.app.entities.questions.multiple_choice;
 import com.busuu.app.entities.questions.Question;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class QuestionMultipleChoice extends Question {
 
     @OneToMany(mappedBy = "questionMultipleChoice", cascade = CascadeType.ALL)

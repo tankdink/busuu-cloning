@@ -5,5 +5,6 @@ public enum QuestionType {
     FILL_BLANK,
     MULTIPLE_CHOICE,
     ORDERING,
-    MATCHING
+    MATCHING,
+    KNOWLEDGE
 }

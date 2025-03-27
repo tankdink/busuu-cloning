@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "question_fill_blank")
@@ -13,6 +15,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class QuestionFillBlank extends Question{
 
     @Column(name = "correct_answer")
