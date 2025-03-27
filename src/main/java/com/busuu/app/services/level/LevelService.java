@@ -101,23 +101,21 @@ public class LevelService implements ILevelService
     {
 
         try {
-            //Convert DTO to entity
-            Level newLevel = modelMapper.map(infoUpdateLevel, Level.class);
 
             //Check exists level/Get update level
             Level getModifyLevel = levelRepository.findById(levelID)
                     .orElseThrow( ()-> new DataNotFoundException("No level found with ID " + levelID) );
 
             //Check duplicated code, name
-            if ( levelRepository.existsByCode(newLevel.getCode()) ) throw new ExistDataException("Level Code has been used!");
-            if ( levelRepository.existsByName(newLevel.getName()) ) throw new ExistDataException("Level Name has been used!");
+            if (!Objects.equals(getModifyLevel.getCode(), infoUpdateLevel.getCode()))
+                if ( levelRepository.existsByCode(infoUpdateLevel.getCode()) ) throw new ExistDataException("Level Code has been used!");
 
-            //Update info
-            getModifyLevel.setCode(newLevel.getCode());
-            getModifyLevel.setDescription(newLevel.getDescription());
-            getModifyLevel.setName(newLevel.getName());
-            getModifyLevel.setChapters(newLevel.getChapters());
-            getModifyLevel.setCourseLevels((newLevel.getCourseLevels()));
+            if (!Objects.equals(getModifyLevel.getName(), infoUpdateLevel.getName()))
+                if ( levelRepository.existsByName(infoUpdateLevel.getName()) ) throw new ExistDataException("Level Name has been used!");
+
+
+            //Convert
+            modelMapper.map(infoUpdateLevel, getModifyLevel);
 
             //Save and return
             return levelRepository.save(getModifyLevel);
