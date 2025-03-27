@@ -76,6 +76,9 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, "/grammars").permitAll()
                             .requestMatchers(GET, "/grammars/**").permitAll()
 
+                            .requestMatchers(GET, "/grammar_sections").permitAll()
+                            .requestMatchers(GET, "/grammar_sections/**").permitAll()
+
                             .requestMatchers(GET,
                                     "/actuator/**").permitAll()
                             .anyRequest()

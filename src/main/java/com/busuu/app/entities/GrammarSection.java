@@ -38,4 +38,5 @@ public class GrammarSection extends BaseEntity {
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
 
+
 }
