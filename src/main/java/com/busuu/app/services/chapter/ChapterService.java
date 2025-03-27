@@ -54,10 +54,11 @@ public class ChapterService implements IChapterService
                 throw new ExistDataException("Chapter's order is duplicated");
             }
 
-            //Check exists course
+            //Check exists course, title
             Course course = courseRepository.findById(chapterDTO.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + chapterDTO.getCourseId()) );
 
+            if (chapterRepository.existsByTitle(chapterDTO.getTitle())) throw new ExistDataException("Chapter's title is duplicated");
 
             //Convert DTO to entity
             Chapter newChapter = modelMapper.map(chapterDTO, Chapter.class);
@@ -137,6 +138,35 @@ public class ChapterService implements IChapterService
     }
 
     @Override
+    public List<ChapterResponse> getByCourseIdAndLevelId(String requestId, String courseID, String levelId)
+    {
+        try {
+
+            List<Chapter> gettedChapterList = chapterRepository.findByCourseIdAndLevelId(courseID, levelId);
+            if (gettedChapterList.isEmpty()) throw new DataNotFoundException("Cannot find chapter with courseID " + courseID + " and levelID " + levelId);
+
+
+            //Return
+            return (gettedChapterList.stream()
+                    .map(chapter ->
+                    {
+                        ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
+
+                        response.setCourseId(chapter.getCourse().getId());
+                        response.setLevelId(chapter.getLevel().getId());
+
+                        return response;
+                    })
+                    .collect(Collectors.toList()));
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get chapter with courseID " +  courseID + " and levelID " + levelId + ", err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_CHAPTER_BY_COURSE_ID_AND_LEVEL_ID, requestId);
+        }
+    }
+
+    @Override
     @Transactional
     public ChapterResponse updateChapter(String requestId, String chapterID, ChapterDTO infoUpdateChapter) 
     {
@@ -146,7 +176,7 @@ public class ChapterService implements IChapterService
             Chapter existingChapter = chapterRepository.findById(chapterID)
                     .orElseThrow( ()-> new DataNotFoundException("No chapter found with ID " + chapterID) );
 
-            //Check exists level, course
+            //Check exists level, course, title
             Level level = levelRepository.findById(infoUpdateChapter.getLevelId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + infoUpdateChapter.getLevelId()) );
 
@@ -159,6 +189,7 @@ public class ChapterService implements IChapterService
             Course course = courseRepository.findById(infoUpdateChapter.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + infoUpdateChapter.getCourseId()) );
 
+            if (chapterRepository.existsByTitle(infoUpdateChapter.getTitle())) throw new ExistDataException("Chapter's title is duplicated");
 
 
             //Update

@@ -13,6 +13,7 @@ public class Constants {
     public static final String LOGIN = "/login";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
     public static final String PATH_PARAM_ID = "/{id}";
+    public static final String GET_BY_COURSE_ID_AND_LEVEL = "/byCourseIdAndLevelId";
 
     public static class URI {
         public static final String INDEX = "/index";
@@ -53,6 +54,7 @@ public class Constants {
         public static final String ERR_CREATE_NEW_CHAPTER = "ERR_CREATE_NEW_CHAPTER";
         public static final String ERR_GET_ALL_CHAPTER = "ERR_GET_ALL_CHAPTER";
         public static final String ERR_GET_CHAPTER_BY_ID = "ERR_GET_CHAPTER_BY_ID";
+        public static final String ERR_GET_CHAPTER_BY_COURSE_ID_AND_LEVEL_ID = "ERR_GET_CHAPTER_BY_COURSE_ID_AND_LEVEL_ID";
         public static final String ERR_UPDATE_CHAPTER_BY_ID = "ERR_UPDATE_CHAPTER_BY_ID";
         public static final String ERR_DELETE_CHAPTER_BY_ID = "ERR_DELETE_CHAPTER_BY_ID";
 

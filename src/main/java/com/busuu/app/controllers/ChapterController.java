@@ -2,6 +2,7 @@ package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.chapter.ChapterDTO;
+import com.busuu.app.dtos.requests.chapter.ChapterFindByCourseIdAndLevelIdDTO;
 import com.busuu.app.dtos.responses.ChapterResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.chapter.IChapterService;
@@ -117,6 +118,40 @@ public class ChapterController
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
                             .data(gettedChapter)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting chapter with ID: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.GET_BY_COURSE_ID_AND_LEVEL)
+    public ResponseEntity<Response> getByCourseIdAndLevelId(@RequestParam(value = "req-id", required = false) String requestId,
+                                                            @Valid @RequestBody ChapterFindByCourseIdAndLevelIdDTO chapterFindByDTO)
+    {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call get chapter by ID service
+            List<ChapterResponse> gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, chapterFindByDTO.getCourseId(), chapterFindByDTO.getLevelId());
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK)
+                            .data(gettedChapterList)
                             .build()
             );
 
