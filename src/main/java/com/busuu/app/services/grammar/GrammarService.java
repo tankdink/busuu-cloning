@@ -172,7 +172,8 @@ public class GrammarService implements IGrammarService
             Language language = languageRepository.findById(infoUpdateGrammar.getLanguageId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + infoUpdateGrammar.getLanguageId()) );
 
-            if (grammarRepository.existsByTitle(infoUpdateGrammar.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
+            if (!Objects.equals(existingGrammar.getTitle(), infoUpdateGrammar.getTitle()))
+                if (grammarRepository.existsByTitle(infoUpdateGrammar.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
 
             //Update
             modelMapper.map(infoUpdateGrammar, existingGrammar);
