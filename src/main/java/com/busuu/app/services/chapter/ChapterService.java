@@ -186,6 +186,9 @@ public class ChapterService implements IChapterService
                 }
             }
 
+            if (!Objects.equals(existingChapter.getTitle(), infoUpdateChapter.getTitle()))
+                if (chapterRepository.existsByTitle(infoUpdateChapter.getTitle())) throw new ExistDataException("Chapter's title is duplicated");
+
             Course course = courseRepository.findById(infoUpdateChapter.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + infoUpdateChapter.getCourseId()) );
 
