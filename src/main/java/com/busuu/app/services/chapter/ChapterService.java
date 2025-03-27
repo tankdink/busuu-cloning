@@ -98,7 +98,7 @@ public class ChapterService implements IChapterService
                     .map(chapter ->
                     {
                         ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
-                        // Manually set additional fields if necessary
+
                         response.setCourseId(chapter.getCourse().getId());
                         response.setLevelId(chapter.getLevel().getId());
 

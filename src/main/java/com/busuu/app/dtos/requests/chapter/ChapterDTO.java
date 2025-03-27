@@ -19,11 +19,11 @@ public class ChapterDTO
 {
 
     @NotBlank(message = "Chapter Title is required!")
-    @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
+    @Size(min = 1, message = "Invalid Title length (minimum length is 1)!")
     private String title;
 
     @NotBlank(message = "Chapter Description is required!")
-    @Size(min = 1, message = "Invalid ID length (minimum length is 1)!")
+    @Size(min = 1, message = "Invalid Description length (minimum length is 1)!")
     private String description;
 
     @NotNull(message = "Chapter Order is required!")
