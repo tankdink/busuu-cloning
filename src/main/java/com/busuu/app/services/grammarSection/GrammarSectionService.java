@@ -55,9 +55,8 @@ public class GrammarSectionService implements IGrammarSectionService
             if (grammarSectionRepository.existsByGrammarSectionOrderAndGrammarId(grammarSectionDTO.getGrammarSectionOrder(), grammar.getId())) {
                 throw new ExistDataException("Grammar Section's order is duplicated");
             }
-            if (grammarSectionRepository.existsByTitle(grammarSectionDTO.getTitle())) throw new ExistDataException("Grammar Section Title order is duplicated");
 
-
+            if (grammarSectionRepository.existsByTitle(grammarSectionDTO.getTitle())) throw new ExistDataException("Grammar Section Title is duplicated");
 
 
             //Convert DTO to entity
@@ -189,7 +188,10 @@ public class GrammarSectionService implements IGrammarSectionService
                 }
             }
 
-            if (grammarSectionRepository.existsByTitle(infoUpdateGrammarSection.getTitle())) throw new ExistDataException("Grammar Section Title order is duplicated");
+            if (!Objects.equals(existingGrammarSection.getTitle(), infoUpdateGrammarSection.getTitle())) {
+                if (grammarSectionRepository.existsByTitle(infoUpdateGrammarSection.getTitle()))
+                    throw new ExistDataException("Grammar Section Title is duplicated");
+            }
 
             //Update
             modelMapper.map(infoUpdateGrammarSection, existingGrammarSection);
