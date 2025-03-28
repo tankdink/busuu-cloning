@@ -141,7 +141,7 @@ public class GrammarSectionService implements IGrammarSectionService
         try {
 
             List<GrammarSection> gettedGrammarSectionList = grammarSectionRepository.findByGrammarId(grammarId);
-            if (gettedGrammarSectionList.isEmpty()) throw new DataNotFoundException("Cannot find grammar section with grammar ID " + grammarId);
+            if (gettedGrammarSectionList.isEmpty()) throw new DataNotFoundException("No grammar section found with grammar ID " + grammarId);
 
 
             //Return
