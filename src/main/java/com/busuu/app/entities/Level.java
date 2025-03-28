@@ -38,4 +38,5 @@ public class Level {
     @JsonIgnore
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLevel> courseLevels = new ArrayList<>();
+
 }

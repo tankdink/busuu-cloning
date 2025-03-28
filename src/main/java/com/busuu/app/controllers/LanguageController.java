@@ -1,61 +1,62 @@
 package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.requests.chapter.ChapterDTO;
-import com.busuu.app.dtos.requests.chapter.ChapterFindByCourseIdAndLevelIdDTO;
-import com.busuu.app.dtos.responses.ChapterResponse;
+import com.busuu.app.dtos.requests.language.LanguageDTO;
+import com.busuu.app.dtos.responses.LanguageResponse;
 import com.busuu.app.dtos.responses.Response;
-import com.busuu.app.services.chapter.IChapterService;
+import com.busuu.app.entities.Language;
+import com.busuu.app.services.language.ILanguageService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
-
 @RestController
-@RequestMapping(Constants.CHAPTER)
+@RequestMapping(Constants.LANGUAGE)
 @RequiredArgsConstructor
 @Slf4j
-public class ChapterController
+public class LanguageController 
 {
-    private final IChapterService chapterService;
+    private final ILanguageService languageService;
 
     private final LocalizationUtils localizationUtils;
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> insertChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                                @Valid @RequestBody ChapterDTO newChapterDTO)
+    public ResponseEntity<Response> insertLanguage(@RequestParam(value = "req-id", required = false) String requestId,
+                                                   @Valid @ModelAttribute LanguageDTO newLanguageDTO)
     {
         try {
 
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
+            
+            
 
-            //Call add chapter service
-            ChapterResponse addedChapter = chapterService.insertChapter(requestId, newChapterDTO);
+            //Call add language service
+            LanguageResponse addedLanguage = languageService.insertLanguage(requestId, newLanguageDTO);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
                             .status(HttpStatus.CREATED)
-                            .data(addedChapter)
+                            .data(addedLanguage)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when adding new chapter: " + e.getMessage());
+            log.error("Error when adding new language: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) +": "+ e.getMessage())
@@ -66,7 +67,7 @@ public class ChapterController
     }
 
     @GetMapping()
-    public ResponseEntity<Response> getChapters(@RequestParam(value = "req-id", required = false) String requestId)
+    public ResponseEntity<Response> getLanguages(@RequestParam(value = "req-id", required = false) String requestId)
     {
 
         try {
@@ -75,20 +76,20 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get all chapter service
-            List<ChapterResponse> chapterList = chapterService.getChapters(requestId);
+            //Call get all language service
+            List<LanguageResponse> languageList = languageService.getLanguages(requestId);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(chapterList)
+                            .data(languageList)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when getting chapter list: " + e.getMessage());
+            log.error("Error when getting language list: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": "+ e.getMessage())
@@ -99,8 +100,8 @@ public class ChapterController
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
-    public ResponseEntity<Response> getChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                             @PathVariable("id") String chapterId)
+    public ResponseEntity<Response> getLanguage(@RequestParam(value = "req-id", required = false) String requestId,
+                                               @PathVariable("id") String languageId)
     {
 
         try {
@@ -109,20 +110,20 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by ID service
-            ChapterResponse gettedChapter = chapterService.getChapter(requestId, chapterId);
+            //Call get language by ID service
+            LanguageResponse gettedLanguage = languageService.getLanguage(requestId, languageId);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(gettedChapter)
+                            .data(gettedLanguage)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when getting chapter with ID: " + e.getMessage());
+            log.error("Error when getting language with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
@@ -132,45 +133,11 @@ public class ChapterController
         }
     }
 
-    @GetMapping(Constants.GET_BY_COURSE_ID_AND_LEVEL_ID)
-    public ResponseEntity<Response> getByCourseIdAndLevelId(@RequestParam(value = "req-id", required = false) String requestId,
-                                                            @Valid @RequestBody ChapterFindByCourseIdAndLevelIdDTO chapterFindByDTO)
-    {
-
-        try {
-
-            if (requestId == null || requestId.isEmpty()) {
-                requestId = UUID.randomUUID().toString();
-            }
-
-            //Call get chapter by ID service
-            List<ChapterResponse> gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, chapterFindByDTO.getCourseId(), chapterFindByDTO.getLevelId());
-
-            //Return response
-            return ResponseEntity.ok().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
-                            .data(gettedChapterList)
-                            .build()
-            );
-
-        } catch (Exception e) {
-            log.error("Error when getting chapter with ID: " + e.getMessage());
-            return ResponseEntity.badRequest().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
-    }
-
-    @PutMapping(Constants.PATH_PARAM_ID)
+    @PutMapping(value = Constants.PATH_PARAM_ID, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> updateChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                                @PathVariable("id") String chapterId,
-                                                @Valid @RequestBody ChapterDTO infoUpdate)
+    public ResponseEntity<Response> updateLanguage(@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @PathVariable("id") String languageId,
+                                                  @Valid @ModelAttribute LanguageDTO infoUpdate)
     {
 
         try {
@@ -179,20 +146,20 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call update chapter by ID service
-            ChapterResponse chapterUpdated = chapterService.updateChapter(requestId, chapterId, infoUpdate);
+            //Call update language by ID service
+            LanguageResponse languageUpdated = languageService.updateLanguage(requestId, languageId, infoUpdate);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
-                            .data(chapterUpdated)
+                            .data(languageUpdated)
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when updating chapter with ID: " + e.getMessage());
+            log.error("Error when updating language with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) +": "+ e.getMessage())
@@ -204,8 +171,8 @@ public class ChapterController
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> deleteChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                                    @PathVariable("id") String chapterId)
+    public ResponseEntity<Response> deleteLanguage(@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @PathVariable("id") String languageId)
     {
 
         try {
@@ -214,8 +181,8 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call delete chapter by ID service
-            chapterService.deleteChapter(requestId, chapterId);
+            //Call delete language by ID service
+            languageService.deleteLanguage(requestId, languageId);
 
             //Return response
             return ResponseEntity.ok().body(
@@ -226,7 +193,7 @@ public class ChapterController
             );
 
         } catch (Exception e) {
-            log.error("Error when deleting chapter: " + e.getMessage());
+            log.error("Error when deleting language: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED)+": " + e.getMessage())

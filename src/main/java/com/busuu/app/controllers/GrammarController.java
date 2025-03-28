@@ -1,11 +1,12 @@
 package com.busuu.app.controllers;
 
+
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.requests.chapter.ChapterDTO;
-import com.busuu.app.dtos.requests.chapter.ChapterFindByCourseIdAndLevelIdDTO;
-import com.busuu.app.dtos.responses.ChapterResponse;
+import com.busuu.app.dtos.requests.grammar.GrammarDTO;
+import com.busuu.app.dtos.responses.GrammarResponse;
+import com.busuu.app.dtos.responses.GrammarResponse;
 import com.busuu.app.dtos.responses.Response;
-import com.busuu.app.services.chapter.IChapterService;
+import com.busuu.app.services.grammar.IGrammarService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import jakarta.validation.Valid;
@@ -14,27 +15,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
-
 @RestController
-@RequestMapping(Constants.CHAPTER)
+@RequestMapping(Constants.GRAMMAR)
 @RequiredArgsConstructor
 @Slf4j
-public class ChapterController
+public class GrammarController
 {
-    private final IChapterService chapterService;
+    private final IGrammarService grammarService;
 
     private final LocalizationUtils localizationUtils;
 
     @PostMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> insertChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                                @Valid @RequestBody ChapterDTO newChapterDTO)
+    public ResponseEntity<Response> insertGrammar(@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @Valid @RequestBody GrammarDTO newGrammarDTO)
     {
         try {
 
@@ -42,20 +41,20 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call add chapter service
-            ChapterResponse addedChapter = chapterService.insertChapter(requestId, newChapterDTO);
+            //Call add grammar service
+            GrammarResponse addedGrammar = grammarService.insertGrammar(requestId, newGrammarDTO);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
                             .status(HttpStatus.CREATED)
-                            .data(addedChapter)
+                            .data(addedGrammar)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when adding new chapter: " + e.getMessage());
+            log.error("Error when adding new grammar: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) +": "+ e.getMessage())
@@ -66,7 +65,7 @@ public class ChapterController
     }
 
     @GetMapping()
-    public ResponseEntity<Response> getChapters(@RequestParam(value = "req-id", required = false) String requestId)
+    public ResponseEntity<Response> getGrammars(@RequestParam(value = "req-id", required = false) String requestId)
     {
 
         try {
@@ -75,20 +74,20 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get all chapter service
-            List<ChapterResponse> chapterList = chapterService.getChapters(requestId);
+            //Call get all grammar service
+            List<GrammarResponse> grammarList = grammarService.getGrammars(requestId);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(chapterList)
+                            .data(grammarList)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when getting chapter list: " + e.getMessage());
+            log.error("Error when getting grammar list: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": "+ e.getMessage())
@@ -99,8 +98,43 @@ public class ChapterController
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
-    public ResponseEntity<Response> getChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                             @PathVariable("id") String chapterId)
+    public ResponseEntity<Response> getGrammar(@RequestParam(value = "req-id", required = false) String requestId,
+                                             @PathVariable("id") String grammarId)
+    {
+
+        try {
+
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call get grammar by ID service
+            GrammarResponse gettedGrammar = grammarService.getGrammar(requestId, grammarId);
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK)
+                            .data(gettedGrammar)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting grammar with ID: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.LANGUAGE + Constants.PATH_PARAM_ID)
+    public ResponseEntity<Response> getByLanguageId(@RequestParam(value = "req-id", required = false) String requestId,
+                                                    @PathVariable("id") String languageId)
     {
 
         try {
@@ -110,14 +144,14 @@ public class ChapterController
             }
 
             //Call get chapter by ID service
-            ChapterResponse gettedChapter = chapterService.getChapter(requestId, chapterId);
+            List<GrammarResponse> gettedGrammarList = grammarService.getByLanguageId(requestId, languageId);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(gettedChapter)
+                            .data(gettedGrammarList)
                             .build()
             );
 
@@ -132,45 +166,12 @@ public class ChapterController
         }
     }
 
-    @GetMapping(Constants.GET_BY_COURSE_ID_AND_LEVEL_ID)
-    public ResponseEntity<Response> getByCourseIdAndLevelId(@RequestParam(value = "req-id", required = false) String requestId,
-                                                            @Valid @RequestBody ChapterFindByCourseIdAndLevelIdDTO chapterFindByDTO)
-    {
-
-        try {
-
-            if (requestId == null || requestId.isEmpty()) {
-                requestId = UUID.randomUUID().toString();
-            }
-
-            //Call get chapter by ID service
-            List<ChapterResponse> gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, chapterFindByDTO.getCourseId(), chapterFindByDTO.getLevelId());
-
-            //Return response
-            return ResponseEntity.ok().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
-                            .data(gettedChapterList)
-                            .build()
-            );
-
-        } catch (Exception e) {
-            log.error("Error when getting chapter with ID: " + e.getMessage());
-            return ResponseEntity.badRequest().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
-    }
 
     @PutMapping(Constants.PATH_PARAM_ID)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> updateChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                                @PathVariable("id") String chapterId,
-                                                @Valid @RequestBody ChapterDTO infoUpdate)
+    public ResponseEntity<Response> updateGrammar(@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @PathVariable("id") String grammarId,
+                                                  @Valid @RequestBody GrammarDTO infoUpdate)
     {
 
         try {
@@ -179,20 +180,20 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call update chapter by ID service
-            ChapterResponse chapterUpdated = chapterService.updateChapter(requestId, chapterId, infoUpdate);
+            //Call update grammar by ID service
+            GrammarResponse grammarUpdated = grammarService.updateGrammar(requestId, grammarId, infoUpdate);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
-                            .data(chapterUpdated)
+                            .data(grammarUpdated)
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when updating chapter with ID: " + e.getMessage());
+            log.error("Error when updating grammar with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) +": "+ e.getMessage())
@@ -204,8 +205,8 @@ public class ChapterController
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Response> deleteChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                                    @PathVariable("id") String chapterId)
+    public ResponseEntity<Response> deleteGrammar(@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @PathVariable("id") String grammarId)
     {
 
         try {
@@ -214,8 +215,8 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call delete chapter by ID service
-            chapterService.deleteChapter(requestId, chapterId);
+            //Call delete grammar by ID service
+            grammarService.deleteGrammar(requestId, grammarId);
 
             //Return response
             return ResponseEntity.ok().body(
@@ -226,7 +227,7 @@ public class ChapterController
             );
 
         } catch (Exception e) {
-            log.error("Error when deleting chapter: " + e.getMessage());
+            log.error("Error when deleting grammar: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED)+": " + e.getMessage())

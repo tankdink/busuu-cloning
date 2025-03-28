@@ -66,9 +66,18 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, "/courses").permitAll()
                             .requestMatchers(GET, "/courses/**").permitAll()
 
+                            .requestMatchers(GET, "/languages").permitAll()
+                            .requestMatchers(GET, "/languages/**").permitAll()
+
                             .requestMatchers(GET, "/lessons").permitAll()
                             .requestMatchers(GET, "/lessons/**").permitAll()
                             .requestMatchers(GET, "/lessons/chapters/**").permitAll()
+
+                            .requestMatchers(GET, "/grammars").permitAll()
+                            .requestMatchers(GET, "/grammars/**").permitAll()
+
+                            .requestMatchers(GET, "/grammar_sections").permitAll()
+                            .requestMatchers(GET, "/grammar_sections/**").permitAll()
 
                             .requestMatchers(GET,
                                     "/actuator/**").permitAll()
