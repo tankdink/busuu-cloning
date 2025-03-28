@@ -1,5 +1,9 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.progresses.ChapterProgress;
+import com.busuu.app.entities.progresses.CourseProgress;
+import com.busuu.app.entities.progresses.LessonProgress;
+import com.busuu.app.entities.progresses.QuestionProgress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -96,6 +100,22 @@ public class User extends BaseEntity implements UserDetails {
             }
     )
     private List<Token> tokens;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<QuestionProgress> questionProgresses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<LessonProgress> lessonProgresses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ChapterProgress> chapterProgresses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<CourseProgress> courseProgresses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

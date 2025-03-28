@@ -2,11 +2,14 @@ package com.busuu.app.entities.questions;
 
 import com.busuu.app.entities.BaseEntity;
 import com.busuu.app.entities.Lesson;
+import com.busuu.app.entities.progresses.QuestionProgress;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "question")
@@ -37,11 +40,20 @@ public class Question extends BaseEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "image_name")
+    private String imageName;
+
     @Column(name = "video_url")
     private String videoUrl;
 
+    @Column(name = "video_name")
+    private String videoName;
+
     @Column(name = "audio_url")
     private String audioUrl;
+
+    @Column(name = "audio_name")
+    private String audioName;
 
     @Column(name = "question_order", nullable = false)
     private Integer questionOrder;
@@ -49,4 +61,7 @@ public class Question extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestionProgress> questionProgressList;
 }

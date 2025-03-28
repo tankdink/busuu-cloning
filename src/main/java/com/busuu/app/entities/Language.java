@@ -1,5 +1,6 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.progresses.CourseProgress;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,20 +17,27 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Language extends BaseEntity{
+public class Language extends BaseEntity
+{
     @Id
     @Column(name = "language_id")
     private String id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "flag_icon_url")
     private String flagIconUrl;
+
+    @Column(name = "flag_icon_name")
+    private String flagIconName;
 
     @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserLanguage> userLanguages = new HashSet<>();
 
     @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Grammar> grammars;
+
+    @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CourseProgress> courseProgresses;
 }

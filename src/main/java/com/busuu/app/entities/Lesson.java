@@ -1,5 +1,6 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.progresses.LessonProgress;
 import com.busuu.app.entities.questions.Question;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class Lesson extends BaseEntity{
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "lesson_order")
@@ -33,6 +34,9 @@ public class Lesson extends BaseEntity{
 
     @Column(name = "flag_icon_url")
     private String flagIconUrl;
+
+    @Column(name = "flag_icon_name")
+    private String flagIconName;
 
     @ManyToOne
     @JoinColumn(name = "chapter_id", nullable = false)
@@ -43,4 +47,7 @@ public class Lesson extends BaseEntity{
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LessonProgress> lessonProgresses;
 }
