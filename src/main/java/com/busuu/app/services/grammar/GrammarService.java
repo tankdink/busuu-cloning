@@ -64,7 +64,7 @@ public class GrammarService implements IGrammarService
             
             //Save, map + add additional properties and return new Grammar
             GrammarResponse savedGrammar = modelMapper.map(grammarRepository.save(newGrammar), GrammarResponse.class);
-            savedGrammar.setLanguageId(savedGrammar.getLanguageId());
+            savedGrammar.setLanguageId(newGrammar.getLanguage().getId());
 
             return savedGrammar;
 
@@ -129,7 +129,7 @@ public class GrammarService implements IGrammarService
         try {
 
             List<Grammar> gettedGrammarList = grammarRepository.findByLanguageId(languageID);
-            if (gettedGrammarList.isEmpty()) throw new DataNotFoundException("Cannot find grammar with languageID " + languageID);
+            if (gettedGrammarList.isEmpty()) throw new DataNotFoundException("No grammar found with languageID " + languageID);
 
 
             //Return
@@ -172,7 +172,8 @@ public class GrammarService implements IGrammarService
             Language language = languageRepository.findById(infoUpdateGrammar.getLanguageId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + infoUpdateGrammar.getLanguageId()) );
 
-            if (grammarRepository.existsByTitle(infoUpdateGrammar.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
+            if (!Objects.equals(existingGrammar.getTitle(), infoUpdateGrammar.getTitle()))
+                if (grammarRepository.existsByTitle(infoUpdateGrammar.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
 
             //Update
             modelMapper.map(infoUpdateGrammar, existingGrammar);
