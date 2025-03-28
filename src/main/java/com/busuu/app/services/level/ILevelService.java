@@ -19,6 +19,6 @@ public interface ILevelService
 
     void deleteLevel(String requestId, String levelID);
 
-    void deleteLevels(String requestId);
+
 
 }

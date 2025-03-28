@@ -146,16 +146,4 @@ public class LevelService implements ILevelService
         }
     }
 
-    @Override
-    @Transactional
-    public void deleteLevels(String requestId)
-    {
-        try {
-            levelRepository.deleteAll();
-        } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to delete all level, err=" +e.getMessage());
-            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_DELETE_ALL_LEVEL, requestId);
-        }
-    }
 }
