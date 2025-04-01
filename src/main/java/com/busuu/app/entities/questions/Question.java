@@ -28,7 +28,7 @@ public class Question extends BaseEntity {
     @Column(name = "request", nullable = false)
     private String request;
 
-    @Column(name = "question_text")
+    @Column(name = "question_text", columnDefinition = "TEXT")
     private String questionText;
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +38,7 @@ public class Question extends BaseEntity {
     @Column(name = "mark")
     private Integer mark;
 
-    @Column(name = "explanation")
+    @Column(name = "explanation", columnDefinition = "TEXT")
     private String explanation;
 
     @Column(name = "image_url")
@@ -59,7 +59,7 @@ public class Question extends BaseEntity {
     @Column(name = "audio_name")
     private String audioName;
 
-    @Column(name = "script_audio")
+    @Column(name = "script_audio", columnDefinition = "TEXT")
     private String scriptAudio;
 
     @Column(name = "question_order", nullable = false)

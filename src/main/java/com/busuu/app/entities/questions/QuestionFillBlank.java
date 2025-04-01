@@ -8,6 +8,9 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "question_fill_blank")
 @EqualsAndHashCode(callSuper = true)
@@ -19,5 +22,5 @@ import org.hibernate.annotations.OnDeleteAction;
 public class QuestionFillBlank extends Question{
 
     @Column(name = "correct_answer")
-    private String correctAnswer;
+    private Set<String> correctAnswer = new HashSet<>();
 }

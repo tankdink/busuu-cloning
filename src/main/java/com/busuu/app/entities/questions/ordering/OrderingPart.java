@@ -19,8 +19,8 @@ public class OrderingPart {
     @Column(name = "sentence_part", nullable = false)
     private String sentencePart;
 
-    @Column(name = "correct_order", nullable = false)
-    private Integer correctOrder;
+//    @Column(name = "correct_order", nullable = false)
+//    private Integer correctOrder;
 
     @Column(name = "part_order", nullable = false)
     private Integer partOrder;

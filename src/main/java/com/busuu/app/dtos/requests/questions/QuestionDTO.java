@@ -1,6 +1,7 @@
 package com.busuu.app.dtos.requests.questions;
 
 import com.busuu.app.entities.questions.QuestionType;
+import com.busuu.app.entities.questions.ShowType;
 import com.busuu.app.entities.questions.multiple_choice.QuestionMultipleChoice;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -67,4 +68,8 @@ public class QuestionDTO {
     @JsonProperty("question_type")
     @NotNull(message = "Question type is required")
     private QuestionType questionType;
+
+    @JsonProperty("show_type")
+    @NotNull(message = "Show type is required")
+    private ShowType showType;
 }
