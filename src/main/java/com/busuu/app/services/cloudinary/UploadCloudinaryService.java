@@ -30,7 +30,8 @@ public class UploadCloudinaryService implements IUploadCloudinaryService {
                     file.getBytes(),
                     Map.of(
                             "public_id", fileName,
-                            "folder", folder
+                            "folder", folder,
+                            "resource_type", type.equals("audio") ? "video" : type
                     ));
 
             String url = (String) result.get("secure_url");

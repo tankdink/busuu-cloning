@@ -3,6 +3,8 @@ package com.busuu.app.entities.questions.ordering;
 import com.busuu.app.entities.questions.Question;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -13,7 +15,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class QuestionOrdering extends Question {
+
+    @Column(name = "correct_answer")
+    private String correctAnswer;
+
     @OneToMany(mappedBy = "questionOrdering", cascade = CascadeType.ALL)
     private List<OrderingPart> parts;
 }
