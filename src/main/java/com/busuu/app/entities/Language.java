@@ -17,12 +17,13 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Language extends BaseEntity{
+public class Language extends BaseEntity
+{
     @Id
     @Column(name = "language_id")
     private String id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "flag_icon_url")

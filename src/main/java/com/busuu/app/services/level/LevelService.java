@@ -96,6 +96,8 @@ public class LevelService implements ILevelService
                     .orElseThrow( ()-> new DataNotFoundException("No level found with ID " + levelID) );
 
             //Check duplicated code, name
+
+
             if (!existingLevel.getCode().equals(infoUpdateLevel.getCode())) {
                 if ( levelRepository.existsByCode(infoUpdateLevel.getCode()) ) throw new ExistDataException("Level Code has been used!");
             }
@@ -135,4 +137,5 @@ public class LevelService implements ILevelService
                     Constants.ERROR_CODE.ERR_DELETE_LEVEL_BY_ID, requestId);
         }
     }
+
 }

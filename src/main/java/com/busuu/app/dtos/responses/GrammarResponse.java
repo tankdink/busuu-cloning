@@ -6,13 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChapterResponse
+public class GrammarResponse
 {
+
     @JsonProperty("id")
     private String id;
 
@@ -22,12 +22,9 @@ public class ChapterResponse
     @JsonProperty("description")
     private String description;
 
-    @JsonProperty("chapter_order")
-    private Integer chapterOrder;
+    @JsonProperty("grammar_order")
+    private Integer grammarOrder;
 
-    @JsonProperty("course_id")
-    private String courseId;
-
-    @JsonProperty("level_id")
-    private String levelId;
+    @JsonProperty("language_id")
+    private String languageId;
 }
