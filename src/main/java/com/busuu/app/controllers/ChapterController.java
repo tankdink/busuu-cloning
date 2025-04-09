@@ -63,38 +63,6 @@ public class ChapterController
         }
     }
 
-    @GetMapping()
-    public ResponseEntity<Response> getChapters(@RequestParam(value = "req-id", required = false) String requestId)
-    {
-
-        try {
-
-            if (requestId == null || requestId.isEmpty()) {
-                requestId = UUID.randomUUID().toString();
-            }
-
-            //Call get all chapter service
-            List<ChapterResponse> chapterList = chapterService.getChapters(requestId);
-
-            //Return response
-            return ResponseEntity.ok().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
-                            .data(chapterList)
-                            .build()
-            );
-
-        } catch (Exception e) {
-            log.error("Error when getting chapter list: " + e.getMessage());
-            return ResponseEntity.badRequest().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": "+ e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
-    }
 
     @GetMapping(Constants.PATH_PARAM_ID)
     public ResponseEntity<Response> getChapter(@RequestParam(value = "req-id", required = false) String requestId,
@@ -130,28 +98,46 @@ public class ChapterController
         }
     }
 
-    @GetMapping(Constants.GET_BY)
-    public ResponseEntity<Response> getByCourseIdAndLevelId(@RequestParam(value = "req-id", required = false) String requestId,
-                                                            @RequestParam(required = false) String courseId,
-                                                            @RequestParam(required = false) String levelId)
+    @GetMapping()
+    public ResponseEntity<Response> getListChapters(@RequestParam(value = "req-id", required = false) String requestId,
+                                                            @RequestParam(value = "course_id",required = false) String courseId,
+                                                            @RequestParam(value = "level_id",required = false) String levelId)
     {
-        if (courseId == null && levelId == null) {
-            return ResponseEntity.badRequest().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": Invalid fetching condition: courseId and levelId is required!" )
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
+
+        //Including get chapters by courseId and levelId; get all chapters
 
         try {
+
+            List<ChapterResponse> gettedChapterList;
 
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by courseID and levelID  service
-            List<ChapterResponse> gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, courseId, levelId);
+            if (courseId != null && levelId != null)
+            {
+
+                //Call get chapter by courseID and levelID service
+                gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, courseId, levelId);
+
+            }
+            else if (courseId != null || levelId != null)
+            {
+
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": Invalid fetching condition: courseId and levelId is BOTH required (fetch chapters by courseId and levelId), or BOTH null (fetch all chapters)!" )
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build()
+                );
+
+            }
+            else
+            {
+                //Call get all chapters service
+                gettedChapterList = chapterService.getChapters(requestId);
+
+            }
 
             //Return response
             return ResponseEntity.ok().body(
