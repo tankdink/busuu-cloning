@@ -2,7 +2,6 @@ package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.chapter.ChapterDTO;
-import com.busuu.app.dtos.requests.chapter.ChapterFindByCourseIdAndLevelIdDTO;
 import com.busuu.app.dtos.responses.ChapterResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.chapter.IChapterService;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -132,10 +130,19 @@ public class ChapterController
         }
     }
 
-    @GetMapping(Constants.GET_BY_COURSE_ID_AND_LEVEL_ID)
+    @GetMapping(Constants.GET_BY)
     public ResponseEntity<Response> getByCourseIdAndLevelId(@RequestParam(value = "req-id", required = false) String requestId,
-                                                            @Valid @RequestBody ChapterFindByCourseIdAndLevelIdDTO chapterFindByDTO)
+                                                            @RequestParam(required = false) String courseId,
+                                                            @RequestParam(required = false) String levelId)
     {
+        if (courseId == null && levelId == null) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": Invalid fetching condition: courseId and levelId is required!" )
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
 
         try {
 
@@ -143,8 +150,8 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by ID service
-            List<ChapterResponse> gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, chapterFindByDTO.getCourseId(), chapterFindByDTO.getLevelId());
+            //Call get chapter by courseID and levelID  service
+            List<ChapterResponse> gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, courseId, levelId);
 
             //Return response
             return ResponseEntity.ok().body(
