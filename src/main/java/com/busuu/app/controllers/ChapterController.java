@@ -2,7 +2,6 @@ package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.chapter.ChapterDTO;
-import com.busuu.app.dtos.requests.chapter.ChapterFindByCourseIdAndLevelIdDTO;
 import com.busuu.app.dtos.responses.ChapterResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.chapter.IChapterService;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
