@@ -14,7 +14,7 @@ public class Constants {
     public static final String LOGIN = "/login";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
     public static final String PATH_PARAM_ID = "/{id}";
-    public static final String GET_BY_COURSE_ID_AND_LEVEL_ID = "/byCourseIdAndLevelId";
+    public static final String GET_BY= "/getBy";
 
     public static class URI {
         public static final String INDEX = "/index";

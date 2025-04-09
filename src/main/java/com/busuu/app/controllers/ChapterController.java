@@ -132,10 +132,19 @@ public class ChapterController
         }
     }
 
-    @GetMapping(Constants.GET_BY_COURSE_ID_AND_LEVEL_ID)
+    @GetMapping(Constants.GET_BY)
     public ResponseEntity<Response> getByCourseIdAndLevelId(@RequestParam(value = "req-id", required = false) String requestId,
-                                                            @Valid @RequestBody ChapterFindByCourseIdAndLevelIdDTO chapterFindByDTO)
+                                                            @RequestParam(required = false) String courseId,
+                                                            @RequestParam(required = false) String levelId)
     {
+        if (courseId == null && levelId == null) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": Invalid fetching condition: courseId and levelId is required!" )
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
 
         try {
 
@@ -143,8 +152,8 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by ID service
-            List<ChapterResponse> gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, chapterFindByDTO.getCourseId(), chapterFindByDTO.getLevelId());
+            //Call get chapter by courseID and levelID  service
+            List<ChapterResponse> gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, courseId, levelId);
 
             //Return response
             return ResponseEntity.ok().body(
