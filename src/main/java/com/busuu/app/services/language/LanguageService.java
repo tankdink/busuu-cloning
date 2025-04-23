@@ -126,7 +126,11 @@ public class LanguageService implements ILanguageService
 
             //Image
             if (infoUpdateLanguage.getFlagIcon() != null) {
-                boolean isRemove = uploadCloudinaryService.removeFile(existingLanguage.getFlagIconName());
+                boolean isRemove = true;
+                if (existingLanguage.getFlagIconName()!= null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingLanguage.getFlagIconName());
+                }
+
                 if (isRemove) {
                     CloudinaryResponse cloudinaryResponse = uploadFlagIcon(infoUpdateLanguage.getFlagIcon());
                     if (cloudinaryResponse != null) {

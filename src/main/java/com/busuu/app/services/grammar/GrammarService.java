@@ -193,7 +193,11 @@ public class GrammarService implements IGrammarService
 
             //Image process
             if (infoUpdateGrammar.getFlagIcon() != null) {
-                boolean isRemove = uploadCloudinaryService.removeFile(existingGrammar.getFlagIconName());
+                boolean isRemove = true;
+                if (existingGrammar.getFlagIconName()!= null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingGrammar.getFlagIconName());
+                }
+
                 if (isRemove) {
                     CloudinaryResponse cloudinaryResponse = uploadFlagIcon(infoUpdateGrammar.getFlagIcon());
                     if (cloudinaryResponse != null) {
@@ -232,7 +236,7 @@ public class GrammarService implements IGrammarService
                     .orElseThrow( ()-> new DataNotFoundException("No grammar found with ID " + grammarID) );
 
             //Image process
-            uploadCloudinaryService.removeFile(existingGrammar.getFlagIconName());
+            if (existingGrammar.getFlagIconName() != null) uploadCloudinaryService.removeFile(existingGrammar.getFlagIconName());
 
             grammarRepository.deleteById(grammarID);
 

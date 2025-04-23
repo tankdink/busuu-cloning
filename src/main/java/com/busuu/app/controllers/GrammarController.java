@@ -188,11 +188,11 @@ public class GrammarController
     }
 
 
-    @PutMapping(Constants.PATH_PARAM_ID)
+    @PutMapping(value = Constants.PATH_PARAM_ID, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateGrammar(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String grammarId,
-                                                  @Valid @RequestBody GrammarDTO infoUpdate,
+                                                  @Valid @ModelAttribute GrammarDTO infoUpdate,
                                                   BindingResult result)
     {
 
