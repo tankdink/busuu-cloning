@@ -40,4 +40,8 @@ public class GrammarSectionDTO
     @NotBlank(message = "The Lesson ID to which this grammar section belongs is required")
     @JsonProperty("lesson_id")
     private String lessonId;
+
+    @NotBlank(message = "The Level ID to which this grammar section belongs is required")
+    @JsonProperty("level_id")
+    private String levelId;
 }

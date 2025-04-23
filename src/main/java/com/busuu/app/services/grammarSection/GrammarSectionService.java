@@ -6,12 +6,14 @@ import com.busuu.app.dtos.responses.GrammarSectionResponse;
 import com.busuu.app.entities.Grammar;
 import com.busuu.app.entities.GrammarSection;
 import com.busuu.app.entities.Lesson;
+import com.busuu.app.entities.Level;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.GrammarRepository;
 import com.busuu.app.repositories.GrammarSectionRepository;
 import com.busuu.app.repositories.LessonRepository;
+import com.busuu.app.repositories.LevelRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,8 @@ public class GrammarSectionService implements IGrammarSectionService
     private final GrammarRepository grammarRepository;
     
     private final LessonRepository lessonRepository;
+
+    private final LevelRepository levelRepository;
     
     
     @Override
@@ -44,12 +48,16 @@ public class GrammarSectionService implements IGrammarSectionService
     {
         try {
 
-            //Check and get exists lesson, grammar
+            //Check and get exists lesson, grammar, level
             Lesson lesson = lessonRepository.findById(grammarSectionDTO.getLessonId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find lesson with ID " + grammarSectionDTO.getLessonId()) );
 
             Grammar grammar = grammarRepository.findById(grammarSectionDTO.getGrammarId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find grammar with ID " + grammarSectionDTO.getGrammarId()) );
+
+            Level level = levelRepository.findById(grammarSectionDTO.getLevelId())
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + grammarSectionDTO.getLevelId()) );
+
 
             //Check duplicate order, name
             if (grammarSectionRepository.existsByGrammarSectionOrderAndGrammarId(grammarSectionDTO.getGrammarSectionOrder(), grammar.getId())) {
@@ -72,11 +80,15 @@ public class GrammarSectionService implements IGrammarSectionService
             //Set course for new grammar section
             newGrammarSection.setGrammar(grammar);
 
+            //Set level for new grammar section
+            newGrammarSection.setLevel(level);
+
 
             //Save, map + add additional properties and return new GrammarSection
             GrammarSectionResponse savedGrammarSection = modelMapper.map(grammarSectionRepository.save(newGrammarSection), GrammarSectionResponse.class);
             savedGrammarSection.setGrammarId(grammar.getId());
             savedGrammarSection.setLessonId(lesson.getId());
+            savedGrammarSection.setLevelId(level.getId());
 
             return savedGrammarSection;
 
@@ -100,6 +112,7 @@ public class GrammarSectionService implements IGrammarSectionService
 
                         response.setGrammarId(grammarSection.getGrammar().getId());
                         response.setLessonId(grammarSection.getLesson().getId());
+                        response.setLevelId(grammarSection.getLevel().getId());
 
                         return response;
                     })
@@ -126,6 +139,7 @@ public class GrammarSectionService implements IGrammarSectionService
             GrammarSectionResponse response = modelMapper.map(gettedGrammarSection, GrammarSectionResponse.class);
             response.setGrammarId(gettedGrammarSection.getGrammar().getId());
             response.setLessonId(gettedGrammarSection.getLesson().getId());
+            response.setLevelId(gettedGrammarSection.getLevel().getId());
             return response;
 
         } catch (Exception e) {
@@ -152,6 +166,7 @@ public class GrammarSectionService implements IGrammarSectionService
 
                         response.setGrammarId(grammarSection.getGrammar().getId());
                         response.setLessonId(grammarSection.getLesson().getId());
+                        response.setLevelId(grammarSection.getLevel().getId());
 
                         return response;
                     })
@@ -175,12 +190,15 @@ public class GrammarSectionService implements IGrammarSectionService
             GrammarSection existingGrammarSection = grammarSectionRepository.findById(grammarSectionId)
                     .orElseThrow( ()-> new DataNotFoundException("No grammar section found with ID " + grammarSectionId) );
 
-            //Check exists lesson, grammar and duplicate order, title
+            //Check exists lesson, grammar, level and duplicate order, title
             Lesson lesson = lessonRepository.findById(infoUpdateGrammarSection.getLessonId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find lesson with ID " + infoUpdateGrammarSection.getLessonId()) );
 
             Grammar grammar = grammarRepository.findById(infoUpdateGrammarSection.getGrammarId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find grammar with ID " + infoUpdateGrammarSection.getGrammarId()) );
+
+            Level level = levelRepository.findById(infoUpdateGrammarSection.getLevelId())
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + infoUpdateGrammarSection.getLevelId()) );
 
             if (!Objects.equals(existingGrammarSection.getGrammarSectionOrder(), infoUpdateGrammarSection.getGrammarSectionOrder())) {
                 if (grammarSectionRepository.existsByGrammarSectionOrderAndGrammarId(infoUpdateGrammarSection.getGrammarSectionOrder(), grammar.getId())) {
@@ -197,11 +215,13 @@ public class GrammarSectionService implements IGrammarSectionService
             modelMapper.map(infoUpdateGrammarSection, existingGrammarSection);
             existingGrammarSection.setLesson(lesson);
             existingGrammarSection.setGrammar(grammar);
+            existingGrammarSection.setLevel(level);
 
             //Save and return
             GrammarSectionResponse response = modelMapper.map(grammarSectionRepository.save(existingGrammarSection), GrammarSectionResponse.class);
             response.setGrammarId(existingGrammarSection.getGrammar().getId());
             response.setLessonId(existingGrammarSection.getLesson().getId());
+            response.setLevelId(existingGrammarSection.getLevel().getId());
 
             return response;
 

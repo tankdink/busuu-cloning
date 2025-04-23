@@ -22,6 +22,12 @@ public class GrammarResponse
     @JsonProperty("description")
     private String description;
 
+    @JsonProperty("flag_icon_url")
+    private String flagIconUrl;
+
+    @JsonProperty("flag_icon_name")
+    private String flagIconName;
+
     @JsonProperty("grammar_order")
     private Integer grammarOrder;
 

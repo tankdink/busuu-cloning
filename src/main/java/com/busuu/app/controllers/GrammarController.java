@@ -13,8 +13,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,16 +34,33 @@ public class GrammarController
 
     private final LocalizationUtils localizationUtils;
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertGrammar(@RequestParam(value = "req-id", required = false) String requestId,
-                                                  @Valid @RequestBody GrammarDTO newGrammarDTO)
+                                                  @Valid @ModelAttribute GrammarDTO newGrammarDTO,
+                                                  BindingResult result)
     {
         try {
 
-            if (requestId == null || requestId.isEmpty()) {
+            if (requestId == null || requestId.isEmpty())
                 requestId = UUID.randomUUID().toString();
+
+            if (result.hasErrors()) {
+                List<String> errorMessages = result.getFieldErrors().stream()
+                        .map(FieldError::getDefaultMessage)
+                        .toList();
+
+                // Log error
+                log.error(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()));
+
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build()
+                );
             }
+
 
             //Call add grammar service
             GrammarResponse addedGrammar = grammarService.insertGrammar(requestId, newGrammarDTO);
@@ -171,13 +192,30 @@ public class GrammarController
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateGrammar(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String grammarId,
-                                                  @Valid @RequestBody GrammarDTO infoUpdate)
+                                                  @Valid @RequestBody GrammarDTO infoUpdate,
+                                                  BindingResult result)
     {
 
         try {
 
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
+            }
+
+            if (result.hasErrors()) {
+                List<String> errorMessages = result.getFieldErrors().stream()
+                        .map(FieldError::getDefaultMessage)
+                        .toList();
+
+                // Log error
+                log.error(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()));
+
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build()
+                );
             }
 
             //Call update grammar by ID service

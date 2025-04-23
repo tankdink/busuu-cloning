@@ -39,4 +39,8 @@ public class Level {
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLevel> courseLevels = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GrammarSection> grammarSections = new ArrayList<>();
+
 }

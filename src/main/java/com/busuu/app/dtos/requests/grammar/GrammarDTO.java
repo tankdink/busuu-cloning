@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Data
@@ -25,6 +26,9 @@ public class GrammarDTO
     @NotBlank(message = "Grammar Description is required!")
     @Size(min = 1, message = "Invalid Description length (minimum length is 1)!")
     private String description;
+
+    @JsonProperty("flag_icon")
+    private MultipartFile flagIcon;
 
     @NotNull(message = "Grammar Order is required!")
     @Min(value = 1, message = "The Grammar Order must be at least 1")

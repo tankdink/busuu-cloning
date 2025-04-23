@@ -2,6 +2,7 @@ package com.busuu.app.services.grammar;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.grammar.GrammarDTO;
+import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.GrammarResponse;
 import com.busuu.app.entities.Grammar;
 import com.busuu.app.entities.Language;
@@ -10,12 +11,15 @@ import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.GrammarRepository;
 import com.busuu.app.repositories.LanguageRepository;
+import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
+import com.busuu.app.utils.UploadCloudinaryUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +38,8 @@ public class GrammarService implements IGrammarService
 
     private final GrammarRepository grammarRepository;
 
+    private final IUploadCloudinaryService uploadCloudinaryService;
+
     @Override
     @Transactional
     public GrammarResponse insertGrammar(String requestId, GrammarDTO grammarDTO) 
@@ -50,7 +56,12 @@ public class GrammarService implements IGrammarService
             }
 
             if (grammarRepository.existsByTitle(grammarDTO.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
-            
+
+            //Image process
+            CloudinaryResponse cloudinaryResponse = null;
+            if (grammarDTO.getFlagIcon() != null) {
+                cloudinaryResponse = uploadFlagIcon(grammarDTO.getFlagIcon());
+            }
 
             //Convert DTO to entity
             Grammar newGrammar = modelMapper.map(grammarDTO, Grammar.class);
@@ -61,7 +72,12 @@ public class GrammarService implements IGrammarService
             //Set level for new grammar
             newGrammar.setLanguage(language);
 
-            
+            //Set cloudinary info to new grammar if exist
+            if (cloudinaryResponse != null) {
+                newGrammar.setFlagIconUrl(cloudinaryResponse.getUrl());
+                newGrammar.setFlagIconName(cloudinaryResponse.getPublicId());
+            }
+
             //Save, map + add additional properties and return new Grammar
             GrammarResponse savedGrammar = modelMapper.map(grammarRepository.save(newGrammar), GrammarResponse.class);
             savedGrammar.setLanguageId(newGrammar.getLanguage().getId());
@@ -175,9 +191,22 @@ public class GrammarService implements IGrammarService
             if (!Objects.equals(existingGrammar.getTitle(), infoUpdateGrammar.getTitle()))
                 if (grammarRepository.existsByTitle(infoUpdateGrammar.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
 
+            //Image process
+            if (infoUpdateGrammar.getFlagIcon() != null) {
+                boolean isRemove = uploadCloudinaryService.removeFile(existingGrammar.getFlagIconName());
+                if (isRemove) {
+                    CloudinaryResponse cloudinaryResponse = uploadFlagIcon(infoUpdateGrammar.getFlagIcon());
+                    if (cloudinaryResponse != null) {
+                        existingGrammar.setFlagIconUrl(cloudinaryResponse.getUrl());
+                        existingGrammar.setFlagIconName(cloudinaryResponse.getPublicId());
+                    }
+                }
+            }
+
             //Update
             modelMapper.map(infoUpdateGrammar, existingGrammar);
             existingGrammar.setLanguage(language);
+
 
             //Save and return
             GrammarResponse response = modelMapper.map(grammarRepository.save(existingGrammar), GrammarResponse.class);
@@ -202,6 +231,9 @@ public class GrammarService implements IGrammarService
             Grammar existingGrammar = grammarRepository.findById(grammarID)
                     .orElseThrow( ()-> new DataNotFoundException("No grammar found with ID " + grammarID) );
 
+            //Image process
+            uploadCloudinaryService.removeFile(existingGrammar.getFlagIconName());
+
             grammarRepository.deleteById(grammarID);
 
         } catch (Exception e) {
@@ -209,5 +241,12 @@ public class GrammarService implements IGrammarService
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_DELETE_GRAMMAR_BY_ID, requestId);
         }
+    }
+
+    private CloudinaryResponse uploadFlagIcon(MultipartFile file) throws Exception {
+        UploadCloudinaryUtil.assertAllowed(file, "image");
+        String fileName = UploadCloudinaryUtil.getFileName(file.getOriginalFilename());
+        CloudinaryResponse response = uploadCloudinaryService.uploadFile(file, fileName, "image");
+        return response;
     }
 }

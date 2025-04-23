@@ -26,6 +26,12 @@ public class Grammar extends BaseEntity{
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "flag_icon_url")
+    private String flagIconUrl;
+
+    @Column(name = "flag_icon_name")
+    private String flagIconName;
+
     @Column(name = "grammar_order")
     private Integer grammarOrder;
 

@@ -33,4 +33,7 @@ public class GrammarSectionResponse
 
     @JsonProperty("lesson_id")
     private String lessonId;
+
+    @JsonProperty("level_id")
+    private String levelId;
 }

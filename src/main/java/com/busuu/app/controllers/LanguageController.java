@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,15 +35,30 @@ public class LanguageController
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertLanguage(@RequestParam(value = "req-id", required = false) String requestId,
-                                                   @Valid @ModelAttribute LanguageDTO newLanguageDTO)
+                                                   @Valid @ModelAttribute LanguageDTO newLanguageDTO,
+                                                   BindingResult result)
     {
         try {
 
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
-            
-            
+
+            if (result.hasErrors()) {
+                List<String> errorMessages = result.getFieldErrors().stream()
+                        .map(FieldError::getDefaultMessage)
+                        .toList();
+
+                // Log error
+                log.error(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()));
+
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build()
+                );
+            }
 
             //Call add language service
             LanguageResponse addedLanguage = languageService.insertLanguage(requestId, newLanguageDTO);
@@ -137,13 +154,30 @@ public class LanguageController
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateLanguage(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String languageId,
-                                                  @Valid @ModelAttribute LanguageDTO infoUpdate)
+                                                  @Valid @ModelAttribute LanguageDTO infoUpdate,
+                                                   BindingResult result)
     {
 
         try {
 
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
+            }
+
+            if (result.hasErrors()) {
+                List<String> errorMessages = result.getFieldErrors().stream()
+                        .map(FieldError::getDefaultMessage)
+                        .toList();
+
+                // Log error
+                log.error(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()));
+
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build()
+                );
             }
 
             //Call update language by ID service

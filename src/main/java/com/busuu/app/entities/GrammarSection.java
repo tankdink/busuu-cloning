@@ -42,6 +42,10 @@ public class GrammarSection extends BaseEntity {
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
 
+    @ManyToOne
+    @JoinColumn(name = "level_id", nullable = false)
+    private Level level;
+
     @OneToMany(mappedBy = "grammarSection", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 }
