@@ -1,0 +1,146 @@
+2025-05-10 16:54:26.567 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
+2025-05-10 16:54:26.703 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17 with PID 19988 (D:\Busuu Project\busuu\build\classes\java\main started by ADMIN in D:\Busuu Project\busuu)
+2025-05-10 16:54:26.705 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-05-10 16:54:26.788 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-05-10 16:54:26.789 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-05-10 16:54:29.383 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-10 16:54:29.660 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 251 ms. Found 20 JPA repository interfaces.
+2025-05-10 16:54:31.722 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-05-10 16:54:31.743 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-05-10 16:54:31.747 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-05-10 16:54:31.747 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-05-10 16:54:31.861 [restartedMain] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring embedded WebApplicationContext
+2025-05-10 16:54:31.863 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 5072 ms
+2025-05-10 16:54:32.473 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-10 16:54:32.584 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-05-10 16:54:32.646 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-05-10 16:54:33.149 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-10 16:54:33.203 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-05-10 16:54:33.563 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3e32d88c
+2025-05-10 16:54:33.568 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-05-10 16:54:33.666 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-10 16:54:33.669 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-05-10 16:54:33.733 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-10 16:54:36.273 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
+2025-05-10 16:54:36.893 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-10 16:54:47.956 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-10 16:54:49.565 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver -Exposing 2 endpoints beneath base path '/api/v1/actuator'
+2025-05-10 16:54:49.729 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-05-10 16:54:50.968 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-05-10 16:54:50.970 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-05-10 16:54:52.144 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-05-10 16:54:53.333 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
+2025-05-10 16:54:53.433 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
+2025-05-10 16:54:53.479 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/api/v1'
+2025-05-10 16:54:53.506 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 27.713 seconds (process running for 29.134)
+2025-05-10 17:00:46.005 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
+2025-05-10 17:00:46.143 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17 with PID 1348 (D:\Busuu Project\busuu\build\classes\java\main started by ADMIN in D:\Busuu Project\busuu)
+2025-05-10 17:00:46.144 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-05-10 17:00:46.247 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-05-10 17:00:46.248 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-05-10 17:00:50.202 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-10 17:00:51.167 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 880 ms. Found 20 JPA repository interfaces.
+2025-05-10 17:00:54.911 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-05-10 17:00:54.964 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-05-10 17:00:54.971 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-05-10 17:00:54.973 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-05-10 17:00:56.116 [restartedMain] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring embedded WebApplicationContext
+2025-05-10 17:00:56.120 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 9869 ms
+2025-05-10 17:00:57.331 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-10 17:00:57.543 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-05-10 17:00:57.679 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-05-10 17:00:58.768 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-10 17:00:58.894 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-05-10 17:00:59.647 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7312f62d
+2025-05-10 17:00:59.687 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-05-10 17:00:59.930 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-10 17:00:59.933 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-05-10 17:01:00.001 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-10 17:01:04.263 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
+2025-05-10 17:01:05.518 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-10 17:01:06.416 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-10 17:01:09.708 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver -Exposing 2 endpoints beneath base path '/api/v1/actuator'
+2025-05-10 17:01:10.286 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-05-10 17:01:14.488 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-05-10 17:01:14.490 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-05-10 17:01:16.323 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-05-10 17:01:18.956 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
+2025-05-10 17:01:19.187 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
+2025-05-10 17:01:19.279 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/api/v1'
+2025-05-10 17:01:19.343 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 34.039 seconds (process running for 35.201)
+2025-05-10 17:11:08.478 [background-preinit] INFO  o.h.validator.internal.util.Version -HV000001: Hibernate Validator 8.0.2.Final
+2025-05-10 17:11:08.608 [restartedMain] INFO  com.busuu.app.BusuuApplication -Starting BusuuApplication using Java 17 with PID 8832 (D:\Busuu Project\busuu\build\classes\java\main started by ADMIN in D:\Busuu Project\busuu)
+2025-05-10 17:11:08.610 [restartedMain] INFO  com.busuu.app.BusuuApplication -No active profile set, falling back to 1 default profile: "default"
+2025-05-10 17:11:08.707 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-05-10 17:11:08.708 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor -For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-05-10 17:11:11.795 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-05-10 17:11:12.366 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate -Finished Spring Data repository scanning in 545 ms. Found 20 JPA repository interfaces.
+2025-05-10 17:11:14.766 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat initialized with port 8080 (http)
+2025-05-10 17:11:14.795 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Initializing ProtocolHandler ["http-nio-8080"]
+2025-05-10 17:11:14.800 [restartedMain] INFO  o.a.catalina.core.StandardService -Starting service [Tomcat]
+2025-05-10 17:11:14.801 [restartedMain] INFO  o.a.catalina.core.StandardEngine -Starting Servlet engine: [Apache Tomcat/10.1.36]
+2025-05-10 17:11:14.939 [restartedMain] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring embedded WebApplicationContext
+2025-05-10 17:11:14.941 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext -Root WebApplicationContext: initialization completed in 6230 ms
+2025-05-10 17:11:15.706 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper -HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-05-10 17:11:15.833 [restartedMain] INFO  org.hibernate.Version -HHH000412: Hibernate ORM core version 6.6.8.Final
+2025-05-10 17:11:15.888 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator -HHH000026: Second-level cache disabled
+2025-05-10 17:11:16.425 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo -No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-05-10 17:11:16.482 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Starting...
+2025-05-10 17:11:16.965 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool -HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@428d88ea
+2025-05-10 17:11:16.970 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource -HikariPool-1 - Start completed.
+2025-05-10 17:11:17.140 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-05-10 17:11:17.142 [restartedMain] WARN  org.hibernate.orm.deprecation -HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-05-10 17:11:17.197 [restartedMain] INFO  o.hibernate.orm.connections.pooling -HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-05-10 17:11:19.483 [restartedMain] INFO  o.h.m.i.EntityInstantiatorPojoStandard -HHH000182: No default (no-argument) constructor for class: com.busuu.app.entities.questions.ordering.OrderingPart (class must be instantiated by Interceptor)
+2025-05-10 17:11:20.078 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator -HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-05-10 17:11:20.750 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean -Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-05-10 17:11:22.070 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver -Exposing 2 endpoints beneath base path '/api/v1/actuator'
+2025-05-10 17:11:22.232 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration -spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-05-10 17:11:23.651 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer -Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-05-10 17:11:23.653 [restartedMain] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer -Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2025-05-10 17:11:26.040 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain -Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-05-10 17:11:27.214 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer -LiveReload server is running on port 35729
+2025-05-10 17:11:27.327 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol -Starting ProtocolHandler ["http-nio-8080"]
+2025-05-10 17:11:27.376 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer -Tomcat started on port 8080 (http) with context path '/api/v1'
+2025-05-10 17:11:27.417 [restartedMain] INFO  com.busuu.app.BusuuApplication -Started BusuuApplication in 19.69 seconds (process running for 21.033)
+2025-05-10 17:12:43.773 [http-nio-8080-exec-3] INFO  o.a.c.c.C.[.[localhost].[/api/v1] -Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-05-10 17:12:43.782 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet -Initializing Servlet 'dispatcherServlet'
+2025-05-10 17:12:43.788 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet -Completed initialization in 6 ms
+2025-05-10 17:12:43.861 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Securing GET /courses
+2025-05-10 17:12:43.916 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy -Secured GET /courses
+2025-05-10 17:12:45.281 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-05-10 17:13:02.115 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Securing GET /courses/2a8312fe-0089-424b-baf7-6e085ee9b8c0
+2025-05-10 17:13:02.118 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy -Secured GET /courses/2a8312fe-0089-424b-baf7-6e085ee9b8c0
+2025-05-10 17:13:02.152 [http-nio-8080-exec-1] ERROR c.b.a.services.course.CourseService -requestId=20826ef4-8def-465b-989d-127ddb6ec3f1,failed to get course, err=Cannot find Course with ID = 2a8312fe-0089-424b-baf7-6e085ee9b8c0
+2025-05-10 17:13:02.152 [http-nio-8080-exec-1] ERROR c.b.app.controllers.CourseController -Error when get course, Cannot find Course with ID = 2a8312fe-0089-424b-baf7-6e085ee9b8c0
+2025-05-10 17:13:02.155 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-05-10 17:13:15.489 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Securing GET /courses/35678dd5-7d11-41cf-8e01-09b36c407e1e
+2025-05-10 17:13:15.492 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy -Secured GET /courses/35678dd5-7d11-41cf-8e01-09b36c407e1e
+2025-05-10 17:13:15.525 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-05-10 17:13:30.932 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Securing GET /courses/81bfb149-e70a-48db-acbe-8af6b4a4e6c0
+2025-05-10 17:13:30.935 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy -Secured GET /courses/81bfb149-e70a-48db-acbe-8af6b4a4e6c0
+2025-05-10 17:13:30.981 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext
+2025-05-10 17:15:37.571 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy -Securing GET /chapters?course_id=81bfb149-e70a-48db-acbe-8af6b4a4e6c0&level_id=560269ef-81f9-4e20-b441-fec41b1c443a
+2025-05-10 17:15:37.591 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy -Secured GET /chapters?course_id=81bfb149-e70a-48db-acbe-8af6b4a4e6c0&level_id=560269ef-81f9-4e20-b441-fec41b1c443a
+2025-05-10 17:15:37.688 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter -Set SecurityContextHolder to anonymous SecurityContext

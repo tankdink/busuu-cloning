@@ -66,7 +66,8 @@ public class LevelController
     }
 
     @GetMapping()
-    public ResponseEntity<Response> getLevels(@RequestParam(value = "req-id", required = false) String requestId)
+    public ResponseEntity<Response> getLevels(@RequestParam(value = "req-id", required = false) String requestId,
+                                              @RequestParam(value = "code", required = false) String code)
     {
 
         try {
@@ -75,17 +76,31 @@ public class LevelController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get all level service
-            List<Level> levelList = levelService.getLevels(requestId);
+            if (code == null || code.isEmpty()) {
+                //Call get all level service
+                List<Level> levelList = levelService.getLevels(requestId);
 
-            //Return response
-            return ResponseEntity.ok().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
-                            .data(levelList)
-                            .build()
-            );
+                //Return response
+                return ResponseEntity.ok().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                                .status(HttpStatus.OK)
+                                .data(levelList)
+                                .build()
+                );
+            }
+            else {
+                Level level = levelService.getLevelByCode(requestId, code);
+
+                //Return response
+                return ResponseEntity.ok().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                                .status(HttpStatus.OK)
+                                .data(level)
+                                .build()
+                );
+            }
 
         } catch (Exception e) {
             log.error("Error when getting level list: " + e.getMessage());

@@ -138,4 +138,15 @@ public class LevelService implements ILevelService
         }
     }
 
+    @Override
+    public Level getLevelByCode(String requestId, String code) {
+        try {
+            return levelRepository.findByCode(code);
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to delete level with code " +  code + ", err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_LEVEL_BY_CODE, requestId);
+        }
+    }
+
 }

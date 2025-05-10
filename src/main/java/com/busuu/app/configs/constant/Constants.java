@@ -55,6 +55,7 @@ public class Constants {
         public static final String ERR_CREATE_NEW_LEVEL = "ERR_CREATE_NEW_LEVEL";
         public static final String ERR_GET_ALL_LEVEL = "ERR_GET_ALL_LEVEL";
         public static final String ERR_GET_LEVEL_BY_ID = "ERR_GET_LEVEL_BY_ID";
+        public static final String ERR_GET_LEVEL_BY_CODE = "ERR_GET_LEVEL_BY_CODE";
         public static final String ERR_UPDATE_LEVEL_BY_ID = "ERR_UPDATE_LEVEL_BY_ID";
         public static final String ERR_DELETE_LEVEL_BY_ID = "ERR_DELETE_LEVEL_BY_ID";
 

@@ -107,7 +107,7 @@ public class CourseService implements ICourseService {
             List<CourseLevel> courseLevels = courseLevelRepository.findByCourseId(courseId);
 
             List<String> levels = courseLevels.stream().map(
-                    courseLevel -> courseLevel.getLevel().getCode()
+                    courseLevel -> courseLevel.getLevel().getId()
             ).toList();
 
             CourseResponse courseResponse = modelMapper.map(course, CourseResponse.class);
@@ -130,7 +130,7 @@ public class CourseService implements ICourseService {
                         List<CourseLevel> courseLevels = courseLevelRepository.findByCourseId(course.getId());
 
                         List<String> levels = courseLevels.stream().map(
-                                courseLevel -> courseLevel.getLevel().getCode()
+                                courseLevel -> courseLevel.getLevel().getId()
                         ).toList();
 
                         CourseResponse courseResponse = modelMapper.map(course, CourseResponse.class);
@@ -199,7 +199,7 @@ public class CourseService implements ICourseService {
                             .build();
 
                     courseLevel = courseLevelRepository.save(courseLevel);
-                    level.add(existingLevel.getCode());
+                    level.add(existingLevel.getId());
                 } catch (DataNotFoundException e) {
                     throw new RuntimeException(e);
                 }
