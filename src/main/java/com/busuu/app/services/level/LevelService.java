@@ -3,10 +3,12 @@ package com.busuu.app.services.level;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.level.LevelDTO;
+import com.busuu.app.entities.CourseLevel;
 import com.busuu.app.entities.Level;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
+import com.busuu.app.repositories.CourseLevelRepository;
 import com.busuu.app.repositories.LevelRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,6 +29,7 @@ public class LevelService implements ILevelService
 
     private final ModelMapper modelMapper;
     private final LevelRepository levelRepository;
+    private final CourseLevelRepository courseLevelRepository;
 
     @Override
     @Transactional
@@ -85,6 +89,25 @@ public class LevelService implements ILevelService
     }
 
     @Override
+    public List<Level> getLevelsByCourseId(String requestId, String courseId)
+    {
+        try {
+
+            //Get Course - Level list
+            //Get each level entity then collect to list
+            //Return
+            return (courseLevelRepository.findByCourseId(courseId).stream()
+                    .map(CourseLevel::getLevel)
+                    .collect(Collectors.toList()));
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get level with courseId " +  courseId + ", err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_LEVEL_BY_COURSE_ID, requestId);
+        }
+    }
+
+    @Override
     @Transactional
     public Level updateLevel(String requestId, String levelID, LevelDTO infoUpdateLevel)
     {
@@ -96,8 +119,6 @@ public class LevelService implements ILevelService
                     .orElseThrow( ()-> new DataNotFoundException("No level found with ID " + levelID) );
 
             //Check duplicated code, name
-
-
             if (!existingLevel.getCode().equals(infoUpdateLevel.getCode())) {
                 if ( levelRepository.existsByCode(infoUpdateLevel.getCode()) ) throw new ExistDataException("Level Code has been used!");
             }

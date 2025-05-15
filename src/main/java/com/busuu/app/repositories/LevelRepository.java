@@ -8,7 +8,6 @@ public interface LevelRepository extends JpaRepository<Level, String>
 {
     Boolean existsByCode(String code);
     Boolean existsByName(String name);
-
     Level findByCode (String Code);
 
 }

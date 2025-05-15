@@ -99,7 +99,7 @@ public class ChapterController
     }
 
     @GetMapping()
-    public ResponseEntity<Response> getListChapters(@RequestParam(value = "req-id", required = false) String requestId,
+    public ResponseEntity<Response> getListChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                                             @RequestParam(value = "course_id",required = false) String courseId,
                                                             @RequestParam(value = "level_id",required = false) String levelId)
     {
@@ -114,14 +114,14 @@ public class ChapterController
                 requestId = UUID.randomUUID().toString();
             }
 
-            if (courseId != null && levelId != null)
+            if ( (courseId != null && !courseId.isEmpty()) && (levelId != null && !levelId.isEmpty()) )
             {
 
                 //Call get chapter by courseID and levelID service
                 gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, courseId, levelId);
 
             }
-            else if (courseId != null || levelId != null)
+            else if ( (courseId != null && !courseId.isEmpty()) || (levelId != null && !levelId.isEmpty()) )
             {
 
                 return ResponseEntity.badRequest().body(

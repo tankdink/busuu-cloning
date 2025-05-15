@@ -67,8 +67,11 @@ public class LevelController
 
     @GetMapping()
     public ResponseEntity<Response> getLevels(@RequestParam(value = "req-id", required = false) String requestId,
-                                              @RequestParam(value = "code", required = false) String code)
+                                              @RequestParam(value = "code", required = false) String code,
+                                              @RequestParam(value = "course_id", required = false) String courseId)
     {
+
+        //This controller include 3 services: get level by code, get levels by courseId and get all levels
 
         try {
 
@@ -76,7 +79,50 @@ public class LevelController
                 requestId = UUID.randomUUID().toString();
             }
 
-            if (code == null || code.isEmpty()) {
+            if ( (courseId != null && !courseId.isEmpty()) && (code != null && !code.isEmpty()) )
+            {
+
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": Invalid fetching condition: only courseId OR code can be pass in one time, or none of them is passed (fetch levels by courseId OR fetch level by code, fetch all levels)" )
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build()
+                );
+
+            }
+            else if (code != null && !code.isEmpty())
+            {
+                //Call get level by code service
+                Level level = levelService.getLevelByCode(requestId, code);
+
+                //Return response
+                return ResponseEntity.ok().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                                .status(HttpStatus.OK)
+                                .data(level)
+                                .build()
+                );
+            }
+            else if (courseId != null && !courseId.isEmpty())
+            {
+
+                //Call get level by courseId
+                List<Level> levelList = levelService.getLevelsByCourseId(requestId, courseId);
+
+                //Return response
+                return ResponseEntity.ok().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                                .status(HttpStatus.OK)
+                                .data(levelList)
+                                .build()
+                );
+
+            }
+            else
+            {
+
                 //Call get all level service
                 List<Level> levelList = levelService.getLevels(requestId);
 
@@ -88,18 +134,7 @@ public class LevelController
                                 .data(levelList)
                                 .build()
                 );
-            }
-            else {
-                Level level = levelService.getLevelByCode(requestId, code);
 
-                //Return response
-                return ResponseEntity.ok().body(
-                        Response.builder()
-                                .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                .status(HttpStatus.OK)
-                                .data(level)
-                                .build()
-                );
             }
 
         } catch (Exception e) {
