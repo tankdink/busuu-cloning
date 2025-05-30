@@ -18,8 +18,8 @@ public class OrderingPartResponse {
     @JsonProperty("sentence_part")
     private String sentencePart;
 
-    @JsonProperty("correct_order")
-    private Integer correctOrder;
+//    @JsonProperty("correct_order")
+//    private Integer correctOrder;
 
     @JsonProperty("part_order")
     private Integer partOrder;

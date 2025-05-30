@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "question_multiple_choice")
 @EqualsAndHashCode(callSuper = true)
-@PrimaryKeyJoinColumn(name = "quest_id")
+@PrimaryKeyJoinColumn(name = "question_id")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

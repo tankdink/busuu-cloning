@@ -5,10 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.type.SqlTypes;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,6 +25,7 @@ import java.util.Set;
 @OnDelete(action = OnDeleteAction.CASCADE)
 public class QuestionFillBlank extends Question{
 
-    @Column(name = "correct_answer")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "correct_answer", columnDefinition = "JSON")
     private Set<String> correctAnswer = new HashSet<>();
 }

@@ -23,6 +23,9 @@ server:
   servlet:
     context-path: ${CONTEXT_PATH:/api/v1}
 
+#api:
+#  prefix: /api/v1
+
 jwt:
   expiration: 2592000 #30 days
   expiration-refresh-token: 5184000 #60 days

@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Configuration;
                 description = "API Documentation for Busuu, Unlock Your Multilingual Potential."
         ),
         servers = {
-                @Server(url = "http://localhost:8080", description = "Local Development Server"),
-                @Server(url = "http://45.117.179.16:8080", description = "Production Server")
+                @Server(url = "http://localhost:8080/api/v1", description = "Local Development Server"),
+                @Server(url = "http://45.117.179.16:8080/api/v1", description = "Production Server")
         }
 )
 

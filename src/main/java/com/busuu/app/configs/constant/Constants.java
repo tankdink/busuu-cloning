@@ -1,12 +1,17 @@
 package com.busuu.app.configs.constant;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class Constants {
+    @Value("${api.prefix}")
+    public static final String PREFIX = "";
     public static final String USER = "/users";
     public static final String ROLE = "/roles";
     public static final String LEVEL = "/levels";
     public static final String CHAPTER = "/chapters";
     public static final String COURSE = "/courses";
     public static final String LESSON = "/lessons";
+
     public static final String QUESTION = "/questions";
     public static final String ANSWER = "/answers";
     public static final String FILL_BLANK = "/fill_blank";
