@@ -18,6 +18,7 @@ import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,7 +105,7 @@ public class CourseService implements ICourseService {
             Course course = courseRepository.findById(courseId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Course with ID = " + courseId));
 
-            List<CourseLevel> courseLevels = courseLevelRepository.findByCourseId(courseId);
+            List<CourseLevel> courseLevels = courseLevelRepository.findByCourseIdWithSortingLevel(courseId);
 
             List<String> levels = courseLevels.stream().map(
                     courseLevel -> courseLevel.getLevel().getId()
