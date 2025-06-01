@@ -140,7 +140,10 @@ public class LessonService implements ILessonService {
             }
 
             if (lessonDTO.getFlagIcon() != null) {
-                boolean isRemove = uploadCloudinaryService.removeFile(existingLesson.getFlagIconName());
+                boolean isRemove = true;
+                if (existingLesson.getFlagIconName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingLesson.getFlagIconName());
+                }
                 if (isRemove) {
                     CloudinaryResponse cloudinaryResponse = uploadFlagIcon(lessonDTO.getFlagIcon());
                     if (cloudinaryResponse != null) {

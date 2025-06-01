@@ -5,6 +5,8 @@ import com.busuu.app.dtos.requests.user.UserUpdateDTO;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.User;
 
+import java.util.List;
+
 public interface IUserService {
 
     UserResponse register (String requestId, UserDTO userDTO) throws Exception;
@@ -16,4 +18,6 @@ public interface IUserService {
     User getUserDetailsFromToken (String requestId, String token) throws Exception;
 
     UserResponse updateUser (String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception;
+
+    List<UserResponse> getAllUsers (String requestId);
 }

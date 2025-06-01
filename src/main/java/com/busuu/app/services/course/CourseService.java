@@ -169,7 +169,10 @@ public class CourseService implements ICourseService {
             }
 
             if (courseDTO.getFlagIcon() != null) {
-                boolean isRemove = uploadCloudinaryService.removeFile(existingCourse.getFlagIconName());
+                boolean isRemove = true;
+                if (existingCourse.getFlagIconName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingCourse.getFlagIconName());
+                }
                 if (isRemove) {
                     CloudinaryResponse cloudinaryResponse = uploadFlagIcon(courseDTO.getFlagIcon());
                     if (cloudinaryResponse != null) {

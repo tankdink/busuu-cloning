@@ -135,4 +135,9 @@ public class UserService implements IUserService {
     public UserResponse updateUser(String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception {
         return null;
     }
+
+    @Override
+    public List<UserResponse> getAllUsers(String requestId) {
+        return List.of();
+    }
 }

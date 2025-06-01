@@ -24,6 +24,6 @@ public class MultipleChoiceOptionResponse {
     @JsonProperty("option_order")
     private Integer optionOrder;
 
-    @JsonProperty("questionId")
+    @JsonProperty("question_id")
     private String questionId;
 }
