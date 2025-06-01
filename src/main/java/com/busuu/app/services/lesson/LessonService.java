@@ -16,6 +16,9 @@ import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -97,15 +100,21 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public List<LessonResponse> getLessons(String requestId) {
+    public Page<LessonResponse> getLessons(String requestId, int page, int size, String sortBy, String sortDirection) {
         try {
-            List<Lesson> lessons = lessonRepository.findAll();
 
-            return lessons.stream().map(lesson -> {
+            //Pageable
+            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            Page<Lesson> lessons = lessonRepository.findAll(pageable);
+
+            return lessons.map(lesson -> {
                 LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);
                 lessonResponse.setChapterId(lesson.getChapter().getId());
                 return lessonResponse;
-            }).toList();
+            });
+
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get lessons, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,

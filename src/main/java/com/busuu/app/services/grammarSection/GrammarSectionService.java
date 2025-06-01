@@ -18,6 +18,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -104,22 +108,26 @@ public class GrammarSectionService implements IGrammarSectionService
     }
 
     @Override
-    public List<GrammarSectionResponse> getGrammarSections(String requestId) {
+    public Page<GrammarSectionResponse>getGrammarSections(String requestId, int page, int size, String sortBy, String sortDirection) {
         try {
 
+            //Pageable
+            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            Pageable pageable = PageRequest.of(page, size, sort);
+
             //Get all, mapping and return
-            return (grammarSectionRepository.findAll()).stream()
+            return (grammarSectionRepository.findAll(pageable))
                     .map(grammarSection ->
                     {
                         GrammarSectionResponse response = modelMapper.map(grammarSection, GrammarSectionResponse.class);
 
                         response.setGrammarId(grammarSection.getGrammar().getId());
-                        response.setLessonId(grammarSection.getLesson().getId());
+                        if (grammarSection.getLesson() != null ) response.setLessonId(grammarSection.getLesson().getId());
                         response.setLevelId(grammarSection.getLevel().getId());
 
                         return response;
-                    })
-                    .collect(Collectors.toList());
+
+                    });
 
 
         } catch (Exception e) {

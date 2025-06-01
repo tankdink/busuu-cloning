@@ -3,6 +3,7 @@ package com.busuu.app.services.course;
 import com.busuu.app.dtos.requests.course.CourseDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.CourseResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface ICourseService {
 
     CourseResponse getCourse (String requestId, String courseId);
 
-    List<CourseResponse> getCourses (String requestId);
+    Page<CourseResponse> getCourses (String requestId, int page, int size, String sortBy, String sortDirection);
 
     CourseResponse updateCourse (String requestId, String courseId, CourseDTO courseDTO);
 

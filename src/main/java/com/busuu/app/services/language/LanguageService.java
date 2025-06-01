@@ -16,6 +16,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,18 +74,21 @@ public class LanguageService implements ILanguageService
     }
 
     @Override
-    public List<LanguageResponse> getLanguages(String requestId)
+    public Page<LanguageResponse> getLanguages(String requestId, int page, int size, String sortBy, String sortDirection)
     {
         try {
 
+            //Pageable
+            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            Pageable pageable = PageRequest.of(page, size, sort);
+
             //Get all and return
-            return (languageRepository.findAll()).stream()
+            return (languageRepository.findAll(pageable))
                     .map(language ->
                     {
                         return modelMapper.map(language, LanguageResponse.class);
 
-                    })
-                    .collect(Collectors.toList());
+                    });
 
 
         } catch (Exception e) {

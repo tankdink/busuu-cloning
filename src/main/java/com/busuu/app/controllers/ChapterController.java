@@ -10,6 +10,7 @@ import com.busuu.app.utils.MessagesKey;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -100,15 +101,21 @@ public class ChapterController
 
     @GetMapping()
     public ResponseEntity<Response> getListChapter(@RequestParam(value = "req-id", required = false) String requestId,
-                                                            @RequestParam(value = "course_id",required = false) String courseId,
-                                                            @RequestParam(value = "level_id",required = false) String levelId)
+                                                   @RequestParam(value = "course_id",required = false) String courseId,
+                                                   @RequestParam(value = "level_id",required = false) String levelId,
+
+                                                   @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                   @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                   @RequestParam(value = "sortBy", defaultValue = "chapterOrder", required = false) String sortBy,
+                                                   @RequestParam(value = "sortDirection", defaultValue = "ASC", required = false) String sortDirection)
     {
 
         //Including get chapters by courseId and levelId; get all chapters
 
         try {
 
-            List<ChapterResponse> gettedChapterList;
+            List<ChapterResponse> gettedChapterList = null;
+            Object responseData;
 
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
@@ -119,6 +126,7 @@ public class ChapterController
 
                 //Call get chapter by courseID and levelID service
                 gettedChapterList = chapterService.getByCourseIdAndLevelId(requestId, courseId, levelId);
+                responseData = gettedChapterList;
 
             }
             else if ( (courseId != null && !courseId.isEmpty()) || (levelId != null && !levelId.isEmpty()) )
@@ -135,7 +143,8 @@ public class ChapterController
             else
             {
                 //Call get all chapters service
-                gettedChapterList = chapterService.getChapters(requestId);
+                Page<ChapterResponse> gettedChapterPage = chapterService.getChapters(requestId, page, size, sortBy, sortDirection);
+                responseData = gettedChapterPage;
 
             }
 
@@ -144,7 +153,7 @@ public class ChapterController
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(gettedChapterList)
+                            .data(responseData)
                             .build()
             );
 

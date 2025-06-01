@@ -2,13 +2,14 @@ package com.busuu.app.services.grammarSection;
 
 import com.busuu.app.dtos.requests.section.GrammarSectionDTO;
 import com.busuu.app.dtos.responses.GrammarSectionResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface IGrammarSectionService
 {
     GrammarSectionResponse insertGrammarSection(String requestId, GrammarSectionDTO grammarSectionDTO);
-    List<GrammarSectionResponse> getGrammarSections(String requestId);
+    Page<GrammarSectionResponse> getGrammarSections(String requestId, int page, int size, String sortBy, String sortDirection);
     GrammarSectionResponse getGrammarSection(String requestId, String grammarSectionID);
     List<GrammarSectionResponse> getByGrammarId(String requestId, String grammarId);
     GrammarSectionResponse updateGrammarSection(String requestId, String grammarSectionID, GrammarSectionDTO infoUpdateGrammarSection);
