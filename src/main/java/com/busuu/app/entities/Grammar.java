@@ -1,5 +1,7 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.progresses.CourseProgress;
+import com.busuu.app.entities.progresses.GrammarProgress;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,4 +44,6 @@ public class Grammar extends BaseEntity{
     @OneToMany(mappedBy = "grammar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrammarSection> grammarSections;
 
+    @OneToMany(mappedBy = "grammar", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GrammarProgress> grammarProgresses;
 }

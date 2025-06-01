@@ -2,16 +2,13 @@ package com.busuu.app.services.question.ordering;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.questions.ordering.OrderingPartDTO;
-import com.busuu.app.dtos.responses.question.matching.MatchingPairResponse;
 import com.busuu.app.dtos.responses.question.ordering.OrderingPartResponse;
-import com.busuu.app.entities.questions.matching.MatchingPair;
-import com.busuu.app.entities.questions.matching.QuestionMatching;
 import com.busuu.app.entities.questions.ordering.OrderingPart;
 import com.busuu.app.entities.questions.ordering.QuestionOrdering;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
-import com.busuu.app.repositories.OrderingPartRepository;
-import com.busuu.app.repositories.QuestionOrderingRepository;
+import com.busuu.app.repositories.questions.ordering.OrderingPartRepository;
+import com.busuu.app.repositories.questions.ordering.QuestionOrderingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

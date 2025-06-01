@@ -9,7 +9,7 @@ import com.busuu.app.entities.Language;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
-import com.busuu.app.repositories.GrammarRepository;
+import com.busuu.app.repositories.grammar.GrammarRepository;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
@@ -51,9 +51,9 @@ public class GrammarService implements IGrammarService
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + grammarDTO.getLanguageId()) );
 
             //Check exists order, title
-            if (grammarRepository.existsByGrammarOrderAndLanguageId(grammarDTO.getGrammarOrder(), grammarDTO.getLanguageId())) {
-                throw new ExistDataException("Grammar's order is duplicated");
-            }
+//            if (grammarRepository.existsByGrammarOrderAndLanguageId(grammarDTO.getGrammarOrder(), grammarDTO.getLanguageId())) {
+//                throw new ExistDataException("Grammar's order is duplicated");
+//            }
 
             if (grammarRepository.existsByTitle(grammarDTO.getTitle())) throw new ExistDataException("Grammar's title is duplicated");
 
@@ -71,6 +71,9 @@ public class GrammarService implements IGrammarService
 
             //Set level for new grammar
             newGrammar.setLanguage(language);
+
+            // Set grammar order max + 1
+            newGrammar.setGrammarOrder(grammarRepository.findMaxGrammarOrderByLanguageId(grammarDTO.getLanguageId()) + 1);
 
             //Set cloudinary info to new grammar if exist
             if (cloudinaryResponse != null) {

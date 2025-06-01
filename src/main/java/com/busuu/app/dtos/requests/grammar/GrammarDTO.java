@@ -30,8 +30,8 @@ public class GrammarDTO
     @JsonProperty("flag_icon")
     private MultipartFile flagIcon;
 
-    @NotNull(message = "Grammar Order is required!")
-    @Min(value = 1, message = "The Grammar Order must be at least 1")
+//    @NotNull(message = "Grammar Order is required!")
+//    @Min(value = 1, message = "The Grammar Order must be at least 1")
     @JsonProperty("grammar_order")
     private Integer grammarOrder;
 

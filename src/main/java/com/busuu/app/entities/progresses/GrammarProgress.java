@@ -1,25 +1,21 @@
 package com.busuu.app.entities.progresses;
 
 import com.busuu.app.entities.BaseEntity;
-import com.busuu.app.entities.Chapter;
-import com.busuu.app.entities.Lesson;
+import com.busuu.app.entities.Grammar;
 import com.busuu.app.entities.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "chapter_progress")
+@Table(name = "grammar_progress")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChapterProgress extends BaseEntity {
+public class GrammarProgress extends BaseEntity {
 
     @Id
     @Column(name = "id")
@@ -30,8 +26,8 @@ public class ChapterProgress extends BaseEntity {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "chapter_id", nullable = false)
-    private Chapter chapter;
+    @JoinColumn(name = "grammar_id", nullable = false)
+    private Grammar grammar;
 
     @Column(name = "progress")
     private Double progress;

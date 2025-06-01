@@ -11,6 +11,7 @@ public class Constants {
     public static final String CHAPTER = "/chapters";
     public static final String COURSE = "/courses";
     public static final String LESSON = "/lessons";
+    public static final String PROGRESS = "/progresses";
 
     public static final String QUESTION = "/questions";
     public static final String ANSWER = "/answers";
@@ -119,6 +120,11 @@ public class Constants {
         public static final String ERR_GET_GRAMMAR_SECTION_BY_GRAMMAR_ID = "ERR_GET_GRAMMAR_SECTION_BY_GRAMMAR_ID";
         public static final String ERR_UPDATE_GRAMMAR_SECTION_BY_ID = "ERR_UPDATE_GRAMMAR_SECTION_BY_ID";
         public static final String ERR_DELETE_GRAMMAR_SECTION_BY_ID = "ERR_DELETE_GRAMMAR_SECTION_BY_ID";
+
+        // Progress
+        public static final String ERR_GET_PROGRESS = "ERR_GET_PROGRESS";
+        public static final String ERR_UPSERT_PROGRESS = "ERR_UPSERT_PROGRESS";
+        public static final String ERR_DELETE_PROGRESS = "ERR_DELETE_PROGRESS";
     }
 
 

@@ -1,7 +1,6 @@
 package com.busuu.app.services.question.ordering;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.requests.questions.QuestionDTO;
 import com.busuu.app.dtos.requests.questions.QuestionFillBlankDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.question.ordering.OrderingPartResponse;
@@ -12,10 +11,10 @@ import com.busuu.app.entities.questions.ordering.OrderingPart;
 import com.busuu.app.entities.questions.ordering.QuestionOrdering;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
-import com.busuu.app.repositories.GrammarSectionRepository;
+import com.busuu.app.repositories.grammar.GrammarSectionRepository;
 import com.busuu.app.repositories.LessonRepository;
-import com.busuu.app.repositories.OrderingPartRepository;
-import com.busuu.app.repositories.QuestionOrderingRepository;
+import com.busuu.app.repositories.questions.ordering.OrderingPartRepository;
+import com.busuu.app.repositories.questions.ordering.QuestionOrderingRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;

@@ -26,8 +26,8 @@ public class ChapterDTO
     @Size(min = 1, message = "Invalid Description length (minimum length is 1)!")
     private String description;
 
-    @NotNull(message = "Chapter Order is required!")
-    @Min(value = 1, message = "The Chapter Order must be at least 1")
+//    @NotNull(message = "Chapter Order is required!")
+//    @Min(value = 1, message = "The Chapter Order must be at least 1")
     @JsonProperty("chapter_order")
     private Integer chapterOrder;
 

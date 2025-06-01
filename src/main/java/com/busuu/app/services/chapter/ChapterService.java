@@ -10,13 +10,12 @@ import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.ChapterRepository;
-import com.busuu.app.repositories.CourseRepository;
+import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -50,10 +49,9 @@ public class ChapterService implements IChapterService
             Level level = levelRepository.findById(chapterDTO.getLevelId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + chapterDTO.getLevelId()) );
 
-            if (chapterRepository.existsByChapterOrderAndLevelId(chapterDTO.getChapterOrder(), level.getId())) {
-                throw new ExistDataException("Chapter's order is duplicated");
-            }
-
+//            if (chapterRepository.existsByChapterOrderAndLevelId(chapterDTO.getChapterOrder(), level.getId())) {
+//                throw new ExistDataException("Chapter's order is duplicated");
+//            }
             //Check exists course, title
             Course course = courseRepository.findById(chapterDTO.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + chapterDTO.getCourseId()) );
@@ -72,6 +70,9 @@ public class ChapterService implements IChapterService
 
             //Set course for new chapter
             newChapter.setCourse(course);
+
+            // Set chapter order max + 1
+            newChapter.setChapterOrder(chapterRepository.findMaxChapterOrderByLevelId(chapterDTO.getLevelId()) + 1);
 
 
             //Save, map + add additional properties and return new Chapter

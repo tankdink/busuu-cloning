@@ -55,8 +55,8 @@ public class QuestionDTO {
     private MultipartFile audio;
 
     @JsonProperty("question_order")
-    @NotNull(message = "Question order is required")
-    @Min(value = 1, message = "Question order must be at least 1")
+//    @NotNull(message = "Question order is required")
+//    @Min(value = 1, message = "Question order must be at least 1")
     private Integer questionOrder;
 
     @JsonProperty("lesson_id")

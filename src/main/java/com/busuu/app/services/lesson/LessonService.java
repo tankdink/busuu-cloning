@@ -45,9 +45,9 @@ public class LessonService implements ILessonService {
                 throw new ExistDataException("Lesson's title is duplicated");
             }
 
-            if (lessonRepository.existsByLessonOrderAndChapterId(lessonDTO.getLessonOrder(), existingChapter.getId())) {
-                throw new ExistDataException("Lesson's order is duplicated");
-            }
+//            if (lessonRepository.existsByLessonOrderAndChapterId(lessonDTO.getLessonOrder(), existingChapter.getId())) {
+//                throw new ExistDataException("Lesson's order is duplicated");
+//            }
 
             Lesson lesson = modelMapper.map(lessonDTO, Lesson.class);
             lesson.setId(UUID.randomUUID().toString());
@@ -61,6 +61,9 @@ public class LessonService implements ILessonService {
                 }
             }
             lesson.setChapter(existingChapter);
+
+            // Set lesson order max + 1
+            lesson.setLessonOrder(lessonRepository.findMaxGrammarSectionOrderByChapterId(lessonDTO.getChapterId()) + 1);
 
             lesson = lessonRepository.save(lesson);
 

@@ -1,4 +1,4 @@
-package com.busuu.app.repositories;
+package com.busuu.app.repositories.course;
 
 import com.busuu.app.entities.CourseLevel;
 import org.springframework.data.jpa.repository.JpaRepository;

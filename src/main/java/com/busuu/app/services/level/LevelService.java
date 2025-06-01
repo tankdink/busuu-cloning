@@ -8,7 +8,7 @@ import com.busuu.app.entities.Level;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
-import com.busuu.app.repositories.CourseLevelRepository;
+import com.busuu.app.repositories.course.CourseLevelRepository;
 import com.busuu.app.repositories.LevelRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

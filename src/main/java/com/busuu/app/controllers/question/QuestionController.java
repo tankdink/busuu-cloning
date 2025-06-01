@@ -1,10 +1,8 @@
 package com.busuu.app.controllers.question;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.responses.ChapterResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.question.QuestionResponse;
-import com.busuu.app.repositories.QuestionRepository;
 import com.busuu.app.services.question.IQuestionService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;

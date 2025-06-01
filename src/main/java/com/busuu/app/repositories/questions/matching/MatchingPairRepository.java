@@ -1,4 +1,4 @@
-package com.busuu.app.repositories;
+package com.busuu.app.repositories.questions.matching;
 
 import com.busuu.app.entities.questions.matching.MatchingPair;
 import com.busuu.app.entities.questions.matching.QuestionMatching;

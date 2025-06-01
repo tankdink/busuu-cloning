@@ -1,9 +1,6 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.progresses.ChapterProgress;
-import com.busuu.app.entities.progresses.CourseProgress;
-import com.busuu.app.entities.progresses.LessonProgress;
-import com.busuu.app.entities.progresses.QuestionProgress;
+import com.busuu.app.entities.progresses.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -103,11 +100,11 @@ public class User extends BaseEntity implements UserDetails {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<QuestionProgress> questionProgresses;
+    private List<CourseProgress> courseProgresses;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<LessonProgress> lessonProgresses;
+    private List<LevelProgress> levelProgresses;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -115,7 +112,15 @@ public class User extends BaseEntity implements UserDetails {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<CourseProgress> courseProgresses;
+    private List<LessonProgress> lessonProgresses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<GrammarProgress> grammarProgresses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<GrammarSectionProgress> grammarSectionProgresses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

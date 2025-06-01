@@ -30,8 +30,8 @@ public class CourseDTO {
     private MultipartFile flagIcon;
 
     @JsonProperty("course_order")
-    @NotNull(message = "Course order is required")
-    @Min(value = 1, message = "Course order must be at least 1")
+//    @NotNull(message = "Course order is required")
+//    @Min(value = 1, message = "Course order must be at least 1")
     private Integer courseOrder;
 
     @JsonProperty("level_ids")

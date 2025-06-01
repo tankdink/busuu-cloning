@@ -10,8 +10,8 @@ import com.busuu.app.entities.Level;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
-import com.busuu.app.repositories.CourseLevelRepository;
-import com.busuu.app.repositories.CourseRepository;
+import com.busuu.app.repositories.course.CourseLevelRepository;
+import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
@@ -44,9 +44,9 @@ public class CourseService implements ICourseService {
                 throw new ExistDataException("Course's title is duplicated");
             }
 
-            if (courseRepository.existsByCourseOrder(courseDTO.getCourseOrder())) {
-                throw new ExistDataException("Course's order is duplicated");
-            }
+//            if (courseRepository.existsByCourseOrder(courseDTO.getCourseOrder())) {
+//                throw new ExistDataException("Course's order is duplicated");
+//            }
 
             CloudinaryResponse cloudinaryResponse = null;
             if (courseDTO.getFlagIcon() != null) {
@@ -55,6 +55,9 @@ public class CourseService implements ICourseService {
 
             Course course = modelMapper.map(courseDTO, Course.class);
             course.setId(UUID.randomUUID().toString());
+
+            // Set course order max + 1
+            course.setCourseOrder(courseRepository.findMaxCourseOrder() + 1);
 
             if (cloudinaryResponse != null) {
                 course.setFlagIconUrl(cloudinaryResponse.getUrl());

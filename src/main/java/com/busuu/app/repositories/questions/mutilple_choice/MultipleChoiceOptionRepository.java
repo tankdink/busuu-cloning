@@ -1,4 +1,4 @@
-package com.busuu.app.repositories;
+package com.busuu.app.repositories.questions.mutilple_choice;
 
 import com.busuu.app.entities.questions.multiple_choice.MultipleChoiceOption;
 import com.busuu.app.entities.questions.multiple_choice.QuestionMultipleChoice;

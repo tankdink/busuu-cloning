@@ -3,7 +3,6 @@ package com.busuu.app.entities.questions;
 import com.busuu.app.entities.BaseEntity;
 import com.busuu.app.entities.GrammarSection;
 import com.busuu.app.entities.Lesson;
-import com.busuu.app.entities.progresses.QuestionProgress;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -76,8 +75,4 @@ public class Question extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "grammar_section_id")
     private GrammarSection grammarSection;
-
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QuestionProgress> questionProgressList;
-
 }

@@ -45,7 +45,6 @@ public class LanguageService implements ILanguageService
                 throw new ExistDataException("Language's name is duplicated");
             }
 
-
             //Image
             CloudinaryResponse cloudinaryResponse = null;
             if (languageDTO.getFlagIcon() != null) {

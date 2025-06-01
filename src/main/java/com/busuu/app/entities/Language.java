@@ -37,7 +37,4 @@ public class Language extends BaseEntity
 
     @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Grammar> grammars;
-
-    @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CourseProgress> courseProgresses;
 }

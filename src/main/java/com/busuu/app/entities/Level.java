@@ -1,5 +1,7 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.progresses.LessonProgress;
+import com.busuu.app.entities.progresses.LevelProgress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,4 +45,6 @@ public class Level {
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrammarSection> grammarSections = new ArrayList<>();
 
+    @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LevelProgress> levelProgresses;
 }

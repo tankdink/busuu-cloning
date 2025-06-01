@@ -1,4 +1,4 @@
-package com.busuu.app.repositories;
+package com.busuu.app.repositories.questions;
 
 import com.busuu.app.entities.questions.QuestionTrueFalse;
 import org.springframework.data.jpa.repository.JpaRepository;

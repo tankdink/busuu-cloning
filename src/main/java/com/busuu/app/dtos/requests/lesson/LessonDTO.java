@@ -28,8 +28,8 @@ public class LessonDTO {
     private String description;
 
     @JsonProperty("lesson_order")
-    @NotNull(message = "Lesson order is required")
-    @Positive(message = "Lesson order must be greater than 0")
+//    @NotNull(message = "Lesson order is required")
+//    @Positive(message = "Lesson order must be greater than 0")
     private Integer lessonOrder;
 
     @JsonProperty("flag_icon")

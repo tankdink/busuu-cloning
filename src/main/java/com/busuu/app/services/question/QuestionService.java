@@ -1,27 +1,20 @@
 package com.busuu.app.services.question;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.responses.CloudinaryResponse;
-import com.busuu.app.dtos.responses.CourseResponse;
 import com.busuu.app.dtos.responses.question.QuestionFillBlankResponse;
 import com.busuu.app.dtos.responses.question.QuestionResponse;
 import com.busuu.app.dtos.responses.question.QuestionTrueFalseResponse;
 import com.busuu.app.dtos.responses.question.matching.QuestionMatchingResponse;
 import com.busuu.app.dtos.responses.question.multiple_choice.QuestionMultipleChoiceResponse;
 import com.busuu.app.dtos.responses.question.ordering.QuestionOrderingResponse;
-import com.busuu.app.entities.Course;
-import com.busuu.app.entities.CourseLevel;
-import com.busuu.app.entities.Level;
 import com.busuu.app.entities.questions.Question;
 import com.busuu.app.entities.questions.QuestionFillBlank;
 import com.busuu.app.entities.questions.QuestionTrueFalse;
 import com.busuu.app.entities.questions.matching.QuestionMatching;
 import com.busuu.app.entities.questions.multiple_choice.QuestionMultipleChoice;
 import com.busuu.app.entities.questions.ordering.QuestionOrdering;
-import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
-import com.busuu.app.exceptions.ExistDataException;
-import com.busuu.app.repositories.QuestionRepository;
+import com.busuu.app.repositories.questions.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,10 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

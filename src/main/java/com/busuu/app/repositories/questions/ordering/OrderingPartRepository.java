@@ -1,4 +1,4 @@
-package com.busuu.app.repositories;
+package com.busuu.app.repositories.questions.ordering;
 
 import com.busuu.app.entities.questions.ordering.OrderingPart;
 import com.busuu.app.entities.questions.ordering.QuestionOrdering;

@@ -10,8 +10,8 @@ import com.busuu.app.entities.Level;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
-import com.busuu.app.repositories.GrammarRepository;
-import com.busuu.app.repositories.GrammarSectionRepository;
+import com.busuu.app.repositories.grammar.GrammarRepository;
+import com.busuu.app.repositories.grammar.GrammarSectionRepository;
 import com.busuu.app.repositories.LessonRepository;
 import com.busuu.app.repositories.LevelRepository;
 import jakarta.transaction.Transactional;
@@ -60,9 +60,9 @@ public class GrammarSectionService implements IGrammarSectionService
 
 
             //Check duplicate order, name
-            if (grammarSectionRepository.existsByGrammarSectionOrderAndGrammarId(grammarSectionDTO.getGrammarSectionOrder(), grammar.getId())) {
-                throw new ExistDataException("Grammar Section's order is duplicated");
-            }
+//            if (grammarSectionRepository.existsByGrammarSectionOrderAndGrammarId(grammarSectionDTO.getGrammarSectionOrder(), grammar.getId())) {
+//                throw new ExistDataException("Grammar Section's order is duplicated");
+//            }
 
             if (grammarSectionRepository.existsByTitle(grammarSectionDTO.getTitle())) throw new ExistDataException("Grammar Section Title is duplicated");
 
@@ -82,6 +82,9 @@ public class GrammarSectionService implements IGrammarSectionService
 
             //Set level for new grammar section
             newGrammarSection.setLevel(level);
+
+            // Set grammar section order max + 1
+            newGrammarSection.setGrammarSectionOrder(grammarSectionRepository.findMaxGrammarSectionOrderByGrammarId(grammar.getId()) + 1);
 
 
             //Save, map + add additional properties and return new GrammarSection

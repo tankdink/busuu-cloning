@@ -28,8 +28,8 @@ public class GrammarSectionDTO
     @Size(min = 1, message = "Invalid Content length (minimum length is 1)!")
     private String content;
 
-    @NotNull(message = "Grammar Section Order is required!")
-    @Min(value = 1, message = "The Grammar Section Order must be at least 1")
+//    @NotNull(message = "Grammar Section Order is required!")
+//    @Min(value = 1, message = "The Grammar Section Order must be at least 1")
     @JsonProperty("grammar_section_order")
     private Integer grammarSectionOrder;
 
