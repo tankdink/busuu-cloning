@@ -137,7 +137,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserResponse> getAllUsers(String requestId) {
-        return List.of();
+    public List<UserResponse> getUsersByRole(String requestId, String roleName) {
+        try {
+            return userRepository.findUsersByRoleName(roleName).stream().map(
+                    user -> modelMapper.map(user, UserResponse.class)
+            ).toList();
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get users by role, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_USER, requestId);
+        }
     }
 }

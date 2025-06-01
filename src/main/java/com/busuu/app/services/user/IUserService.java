@@ -19,5 +19,5 @@ public interface IUserService {
 
     UserResponse updateUser (String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception;
 
-    List<UserResponse> getAllUsers (String requestId);
+    List<UserResponse> getUsersByRole (String requestId, String roleName);
 }

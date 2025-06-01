@@ -39,6 +39,8 @@ public class Constants {
         public static final String ERR_REGISTER_USER = "ERR_REGISTER_USER";
         public static final String ERR_LOGIN_USER = "ERR_LOGIN_USER";
 
+        public static final String ERR_GET_USER = "ERR_GET_USER";
+
         // Role
         public static final String ERR_CREATE_ROLE = "ERR_CREATE_ROLE";
         public static final String ERR_GET_ROLE = "ERR_GET_ROLE";
