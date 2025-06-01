@@ -2,7 +2,9 @@ package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.section.GrammarSectionDTO;
+import com.busuu.app.dtos.responses.GrammarResponse;
 import com.busuu.app.dtos.responses.GrammarSectionResponse;
+import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.grammarSection.IGrammarSectionService;
 import com.busuu.app.utils.LocalizationUtils;
@@ -70,8 +72,8 @@ public class GrammarSectionController
 
                                                        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                        @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                       @RequestParam(value = "sortBy", defaultValue = "grammarSectionOrder", required = false) String sortBy,
-                                                       @RequestParam(value = "sortDirection", defaultValue = "ASC", required = false) String sortDirection)
+                                                       @RequestParam(value = "sort_by", defaultValue = "grammarSectionOrder", required = false) String sortBy,
+                                                       @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
     {
 
         try {
@@ -82,13 +84,18 @@ public class GrammarSectionController
 
             //Call get all grammarSection service
             Page<GrammarSectionResponse> grammarSectionList = grammarSectionService.getGrammarSections(requestId, page, size, sortBy, sortDirection);
+            Object responseData = PagingResponse.<GrammarSectionResponse>builder()
+                    .totalPages(grammarSectionList.getTotalPages())
+                    .objects(grammarSectionList.getContent())
+                    .totalObjects(grammarSectionList.getTotalElements())
+                    .build();
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(grammarSectionList)
+                            .data(responseData)
                             .build()
             );
 

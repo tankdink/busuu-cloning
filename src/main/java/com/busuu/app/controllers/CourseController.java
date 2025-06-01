@@ -3,6 +3,7 @@ package com.busuu.app.controllers;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.course.CourseDTO;
 import com.busuu.app.dtos.responses.CourseResponse;
+import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.course.ICourseService;
 import com.busuu.app.utils.LocalizationUtils;
@@ -82,8 +83,8 @@ public class CourseController {
 
                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                @RequestParam(value = "sortBy", defaultValue = "courseOrder", required = false) String sortBy,
-                                                @RequestParam(value = "sortDirection", defaultValue = "ASC", required = false) String sortDirection)
+                                                @RequestParam(value = "sort_by", defaultValue = "courseOrder", required = false) String sortBy,
+                                                @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
     {
         try {
             if (requestId == null || requestId.isEmpty()) {
@@ -91,10 +92,16 @@ public class CourseController {
             }
 
             Page<CourseResponse> courses = courseService.getCourses(requestId, page, size, sortBy, sortDirection);
+            Object responseData = PagingResponse.<CourseResponse>builder()
+                    .totalPages(courses.getTotalPages())
+                    .objects(courses.getContent())
+                    .totalObjects(courses.getTotalElements())
+                    .build();
+
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .data(courses)
+                            .data(responseData)
                             .status(HttpStatus.OK)
                             .build()
             );

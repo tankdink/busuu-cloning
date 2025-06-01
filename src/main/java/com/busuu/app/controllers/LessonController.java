@@ -4,6 +4,7 @@ import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.lesson.LessonDTO;
 import com.busuu.app.dtos.responses.CourseResponse;
 import com.busuu.app.dtos.responses.LessonResponse;
+import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.lesson.ILessonService;
 import com.busuu.app.utils.LocalizationUtils;
@@ -82,8 +83,8 @@ public class LessonController {
 
                                                @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                               @RequestParam(value = "sortBy", defaultValue = "lessonOrder", required = false) String sortBy,
-                                               @RequestParam(value = "sortDirection", defaultValue = "ASC", required = false) String sortDirection)
+                                               @RequestParam(value = "sort_by", defaultValue = "lessonOrder", required = false) String sortBy,
+                                               @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
     {
         try {
             if (requestId == null || requestId.isEmpty()) {
@@ -91,10 +92,16 @@ public class LessonController {
             }
 
             Page<LessonResponse> lessonResponses = lessonService.getLessons(requestId, page, size, sortBy, sortDirection);
+            Object responseData = PagingResponse.<LessonResponse>builder()
+                    .totalPages(lessonResponses.getTotalPages())
+                    .objects(lessonResponses.getContent())
+                    .totalObjects(lessonResponses.getTotalElements())
+                    .build();
+
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .data(lessonResponses)
+                            .data(responseData)
                             .status(HttpStatus.CREATED)
                             .build()
             );

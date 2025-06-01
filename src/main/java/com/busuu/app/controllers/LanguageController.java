@@ -3,6 +3,7 @@ package com.busuu.app.controllers;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.language.LanguageDTO;
 import com.busuu.app.dtos.responses.LanguageResponse;
+import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.entities.Language;
 import com.busuu.app.services.language.ILanguageService;
@@ -89,8 +90,8 @@ public class LanguageController
 
                                                  @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                  @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                 @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
-                                                 @RequestParam(value = "sortDirection", defaultValue = "ASC", required = false) String sortDirection)
+                                                 @RequestParam(value = "sort_by", defaultValue = "name", required = false) String sortBy,
+                                                 @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
     {
 
         try {
@@ -101,13 +102,18 @@ public class LanguageController
 
             //Call get all language service
             Page<LanguageResponse> languageList = languageService.getLanguages(requestId, page, size, sortBy, sortDirection);
+            Object responseData = PagingResponse.<LanguageResponse>builder()
+                    .totalPages(languageList.getTotalPages())
+                    .objects(languageList.getContent())
+                    .totalObjects(languageList.getTotalElements())
+                    .build();
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(languageList)
+                            .data(responseData)
                             .build()
             );
 
