@@ -11,6 +11,7 @@ import com.busuu.app.utils.MessagesKey;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -84,7 +85,12 @@ public class LanguageController
     }
 
     @GetMapping()
-    public ResponseEntity<Response> getLanguages(@RequestParam(value = "req-id", required = false) String requestId)
+    public ResponseEntity<Response> getLanguages(@RequestParam(value = "req-id", required = false) String requestId,
+
+                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                 @RequestParam(value = "sortBy", defaultValue = "name", required = false) String sortBy,
+                                                 @RequestParam(value = "sortDirection", defaultValue = "ASC", required = false) String sortDirection)
     {
 
         try {
@@ -94,7 +100,7 @@ public class LanguageController
             }
 
             //Call get all language service
-            List<LanguageResponse> languageList = languageService.getLanguages(requestId);
+            Page<LanguageResponse> languageList = languageService.getLanguages(requestId, page, size, sortBy, sortDirection);
 
             //Return response
             return ResponseEntity.ok().body(

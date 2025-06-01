@@ -10,6 +10,7 @@ import com.busuu.app.utils.MessagesKey;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,7 +66,12 @@ public class GrammarSectionController
     }
 
     @GetMapping()
-    public ResponseEntity<Response> getGrammarSections(@RequestParam(value = "req-id", required = false) String requestId)
+    public ResponseEntity<Response> getGrammarSections(@RequestParam(value = "req-id", required = false) String requestId,
+
+                                                       @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                       @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                       @RequestParam(value = "sortBy", defaultValue = "grammarSectionOrder", required = false) String sortBy,
+                                                       @RequestParam(value = "sortDirection", defaultValue = "ASC", required = false) String sortDirection)
     {
 
         try {
@@ -75,7 +81,7 @@ public class GrammarSectionController
             }
 
             //Call get all grammarSection service
-            List<GrammarSectionResponse> grammarSectionList = grammarSectionService.getGrammarSections(requestId);
+            Page<GrammarSectionResponse> grammarSectionList = grammarSectionService.getGrammarSections(requestId, page, size, sortBy, sortDirection);
 
             //Return response
             return ResponseEntity.ok().body(

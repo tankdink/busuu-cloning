@@ -16,6 +16,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -92,12 +95,16 @@ public class ChapterService implements IChapterService
     }
 
     @Override
-    public List<ChapterResponse> getChapters(String requestId) 
+    public Page<ChapterResponse> getChapters(String requestId, int page, int size, String sortBy, String sortDirection)
     {
         try {
-            
+
+            //Pageable
+            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            Pageable pageable = PageRequest.of(page, size, sort);
+
             //Get all, mapping and return
-            return (chapterRepository.findAll()).stream()
+            return (chapterRepository.findAll(pageable))
                     .map(chapter ->
                     {
                         ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
@@ -106,9 +113,9 @@ public class ChapterService implements IChapterService
                         response.setLevelId(chapter.getLevel().getId());
 
                         return response;
-                    })
-                    .collect(Collectors.toList());
-            
+
+                    });
+
 
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get chapter list, err="+e.getMessage());

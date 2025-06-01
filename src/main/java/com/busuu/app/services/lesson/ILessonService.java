@@ -2,6 +2,7 @@ package com.busuu.app.services.lesson;
 
 import com.busuu.app.dtos.requests.lesson.LessonDTO;
 import com.busuu.app.dtos.responses.LessonResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface ILessonService {
 
     LessonResponse getLesson (String requestId, String lessonId);
 
-    List<LessonResponse> getLessons (String requestId);
+    Page<LessonResponse> getLessons (String requestId, int page, int size, String sortBy, String sortDirection);
 
     LessonResponse updateLesson (String requestId, String lessonId, LessonDTO lessonDTO);
 

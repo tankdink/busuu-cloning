@@ -17,6 +17,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,12 +100,16 @@ public class GrammarService implements IGrammarService
     }
 
     @Override
-    public List<GrammarResponse> getGrammars(String requestId) 
+    public Page<GrammarResponse> getGrammars(String requestId, int page, int size, String sortBy, String sortDirection)
     {
         try {
 
+            //Pageable
+            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            Pageable pageable = PageRequest.of(page, size, sort);
+
             //Get all, mapping and return
-            return (grammarRepository.findAll()).stream()
+            return (grammarRepository.findAll(pageable))
                     .map(grammar ->
                     {
                         GrammarResponse response = modelMapper.map(grammar, GrammarResponse.class);
@@ -109,8 +117,7 @@ public class GrammarService implements IGrammarService
                         response.setLanguageId(grammar.getLanguage().getId());
 
                         return response;
-                    })
-                    .collect(Collectors.toList());
+                    });
 
 
         } catch (Exception e) {

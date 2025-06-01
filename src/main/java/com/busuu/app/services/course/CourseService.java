@@ -18,6 +18,9 @@ import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -125,11 +128,16 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public List<CourseResponse> getCourses(String requestId) {
+    public Page<CourseResponse> getCourses(String requestId, int page, int size, String sortBy, String sortDirection) {
         try {
-            List<Course> courses = courseRepository.findAll();
 
-            return courses.stream().map(
+            //Pageable
+            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            Page<Course> courses = courseRepository.findAll(pageable);
+
+            return courses.map(
                     course -> {
                         List<CourseLevel> courseLevels = courseLevelRepository.findByCourseIdWithSortingLevel(course.getId());
 
@@ -140,8 +148,8 @@ public class CourseService implements ICourseService {
                         CourseResponse courseResponse = modelMapper.map(course, CourseResponse.class);
                         courseResponse.setLevelIds(levels);
                         return courseResponse;
-                    }
-            ).toList();
+                    });
+
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get courses, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
