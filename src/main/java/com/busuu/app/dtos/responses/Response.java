@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Response extends BaseResponse {
+public class Response {
 
     @JsonProperty("message")
     private String message;

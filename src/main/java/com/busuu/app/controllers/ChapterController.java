@@ -3,6 +3,7 @@ package com.busuu.app.controllers;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.chapter.ChapterDTO;
 import com.busuu.app.dtos.responses.ChapterResponse;
+import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.chapter.IChapterService;
 import com.busuu.app.utils.LocalizationUtils;
@@ -103,7 +104,6 @@ public class ChapterController
     public ResponseEntity<Response> getListChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                                    @RequestParam(value = "course_id",required = false) String courseId,
                                                    @RequestParam(value = "level_id",required = false) String levelId,
-
                                                    @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                    @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                    @RequestParam(value = "sortBy", defaultValue = "chapterOrder", required = false) String sortBy,
@@ -111,7 +111,6 @@ public class ChapterController
     {
 
         //Including get chapters by courseId and levelId; get all chapters
-
         try {
 
             List<ChapterResponse> gettedChapterList = null;
@@ -144,8 +143,11 @@ public class ChapterController
             {
                 //Call get all chapters service
                 Page<ChapterResponse> gettedChapterPage = chapterService.getChapters(requestId, page, size, sortBy, sortDirection);
-                responseData = gettedChapterPage;
-
+                responseData = PagingResponse.<ChapterResponse>builder()
+                                .totalPages(gettedChapterPage.getTotalPages())
+                                .objects(gettedChapterPage.getContent())
+                                .totalObjects(gettedChapterPage.getTotalElements())
+                                .build();
             }
 
             //Return response
