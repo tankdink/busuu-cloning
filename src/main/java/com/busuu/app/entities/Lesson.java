@@ -39,7 +39,7 @@ public class Lesson extends BaseEntity{
     private String flagIconName;
 
     @ManyToOne
-    @JoinColumn(name = "chapter_id", nullable = false)
+    @JoinColumn(name = "chapter_id", nullable = true)
     private Chapter chapter;
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,7 @@ public class ChapterService implements IChapterService
 //            if (chapterRepository.existsByChapterOrderAndLevelId(chapterDTO.getChapterOrder(), level.getId())) {
 //                throw new ExistDataException("Chapter's order is duplicated");
 //            }
+
             //Check exists course, title
             Course course = courseRepository.findById(chapterDTO.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + chapterDTO.getCourseId()) );
@@ -73,7 +75,6 @@ public class ChapterService implements IChapterService
 
             // Set chapter order max + 1
             newChapter.setChapterOrder(chapterRepository.findMaxChapterOrderByLevelId(chapterDTO.getLevelId()) + 1);
-
 
             //Save, map + add additional properties and return new Chapter
             ChapterResponse savedChapter = modelMapper.map(chapterRepository.save(newChapter), ChapterResponse.class);
@@ -143,7 +144,7 @@ public class ChapterService implements IChapterService
     {
         try {
 
-            List<Chapter> gettedChapterList = chapterRepository.findByCourseIdAndLevelId(courseID, levelId);
+            List<Chapter> gettedChapterList = chapterRepository.findByCourseIdAndLevelId(courseID, levelId, Sort.by(Sort.Direction.ASC, "chapterOrder"));
             if (gettedChapterList.isEmpty()) throw new DataNotFoundException("There are no chapter found with courseID " + courseID + " and levelID " + levelId);
 
 

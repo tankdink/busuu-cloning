@@ -38,7 +38,7 @@ public class Grammar extends BaseEntity{
     private Integer grammarOrder;
 
     @ManyToOne
-    @JoinColumn(name = "language_id", nullable = false)
+    @JoinColumn(name = "language_id", nullable = true)
     private Language language;
 
     @OneToMany(mappedBy = "grammar", cascade = CascadeType.ALL, orphanRemoval = true)

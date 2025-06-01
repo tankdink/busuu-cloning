@@ -5,12 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GrammarSectionResponse
+public class GrammarSectionResponse extends BaseResponse
 {
 
     @JsonProperty("id")
