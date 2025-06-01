@@ -96,7 +96,7 @@ public class LevelService implements ILevelService
             //Get Course - Level list
             //Get each level entity then collect to list
             //Return
-            return (courseLevelRepository.findByCourseId(courseId).stream()
+            return (courseLevelRepository.findByCourseIdWithSortingLevel(courseId).stream()
                     .map(CourseLevel::getLevel)
                     .collect(Collectors.toList()));
 

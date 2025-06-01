@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -142,7 +143,7 @@ public class ChapterService implements IChapterService
     {
         try {
 
-            List<Chapter> gettedChapterList = chapterRepository.findByCourseIdAndLevelId(courseID, levelId);
+            List<Chapter> gettedChapterList = chapterRepository.findByCourseIdAndLevelId(courseID, levelId, Sort.by(Sort.Direction.ASC, "chapterOrder"));
             if (gettedChapterList.isEmpty()) throw new DataNotFoundException("There are no chapter found with courseID " + courseID + " and levelID " + levelId);
 
 

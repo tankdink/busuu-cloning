@@ -16,6 +16,7 @@ import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -180,7 +181,7 @@ public class LessonService implements ILessonService {
     @Override
     public List<LessonResponse> getByChapterId(String requestId, String chapterId) {
         try {
-            List<Lesson> lessons = lessonRepository.findByChapterId(chapterId);
+            List<Lesson> lessons = lessonRepository.findByChapterId(chapterId, Sort.by(Sort.Direction.ASC, "lessonOrder"));
 
             return lessons.stream().map(lesson -> {
                 LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);

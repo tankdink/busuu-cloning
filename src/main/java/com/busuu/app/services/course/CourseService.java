@@ -128,7 +128,7 @@ public class CourseService implements ICourseService {
 
             return courses.stream().map(
                     course -> {
-                        List<CourseLevel> courseLevels = courseLevelRepository.findByCourseId(course.getId());
+                        List<CourseLevel> courseLevels = courseLevelRepository.findByCourseIdWithSortingLevel(course.getId());
 
                         List<String> levels = courseLevels.stream().map(
                                 courseLevel -> courseLevel.getLevel().getId()
