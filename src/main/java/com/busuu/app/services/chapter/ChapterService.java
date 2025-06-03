@@ -42,7 +42,6 @@ public class ChapterService implements IChapterService
 
     private final ChapterRepository chapterRepository;
 
-
     @Override
     @Transactional
     public ChapterResponse insertChapter(String requestId, ChapterDTO chapterDTO) 
@@ -61,7 +60,7 @@ public class ChapterService implements IChapterService
             Course course = courseRepository.findById(chapterDTO.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + chapterDTO.getCourseId()) );
 
-            if (chapterRepository.existsByDescription(chapterDTO.getDescription())) throw new ExistDataException("Chapter's title is duplicated");
+            if (chapterRepository.existsByTitle(chapterDTO.getTitle())) throw new ExistDataException("Chapter's title is duplicated");
 
             //Convert DTO to entity
             Chapter newChapter = modelMapper.map(chapterDTO, Chapter.class);
@@ -77,7 +76,7 @@ public class ChapterService implements IChapterService
             newChapter.setCourse(course);
 
             // Set chapter order max + 1
-            newChapter.setChapterOrder(chapterRepository.findMaxChapterOrderByLevelId(chapterDTO.getLevelId()) + 1);
+            newChapter.setChapterOrder(chapterRepository.findMaxChapterOrderByLevelIdAndCourseId(chapterDTO.getLevelId(), chapterDTO.getCourseId()) + 1);
 
             //Save, map + add additional properties and return new Chapter
             ChapterResponse savedChapter = modelMapper.map(chapterRepository.save(newChapter), ChapterResponse.class);
@@ -196,7 +195,7 @@ public class ChapterService implements IChapterService
             }
 
             if (!Objects.equals(existingChapter.getDescription(), infoUpdateChapter.getDescription()))
-                if (chapterRepository.existsByDescription(infoUpdateChapter.getDescription())) throw new ExistDataException("Chapter's description is duplicated");
+                if (chapterRepository.existsByTitle(infoUpdateChapter.getTitle())) throw new ExistDataException("Chapter's title is duplicated");
 
             Course course = courseRepository.findById(infoUpdateChapter.getCourseId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find course with ID " + infoUpdateChapter.getCourseId()) );

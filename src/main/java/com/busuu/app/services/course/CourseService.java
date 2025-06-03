@@ -204,6 +204,7 @@ public class CourseService implements ICourseService {
                             .orElseThrow(() -> new DataNotFoundException("Cannot find Level with ID = " + levelId));
 
                     if (courseLevelRepository.existsByCourseIdAndLevelId(existingCourse.getId(), existingLevel.getId())) {
+                        level.add(existingLevel.getId());
                         continue;
                     }
 

@@ -17,10 +17,11 @@ public interface ChapterRepository extends JpaRepository<Chapter, String> {
 
     List<Chapter> findByCourseIdAndLevelId(String courseId, String levelId, Sort sort);
   
-    boolean existsByDescription(String description);
+    boolean existsByTitle(String title);
 
     boolean existsByCourseIdAndLevelId(String courseId, String levelId);
 
-    @Query(value = "SELECT MAX(chapter_order) FROM chapter WHERE level_id = :levelId", nativeQuery = true)
-    Integer findMaxChapterOrderByLevelId(@Param("levelId") String levelId);
+    @Query(value = "SELECT MAX(chapter_order) FROM chapter WHERE level_id = :levelId AND course_id = :courseId", nativeQuery = true)
+    Integer findMaxChapterOrderByLevelIdAndCourseId(@Param("levelId") String levelId, @Param("courseId") String courseId);
+
 }
