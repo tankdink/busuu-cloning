@@ -76,7 +76,12 @@ public class ChapterService implements IChapterService
             newChapter.setCourse(course);
 
             // Set chapter order max + 1
-            newChapter.setChapterOrder(chapterRepository.findMaxChapterOrderByLevelIdAndCourseId(chapterDTO.getLevelId(), chapterDTO.getCourseId()) + 1);
+            Integer chapterOrder = chapterRepository.findMaxChapterOrderByLevelIdAndCourseId(chapterDTO.getLevelId(), chapterDTO.getCourseId());
+            if (chapterOrder == null) {
+                newChapter.setChapterOrder(1);
+            } else {
+                newChapter.setChapterOrder(chapterOrder + 1);
+            }
 
             //Save, map + add additional properties and return new Chapter
             ChapterResponse savedChapter = modelMapper.map(chapterRepository.save(newChapter), ChapterResponse.class);

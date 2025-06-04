@@ -37,7 +37,7 @@ public class GrammarSection extends BaseEntity {
     private Integer grammarSectionOrder;
 
     @ManyToOne
-    @JoinColumn(name = "grammar_id", nullable = true)
+    @JoinColumn(name = "grammar_id", nullable = false)
     private Grammar grammar;
 
     @ManyToOne
@@ -45,7 +45,7 @@ public class GrammarSection extends BaseEntity {
     private Lesson lesson;
 
     @ManyToOne
-    @JoinColumn(name = "level_id", nullable = true)
+    @JoinColumn(name = "level_id", nullable = false)
     private Level level;
 
     @OneToMany(mappedBy = "grammarSection", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -77,7 +77,12 @@ public class GrammarService implements IGrammarService
             newGrammar.setLanguage(language);
 
             // Set grammar order max + 1
-            newGrammar.setGrammarOrder(grammarRepository.findMaxGrammarOrderByLanguageId(grammarDTO.getLanguageId()) + 1);
+            Integer grammarOrder = grammarRepository.findMaxGrammarOrderByLanguageId(grammarDTO.getLanguageId());
+            if (grammarOrder == null) {
+                newGrammar.setGrammarOrder(1);
+            } else {
+                newGrammar.setGrammarOrder(grammarOrder + 1);
+            }
 
             //Set cloudinary info to new grammar if exist
             if (cloudinaryResponse != null) {

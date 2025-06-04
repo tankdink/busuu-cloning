@@ -67,7 +67,12 @@ public class LessonService implements ILessonService {
             lesson.setChapter(existingChapter);
 
             // Set lesson order max + 1
-            lesson.setLessonOrder(lessonRepository.findMaxGrammarSectionOrderByChapterId(lessonDTO.getChapterId()) + 1);
+            Integer lessonOrder = lessonRepository.findMaxGrammarSectionOrderByChapterId(lessonDTO.getChapterId());
+            if (lessonOrder == null) {
+                lesson.setLessonOrder(1);
+            } else {
+                lesson.setLessonOrder(lessonOrder + 1);
+            }
 
             lesson = lessonRepository.save(lesson);
 
