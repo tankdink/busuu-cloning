@@ -17,6 +17,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -137,11 +141,17 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserResponse> getUsersByRole(String requestId, String roleName) {
+    public Page<UserResponse> getUsersByRole(String requestId, String roleName, int page, int size, String sortBy, String sortDirection) {
         try {
-            return userRepository.findUsersByRoleName(roleName).stream().map(
+
+            //Pageable
+            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            return userRepository.findUsersByRoleName(roleName, pageable).map(
                     user -> modelMapper.map(user, UserResponse.class)
-            ).toList();
+            );
+
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get users by role, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,

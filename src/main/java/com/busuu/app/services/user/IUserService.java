@@ -4,6 +4,7 @@ import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.User;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -19,5 +20,5 @@ public interface IUserService {
 
     UserResponse updateUser (String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception;
 
-    List<UserResponse> getUsersByRole (String requestId, String roleName);
+    Page<UserResponse> getUsersByRole (String requestId, String roleName, int page, int size, String sortBy, String sortDirection);
 }

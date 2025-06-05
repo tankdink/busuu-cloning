@@ -1,6 +1,8 @@
 package com.busuu.app.repositories;
 
 import com.busuu.app.entities.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,12 @@ public interface UserRepository extends JpaRepository<User, String> {
         JOIN user_role ur ON u.user_id = ur.user_id 
         JOIN role r ON ur.role_id = r.role_id 
         WHERE r.name = :roleName
+        """, countQuery = """
+        SELECT count(u.user_id) 
+        FROM user u 
+        JOIN user_role ur ON u.user_id = ur.user_id 
+        JOIN role r ON ur.role_id = r.role_id 
+        WHERE r.name = :roleName
         """, nativeQuery = true)
-    List<User> findUsersByRoleName(@Param("roleName") String roleName);
+    Page<User> findUsersByRoleName(@Param("roleName") String roleName, Pageable pageable);
 }

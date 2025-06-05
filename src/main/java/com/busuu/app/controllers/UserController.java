@@ -4,6 +4,7 @@ import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserLoginDTO;
 import com.busuu.app.dtos.responses.LoginResponse;
+import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.Token;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -143,18 +145,30 @@ public class UserController {
     @GetMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getUsers (@RequestParam(value = "req-id", required = false) String requestId,
-                                              @RequestParam("role_name") String roleName) {
+                                              @RequestParam("role_name") String roleName,
+
+                                              @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                              @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                              @RequestParam(value = "sort_by", defaultValue = "first_name", required = false) String sortBy,
+                                              @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
+    {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            List<UserResponse> users = userService.getUsersByRole(requestId, roleName);
+            Page<UserResponse> users = userService.getUsersByRole(requestId, roleName, page, size, sortBy, sortDirection);
+
+            Object responseData = PagingResponse.<UserResponse>builder()
+                    .totalPages(users.getTotalPages())
+                    .objects(users.getContent())
+                    .totalObjects(users.getTotalElements())
+                    .build();
 
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .data(users)
+                            .data(responseData)
                             .status(HttpStatus.OK)
                             .build()
             );
