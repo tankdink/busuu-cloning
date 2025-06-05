@@ -13,7 +13,11 @@ import java.util.List;
 public interface CourseLevelRepository extends JpaRepository<CourseLevel, String> {
     List<CourseLevel> findByCourseId (String courseId);
 
-    @Query("SELECT a FROM CourseLevel a JOIN a.level b WHERE a.course.id = :courseId ORDER BY b.code ASC")
+    @Query("SELECT a " +
+            "FROM CourseLevel a " +
+            "JOIN a.level b " +
+            "WHERE a.course.id = :courseId " +
+            "ORDER BY b.code ASC")
     List<CourseLevel> findByCourseIdWithSortingLevel(@Param("courseId") String courseId);
 
     void deleteByCourseId (String courseId);
