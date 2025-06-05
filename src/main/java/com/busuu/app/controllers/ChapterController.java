@@ -107,7 +107,7 @@ public class ChapterController
 
                                                    @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                    @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                   @RequestParam(value = "sort_by", defaultValue = "chapterOrder", required = false) String sortBy,
+                                                   @RequestParam(value = "sort_by", defaultValue = "chapter_id", required = false) String sortBy,
                                                    @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
     {
 
