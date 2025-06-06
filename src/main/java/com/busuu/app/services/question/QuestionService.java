@@ -14,6 +14,7 @@ import com.busuu.app.entities.questions.QuestionType;
 import com.busuu.app.entities.questions.matching.QuestionMatching;
 import com.busuu.app.entities.questions.multiple_choice.QuestionMultipleChoice;
 import com.busuu.app.entities.questions.ordering.QuestionOrdering;
+import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.questions.QuestionRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,20 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public Page<QuestionResponse> getByQuestiontype(String requestId, String questionType, int page, int size, String sortBy, String sortDirection)
+    public QuestionResponse getById(String requestId, String questionId)
+    {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow( ()-> new DataNotFoundException("Cannot find question with ID " + questionId) );
+
+        QuestionResponse response = modelMapper.map(question, QuestionResponse.class);
+        if (question.getLesson() != null ) response.setLessonId(question.getLesson().getId());
+        if (question.getGrammarSection() != null ) response.setGrammarSectionId(question.getGrammarSection().getId());
+
+        return response;
+    }
+
+    @Override
+    public Page<QuestionResponse> getByQuestionType(String requestId, String questionType, int page, int size, String sortBy, String sortDirection)
     {
         try {
 

@@ -21,6 +21,7 @@ public class Constants {
     public static final String MATCHING_PAIR = "/matching_pair";
     public static final String MULTIPLE_CHOICE = "/multiple_choice";
     public static final String ORDERING_PART = "/ordering_part";
+    public static final String KNOWLEDGE = "/knowledge";
     public static final String LANGUAGE = "/languages";
     public static final String GRAMMAR = "/grammars";
     public static final String GRAMMAR_SECTION = "/grammar_sections";

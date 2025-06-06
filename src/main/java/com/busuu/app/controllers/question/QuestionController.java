@@ -102,7 +102,7 @@ public class QuestionController {
                 requestId = UUID.randomUUID().toString();
             }
 
-            Page<QuestionResponse> questionResponses = questionService.getByQuestiontype(requestId, questionType, page, size, sortBy, sortDirection);
+            Page<QuestionResponse> questionResponses = questionService.getByQuestionType(requestId, questionType, page, size, sortBy, sortDirection);
 
             Object responseData = PagingResponse.<QuestionResponse>builder()
                     .totalPages(questionResponses.getTotalPages())
@@ -120,7 +120,38 @@ public class QuestionController {
             );
 
         } catch (Exception e) {
-            log.error("Error when getting questions with lesson ID: " + e.getMessage());
+            log.error("Error when getting questions with question type: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
+    }
+
+    //This controller should be used for question with type KNOWLEDGE only, if use with other question type, it won't return the question's result
+    @GetMapping(Constants.KNOWLEDGE + Constants.PATH_PARAM_ID)
+    public ResponseEntity<Response> getQuestionKnowledgeById(@RequestParam(value = "req-id", required = false) String requestId,
+                                                          @PathVariable("id") String questionId) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            QuestionResponse questionResponses = questionService.getById(requestId, questionId);
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK)
+                            .data(questionResponses)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting questions with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())

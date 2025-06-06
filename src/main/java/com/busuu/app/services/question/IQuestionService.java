@@ -11,7 +11,9 @@ public interface IQuestionService {
 
     List<QuestionResponse> getByGrammarSectionId (String requestId, String grammarSectionId);
 
-    Page<QuestionResponse> getByQuestiontype (String requestId, String questionType, int page, int size, String sortBy, String sortDirection);
+    QuestionResponse getById(String requestId, String questionId);
+
+    Page<QuestionResponse> getByQuestionType (String requestId, String questionType, int page, int size, String sortBy, String sortDirection);
 
     void deleteByLessonId (String requestId, String lessonId);
 

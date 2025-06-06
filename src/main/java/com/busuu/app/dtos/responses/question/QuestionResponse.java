@@ -2,6 +2,7 @@ package com.busuu.app.dtos.responses.question;
 
 import com.busuu.app.dtos.responses.BaseResponse;
 import com.busuu.app.entities.questions.QuestionType;
+import com.busuu.app.entities.questions.ShowType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,9 @@ public class QuestionResponse extends BaseResponse {
 
     @JsonProperty("question_type")
     private QuestionType questionType;
+
+    @JsonProperty("show_type")
+    private ShowType showType;
 
     @JsonProperty("mark")
     private Integer mark;
