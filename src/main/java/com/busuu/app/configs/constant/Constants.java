@@ -15,6 +15,7 @@ public class Constants {
 
     public static final String QUESTION = "/questions";
     public static final String ANSWER = "/answers";
+    public static final String QUESTION_TYPE = "/{type}";
     public static final String FILL_BLANK = "/fill_blank";
     public static final String TRUE_FALSE = "/true_false";
     public static final String MATCHING_PAIR = "/matching_pair";

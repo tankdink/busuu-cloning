@@ -1,6 +1,9 @@
 package com.busuu.app.repositories.questions;
 
 import com.busuu.app.entities.questions.Question;
+import com.busuu.app.entities.questions.QuestionType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +17,8 @@ public interface QuestionRepository extends JpaRepository<Question, String> {
     List<Question> findByLessonId (String lessonId);
 
     List<Question> findByGrammarSectionId (String grammarSectionId);
+
+    Page<Question> findByQuestionType(QuestionType questionType, Pageable pageable);
 
     void deleteByLessonId (String lessonId);
 
