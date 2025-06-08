@@ -134,7 +134,7 @@ public class ProgressController {
         }
     }
 
-    @GetMapping()
+    @PostMapping()
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getObjectProgress(@RequestParam(value = "req-id", required = false) String requestId,
                                                          @RequestParam("object_name") String objectName,

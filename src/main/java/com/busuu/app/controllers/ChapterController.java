@@ -104,7 +104,6 @@ public class ChapterController
     public ResponseEntity<Response> getListChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                                    @RequestParam(value = "course_id",required = false) String courseId,
                                                    @RequestParam(value = "level_id",required = false) String levelId,
-
                                                    @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                    @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                    @RequestParam(value = "sort_by", defaultValue = "chapter_id", required = false) String sortBy,

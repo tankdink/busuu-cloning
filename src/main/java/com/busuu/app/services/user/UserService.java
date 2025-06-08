@@ -158,4 +158,17 @@ public class UserService implements IUserService {
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
     }
+
+    @Override
+    public UserResponse getUserById(String requestId, String userId) {
+        try {
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
+            return modelMapper.map(existingUser, UserResponse.class);
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get user by id, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_USER, requestId);
+        }
+    }
 }

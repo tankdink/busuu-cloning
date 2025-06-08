@@ -27,6 +27,7 @@ public class Constants {
     public static final String GRAMMAR_SECTION = "/grammar_sections";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
+    public static final String DETAILS = "/details";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
 
     public static final String PATH_PARAM_ID = "/{id}";

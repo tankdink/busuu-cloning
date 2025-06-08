@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,7 @@ public class UserController {
     private final IUserService userService;
     private final ITokenService tokenService;
     private final LocalizationUtils localizationUtils;
+    private final ModelMapper modelMapper;
 
     @PostMapping(value = Constants.REGISTER)
     public ResponseEntity<Response> register (@RequestParam(value = "req-id", required = false) String requestId,
@@ -169,6 +171,64 @@ public class UserController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .data(responseData)
+                            .status(HttpStatus.OK)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.DETAILS)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getDetailUserFromToken (@RequestParam(value = "req-id", required = false) String requestId,
+                                                            @RequestHeader("Authorization") String token) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            String extractToken = token.substring(7);
+
+            User user = userService.getUserDetailsFromToken(requestId, extractToken);
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(modelMapper.map(user, UserResponse.class))
+                            .status(HttpStatus.OK)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Response> getUserById (@RequestParam(value = "req-id", required = false) String requestId,
+                                                 @PathVariable("id") String userId) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            UserResponse userResponse = userService.getUserById(requestId, userId);
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(userResponse)
                             .status(HttpStatus.OK)
                             .build()
             );

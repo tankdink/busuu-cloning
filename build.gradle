@@ -74,6 +74,10 @@ dependencies {
 	// Commons IO
 	implementation 'commons-io:commons-io:2.16.1'
 
+	// Flyway
+	implementation("org.flywaydb:flyway-core:11.9.0")
+	implementation("org.flywaydb:flyway-mysql:11.9.0")
+
 }
 
 tasks.named('test') {

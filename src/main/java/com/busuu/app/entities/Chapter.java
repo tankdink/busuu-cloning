@@ -1,6 +1,7 @@
 package com.busuu.app.entities;
 
 import com.busuu.app.entities.progresses.ChapterProgress;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.modelmapper.config.Configuration;

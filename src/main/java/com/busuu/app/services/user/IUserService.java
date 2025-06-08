@@ -21,4 +21,6 @@ public interface IUserService {
     UserResponse updateUser (String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception;
 
     Page<UserResponse> getUsersByRole (String requestId, String roleName, int page, int size, String sortBy, String sortDirection);
+
+    UserResponse getUserById (String requestId, String userId);
 }

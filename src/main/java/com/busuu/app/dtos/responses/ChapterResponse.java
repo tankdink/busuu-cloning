@@ -19,8 +19,8 @@ public class ChapterResponse extends BaseResponse
     @JsonProperty("title")
     private String title;
 
-//    @JsonProperty("description")
-//    private String description;
+    @JsonProperty("description")
+    private String description;
 
     @JsonProperty("chapter_order")
     private Integer chapterOrder;

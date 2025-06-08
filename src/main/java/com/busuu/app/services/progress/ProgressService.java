@@ -245,69 +245,87 @@ public class ProgressService implements IProgressService {
             switch (objectName) {
                 case "COURSE" -> {
                     CourseProgress courseProgress = courseProgressRepository.findCourseProgressByIdAndUserId(objectId, userId);
-                    return ProgressResponse.builder()
-                            .id(courseProgress.getId())
-                            .isCompleted(courseProgress.getIsCompleted())
-                            .objectId(objectId)
-                            .objectName("Course Progress")
-                            .progress(courseProgress.getProgress())
-                            .userId(userId)
-                            .build();
+                    if (courseProgress != null) {
+                        return ProgressResponse.builder()
+                                .id(courseProgress.getId())
+                                .isCompleted(courseProgress.getIsCompleted())
+                                .objectId(objectId)
+                                .objectName("Course Progress")
+                                .progress(courseProgress.getProgress())
+                                .userId(userId)
+                                .build();
+                    }
+                    return null;
                 }
                 case "LEVEL" -> {
                     LevelProgress levelProgress = levelProgressRepository.findLevelProgressByIdAndUserId(objectId, userId);
-                    return ProgressResponse.builder()
-                            .id(levelProgress.getId())
-                            .isCompleted(levelProgress.getIsCompleted())
-                            .objectId(objectId)
-                            .objectName("Level Progress")
-                            .progress(levelProgress.getProgress())
-                            .userId(userId)
-                            .build();
+                    if (levelProgress != null) {
+                        return ProgressResponse.builder()
+                                .id(levelProgress.getId())
+                                .isCompleted(levelProgress.getIsCompleted())
+                                .objectId(objectId)
+                                .objectName("Level Progress")
+                                .progress(levelProgress.getProgress())
+                                .userId(userId)
+                                .build();
+                    }
+                    return null;
                 }
                 case "CHAPTER" -> {
                     ChapterProgress chapterProgress = chapterProgressRepository.findChapterProgressByIdAndUserId(objectId, userId);
-                    return ProgressResponse.builder()
-                            .id(chapterProgress.getId())
-                            .isCompleted(chapterProgress.getIsCompleted())
-                            .objectId(objectId)
-                            .objectName("Chapter Progress")
-                            .progress(chapterProgress.getProgress())
-                            .userId(userId)
-                            .build();
+                    if (chapterProgress != null) {
+                        return ProgressResponse.builder()
+                                .id(chapterProgress.getId())
+                                .isCompleted(chapterProgress.getIsCompleted())
+                                .objectId(objectId)
+                                .objectName("Chapter Progress")
+                                .progress(chapterProgress.getProgress())
+                                .userId(userId)
+                                .build();
+                    }
+                    return null;
                 }
                 case "LESSON" -> {
                     LessonProgress lessonProgress = lessonProgressRepository.findLessonProgressByIdAndUserId(objectId, userId);
-                    return ProgressResponse.builder()
-                            .id(lessonProgress.getId())
-                            .isCompleted(lessonProgress.getIsCompleted())
-                            .objectId(objectId)
-                            .objectName("Lesson Progress")
-                            .progress(lessonProgress.getProgress())
-                            .userId(userId)
-                            .build();
+                    if (lessonProgress != null) {
+                        return ProgressResponse.builder()
+                                .id(lessonProgress.getId())
+                                .isCompleted(lessonProgress.getIsCompleted())
+                                .objectId(objectId)
+                                .objectName("Lesson Progress")
+                                .progress(lessonProgress.getProgress())
+                                .userId(userId)
+                                .build();
+                    }
+                    return null;
                 }
                 case "GRAMMAR" -> {
                     GrammarProgress grammarProgress = grammarProgressRepository.findGrammarProgressByIdAndUserId(objectId, userId);
-                    return ProgressResponse.builder()
-                            .id(grammarProgress.getId())
-                            .isCompleted(grammarProgress.getIsCompleted())
-                            .objectId(objectId)
-                            .objectName("Grammar Progress")
-                            .progress(grammarProgress.getProgress())
-                            .userId(userId)
-                            .build();
+                    if (grammarProgress != null) {
+                        return ProgressResponse.builder()
+                                .id(grammarProgress.getId())
+                                .isCompleted(grammarProgress.getIsCompleted())
+                                .objectId(objectId)
+                                .objectName("Grammar Progress")
+                                .progress(grammarProgress.getProgress())
+                                .userId(userId)
+                                .build();
+                    }
+                    return null;
                 }
                 case "GRAMMAR_SECTION" -> {
                     GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findGrammarSectionProgressByIdAndUserId(objectId, userId);
-                    return ProgressResponse.builder()
-                            .id(grammarSectionProgress.getId())
-                            .isCompleted(grammarSectionProgress.getIsCompleted())
-                            .objectId(objectId)
-                            .objectName("Grammar Section Progress")
-                            .progress(grammarSectionProgress.getProgress())
-                            .userId(userId)
-                            .build();
+                    if (grammarSectionProgress != null) {
+                        return ProgressResponse.builder()
+                                .id(grammarSectionProgress.getId())
+                                .isCompleted(grammarSectionProgress.getIsCompleted())
+                                .objectId(objectId)
+                                .objectName("Grammar Section Progress")
+                                .progress(grammarSectionProgress.getProgress())
+                                .userId(userId)
+                                .build();
+                    }
+                    return null;
                 }
                 default -> throw new ExistDataException("Object name is not valid");
             }
