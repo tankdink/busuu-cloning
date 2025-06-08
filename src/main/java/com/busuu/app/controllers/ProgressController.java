@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class ProgressController {
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(Constants.COURSE)
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> upSertCourseProgress(@RequestParam(value = "req-id", required = false) String requestId,
                                                          @Valid @RequestBody CourseProgressDTO courseProgressRequest,
                                                          BindingResult result)
@@ -83,8 +84,8 @@ public class ProgressController {
     }
 
     @PostMapping(Constants.GRAMMAR)
-//    @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<Response> upSertCourseProgress(@RequestParam(value = "req-id", required = false) String requestId,
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Response> upSertGrammarProgress(@RequestParam(value = "req-id", required = false) String requestId,
                                                          @Valid @RequestBody GrammarProgressDTO grammarProgressRequest,
                                                          BindingResult result)
     {
@@ -133,8 +134,8 @@ public class ProgressController {
         }
     }
 
-    @PostMapping()
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping()
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getObjectProgress(@RequestParam(value = "req-id", required = false) String requestId,
                                                          @RequestParam("object_name") String objectName,
                                                          @Valid @RequestBody ProgressDTO progressRequest,

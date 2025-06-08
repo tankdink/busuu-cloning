@@ -91,7 +91,6 @@ public class QuestionController {
     @GetMapping(Constants.QUESTION_TYPE)
     public ResponseEntity<Response> getQuestionsByQuestionType(@RequestParam(value = "req-id", required = false) String requestId,
                                                                @PathVariable("type") String questionType,
-
                                                                @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                                @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                                @RequestParam(value = "sort_by", defaultValue = "default", required = false) String sortBy,
