@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Level {
+public class Level extends BaseEntity {
 
     @Id
     @Column(name = "level_id")
@@ -45,6 +45,7 @@ public class Level {
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrammarSection> grammarSections = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LevelProgress> levelProgresses;
 }

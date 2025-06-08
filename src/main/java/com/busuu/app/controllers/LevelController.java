@@ -2,6 +2,7 @@ package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.level.LevelDTO;
+import com.busuu.app.dtos.responses.LevelResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.entities.Level;
 import com.busuu.app.services.level.ILevelService;
@@ -43,7 +44,7 @@ public class LevelController
             }
 
             //Call add level service
-            Level addedLevel = levelService.insertLevel(requestId, newLevelDTO);
+            LevelResponse addedLevel = levelService.insertLevel(requestId, newLevelDTO);
 
             //Return response
             return ResponseEntity.ok().body(
@@ -93,7 +94,7 @@ public class LevelController
             else if (code != null && !code.isEmpty())
             {
                 //Call get level by code service
-                Level level = levelService.getLevelByCode(requestId, code);
+                LevelResponse level = levelService.getLevelByCode(requestId, code);
 
                 //Return response
                 return ResponseEntity.ok().body(
@@ -108,7 +109,7 @@ public class LevelController
             {
 
                 //Call get level by courseId
-                List<Level> levelList = levelService.getLevelsByCourseId(requestId, courseId);
+                List<LevelResponse> levelList = levelService.getLevelsByCourseId(requestId, courseId);
 
                 //Return response
                 return ResponseEntity.ok().body(
@@ -124,7 +125,7 @@ public class LevelController
             {
 
                 //Call get all level service
-                List<Level> levelList = levelService.getLevels(requestId);
+                List<LevelResponse> levelList = levelService.getLevels(requestId);
 
                 //Return response
                 return ResponseEntity.ok().body(
@@ -160,7 +161,7 @@ public class LevelController
             }
 
             //Call get level by ID service
-            Level gettedLevel = levelService.getLevel(requestId, levelId);
+            LevelResponse gettedLevel = levelService.getLevel(requestId, levelId);
 
             //Return response
             return ResponseEntity.ok().body(
@@ -196,7 +197,7 @@ public class LevelController
             }
 
             //Call update level by ID service
-            Level levelUpdated = levelService.updateLevel(requestId, levelId, infoUpdate);
+            LevelResponse levelUpdated = levelService.updateLevel(requestId, levelId, infoUpdate);
 
             //Return response
             return ResponseEntity.ok().body(

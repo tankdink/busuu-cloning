@@ -3,6 +3,7 @@ package com.busuu.app.services.level;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.level.LevelDTO;
+import com.busuu.app.dtos.responses.LevelResponse;
 import com.busuu.app.entities.CourseLevel;
 import com.busuu.app.entities.Level;
 import com.busuu.app.exceptions.DataNotFoundException;
@@ -33,7 +34,7 @@ public class LevelService implements ILevelService
 
     @Override
     @Transactional
-    public Level insertLevel(String requestId, LevelDTO levelDTO)
+    public LevelResponse insertLevel(String requestId, LevelDTO levelDTO)
     {
         try {
 
@@ -48,8 +49,9 @@ public class LevelService implements ILevelService
             newLevel.setId(UUID.randomUUID().toString());
 
             //Save and return new Level
-            return levelRepository.save(newLevel);
+            newLevel = levelRepository.save(newLevel);
 
+            return modelMapper.map(newLevel, LevelResponse.class);
         } catch (Exception e) {
             log.error("requestId="+requestId+", failed to create new level, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -59,12 +61,13 @@ public class LevelService implements ILevelService
     }
 
     @Override
-    public List<Level> getLevels(String requestId)
+    public List<LevelResponse> getLevels(String requestId)
     {
         try {
 
-            return levelRepository.findAll();
-
+            return levelRepository.findAll().stream().map(
+                    level -> modelMapper.map(level, LevelResponse.class
+                    )).toList();
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get level list, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -74,13 +77,14 @@ public class LevelService implements ILevelService
     }
 
     @Override
-    public Level getLevel(String requestId, String levelID)
+    public LevelResponse getLevel(String requestId, String levelID)
     {
         try {
 
-            return levelRepository.findById(levelID)
+            Level existingLevel = levelRepository.findById(levelID)
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + levelID) );
 
+            return modelMapper.map(existingLevel, LevelResponse.class);
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get level with ID " +  levelID + ", err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -89,16 +93,20 @@ public class LevelService implements ILevelService
     }
 
     @Override
-    public List<Level> getLevelsByCourseId(String requestId, String courseId)
+    public List<LevelResponse> getLevelsByCourseId(String requestId, String courseId)
     {
         try {
 
             //Get Course - Level list
             //Get each level entity then collect to list
             //Return
-            return (courseLevelRepository.findByCourseIdWithSortingLevel(courseId).stream()
+            List<Level> levels = (courseLevelRepository.findByCourseIdWithSortingLevel(courseId).stream()
                     .map(CourseLevel::getLevel)
-                    .collect(Collectors.toList()));
+                    .toList());
+
+            return levels.stream().map(
+                    level -> modelMapper.map(level, LevelResponse.class)
+            ).toList();
 
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get level with courseId " +  courseId + ", err="+e.getMessage());
@@ -109,7 +117,7 @@ public class LevelService implements ILevelService
 
     @Override
     @Transactional
-    public Level updateLevel(String requestId, String levelID, LevelDTO infoUpdateLevel)
+    public LevelResponse updateLevel(String requestId, String levelID, LevelDTO infoUpdateLevel)
     {
 
         try {
@@ -131,8 +139,9 @@ public class LevelService implements ILevelService
             modelMapper.map(infoUpdateLevel, existingLevel);
 
             //Save and return
-            return levelRepository.save(existingLevel);
+            existingLevel = levelRepository.save(existingLevel);
 
+            return modelMapper.map(existingLevel, LevelResponse.class);
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to update level with ID " +  levelID + ", err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -160,9 +169,9 @@ public class LevelService implements ILevelService
     }
 
     @Override
-    public Level getLevelByCode(String requestId, String code) {
+    public LevelResponse getLevelByCode(String requestId, String code) {
         try {
-            return levelRepository.findByCode(code);
+            return modelMapper.map(levelRepository.findByCode(code), LevelResponse.class);
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to delete level with code " +  code + ", err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
