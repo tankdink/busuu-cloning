@@ -109,8 +109,16 @@ public class GrammarService implements IGrammarService
     {
         try {
 
-            //Pageable
-            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            //Paging
+            Sort sort;
+            if (sortBy.equals("default"))
+            {
+                sort = Sort.by(
+                        Sort.Order.by("languageId").with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("grammarOrder").with(Sort.Direction.fromString(sortDirection))
+                );
+            }
+            else { sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection))); }
             Pageable pageable = PageRequest.of(page, size, sort);
 
             //Get all, mapping and return
@@ -155,16 +163,20 @@ public class GrammarService implements IGrammarService
     }
 
     @Override
-    public List<GrammarResponse> getByLanguageId(String requestId, String languageID)
+    public Page<GrammarResponse> getByLanguageId(String requestId, String languageID, int page, int size, String sortBy, String sortDirection)
     {
         try {
 
-            List<Grammar> gettedGrammarList = grammarRepository.findByLanguageId(languageID);
+            //Paging
+            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            Page<Grammar> gettedGrammarList = grammarRepository.findByLanguageId(languageID, pageable);
             if (gettedGrammarList.isEmpty()) throw new DataNotFoundException("No grammar found with languageID " + languageID);
 
 
             //Return
-            return (gettedGrammarList.stream()
+            return (gettedGrammarList
                     .map(grammar ->
                     {
                         GrammarResponse response = modelMapper.map(grammar, GrammarResponse.class);
@@ -172,8 +184,7 @@ public class GrammarService implements IGrammarService
                         response.setLanguageId(grammar.getLanguage().getId());
 
                         return response;
-                    })
-                    .collect(Collectors.toList()));
+                    }));
 
 
         } catch (Exception e) {

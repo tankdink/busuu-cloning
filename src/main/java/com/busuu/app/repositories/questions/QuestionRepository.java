@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, String> {
 
-    List<Question> findByLessonId (String lessonId);
+    Page<Question> findByLessonId (String lessonId, Pageable pageable);
 
-    List<Question> findByGrammarSectionId (String grammarSectionId);
+    Page<Question> findByGrammarSectionId (String grammarSectionId, Pageable pageable);
 
     Page<Question> findByQuestionType(QuestionType questionType, Pageable pageable);
 

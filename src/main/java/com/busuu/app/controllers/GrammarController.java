@@ -92,7 +92,7 @@ public class GrammarController
 
                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                @RequestParam(value = "sort_by", defaultValue = "grammarOrder", required = false) String sortBy,
+                                                @RequestParam(value = "sort_by", defaultValue = "default", required = false) String sortBy,
                                                 @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
     {
 
@@ -167,7 +167,13 @@ public class GrammarController
 
     @GetMapping(Constants.LANGUAGE + Constants.PATH_PARAM_ID)
     public ResponseEntity<Response> getByLanguageId(@RequestParam(value = "req-id", required = false) String requestId,
-                                                    @PathVariable("id") String languageId)
+                                                    @PathVariable("id") String languageId,
+
+                                                    @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                    @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                    @RequestParam(value = "sort_by", defaultValue = "grammarOrder", required = false) String sortBy,
+                                                    @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
+
     {
 
         try {
@@ -177,14 +183,20 @@ public class GrammarController
             }
 
             //Call get chapter by ID service
-            List<GrammarResponse> gettedGrammarList = grammarService.getByLanguageId(requestId, languageId);
+            Page<GrammarResponse> gettedGrammarList = grammarService.getByLanguageId(requestId, languageId, page, size, sortBy, sortDirection);
+
+            Object responseData = PagingResponse.<GrammarResponse>builder()
+                    .totalPages(gettedGrammarList.getTotalPages())
+                    .objects(gettedGrammarList.getContent())
+                    .totalObjects(gettedGrammarList.getTotalElements())
+                    .build();
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(gettedGrammarList)
+                            .data(responseData)
                             .build()
             );
 

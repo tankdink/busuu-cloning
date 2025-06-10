@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface IQuestionService {
 
-    List<QuestionResponse> getByLessonId (String requestId, String lessonId);
+    Page<QuestionResponse> getByLessonId (String requestId, String lessonId, int page, int size, String sortBy, String sortDirection);
 
-    List<QuestionResponse> getByGrammarSectionId (String requestId, String grammarSectionId);
+    Page<QuestionResponse> getByGrammarSectionId (String requestId, String grammarSectionId, int page, int size, String sortBy, String sortDirection);
 
     QuestionResponse getById(String requestId, String questionId);
 

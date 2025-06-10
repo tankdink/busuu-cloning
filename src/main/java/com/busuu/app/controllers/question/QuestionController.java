@@ -30,20 +30,32 @@ public class QuestionController {
 
     @GetMapping(Constants.LESSON + Constants.PATH_PARAM_ID)
     public ResponseEntity<Response> getQuestionsByLesson (@RequestParam(value = "req-id", required = false) String requestId,
-                                                          @PathVariable("id") String lessonId) {
+                                                          @PathVariable("id") String lessonId,
+
+                                                          @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                          @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                          @RequestParam(value = "sort_by", defaultValue = "default", required = false) String sortBy,
+                                                          @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
+    {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-           List<QuestionResponse> questionResponses = questionService.getByLessonId(requestId, lessonId);
+           Page<QuestionResponse> questionResponses = questionService.getByLessonId(requestId, lessonId, page, size, sortBy, sortDirection);
+
+            Object responseData = PagingResponse.<QuestionResponse>builder()
+                    .totalPages(questionResponses.getTotalPages())
+                    .objects(questionResponses.getContent())
+                    .totalObjects(questionResponses.getTotalElements())
+                    .build();
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(questionResponses)
+                            .data(responseData)
                             .build()
             );
 
@@ -60,20 +72,32 @@ public class QuestionController {
 
     @GetMapping(Constants.GRAMMAR_SECTION + Constants.PATH_PARAM_ID)
     public ResponseEntity<Response> getQuestionsByGrammarSection (@RequestParam(value = "req-id", required = false) String requestId,
-                                                                  @PathVariable("id") String grammarSectionId) {
+                                                                  @PathVariable("id") String grammarSectionId,
+
+                                                                  @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                                  @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                                  @RequestParam(value = "sort_by", defaultValue = "default", required = false) String sortBy,
+                                                                  @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
+    {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            List<QuestionResponse> questionResponses = questionService.getByGrammarSectionId(requestId, grammarSectionId);
+            Page<QuestionResponse> questionResponses = questionService.getByGrammarSectionId(requestId, grammarSectionId, page, size, sortBy, sortDirection);
+            Object responseData = PagingResponse.<QuestionResponse>builder()
+                    .totalPages(questionResponses.getTotalPages())
+                    .objects(questionResponses.getContent())
+                    .totalObjects(questionResponses.getTotalElements())
+                    .build();
+
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK)
-                            .data(questionResponses)
+                            .data(responseData)
                             .build()
             );
 

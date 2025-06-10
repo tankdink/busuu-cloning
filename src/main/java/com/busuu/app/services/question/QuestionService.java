@@ -38,9 +38,22 @@ public class QuestionService implements IQuestionService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<QuestionResponse> getByLessonId(String requestId, String lessonId) {
+    public Page<QuestionResponse> getByLessonId(String requestId, String lessonId, int page, int size, String sortBy, String sortDirection) {
         try {
-            List<Question> questions = questionRepository.findByLessonId(lessonId);
+
+            //Pageable
+            Sort sort;
+            if (sortBy.equals("default"))
+            {
+                sort = Sort.by(
+                        Sort.Order.by("grammarSectionId").with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("lessonId").with(Sort.Direction.fromString(sortDirection))
+                );
+            }
+            else { sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection))); }
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            Page<Question> questions = questionRepository.findByLessonId(lessonId, pageable);
             return convertQuestionResponse(questions);
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get questions by lesson id, err="+e.getMessage());
@@ -50,9 +63,22 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public List<QuestionResponse> getByGrammarSectionId(String requestId, String grammarSectionId) {
+    public Page<QuestionResponse> getByGrammarSectionId(String requestId, String grammarSectionId, int page, int size, String sortBy, String sortDirection) {
         try {
-            List<Question> questions = questionRepository.findByGrammarSectionId(grammarSectionId);
+
+            //Pageable
+            Sort sort;
+            if (sortBy.equals("default"))
+            {
+                sort = Sort.by(
+                        Sort.Order.by("grammarSectionId").with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("lessonId").with(Sort.Direction.fromString(sortDirection))
+                );
+            }
+            else { sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection))); }
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            Page<Question> questions = questionRepository.findByGrammarSectionId(grammarSectionId, pageable);
             return convertQuestionResponse(questions);
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get questions by grammar section id, err="+e.getMessage());
