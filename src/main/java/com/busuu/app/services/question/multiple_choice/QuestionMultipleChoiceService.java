@@ -2,6 +2,7 @@ package com.busuu.app.services.question.multiple_choice;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.questions.QuestionDTO;
+import com.busuu.app.dtos.requests.questions.multiple_choice.QuestionMultipleChoiceDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.question.multiple_choice.MultipleChoiceOptionResponse;
 import com.busuu.app.dtos.responses.question.multiple_choice.QuestionMultipleChoiceResponse;
@@ -37,11 +38,12 @@ public class QuestionMultipleChoiceService implements IQuestionMultipleChoiceSer
     private final LessonRepository lessonRepository;
     private final GrammarSectionRepository grammarSectionRepository;
     private final IUploadCloudinaryService uploadCloudinaryService;
+    private final IMultipleChoiceOptionService multipleChoiceOptionService;
     private final ModelMapper modelMapper;
 
     @Override
     @Transactional
-    public QuestionMultipleChoiceResponse insertQuestion(String requestId, QuestionDTO questionDTO) {
+    public QuestionMultipleChoiceResponse insertQuestion(String requestId, QuestionMultipleChoiceDTO questionDTO) {
         try {
             Lesson existingLesson = questionDTO.getLessonId() != null ?
                     lessonRepository.findById(questionDTO.getLessonId()).orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID = " + questionDTO.getLessonId()))
@@ -75,10 +77,19 @@ public class QuestionMultipleChoiceService implements IQuestionMultipleChoiceSer
 
             question = questionMultipleChoiceRepository.save(question);
 
+            // Save ans
+            QuestionMultipleChoice finalQuestion = question;
+            List<MultipleChoiceOptionResponse> options = questionDTO.getOptions().stream().map(
+                    option -> {
+                       option.setQuestionMultipleChoiceId(finalQuestion.getId());
+                       return multipleChoiceOptionService.insertMultipleChoiceOption(requestId, option);
+                    }
+            ).toList();
+
             QuestionMultipleChoiceResponse response = modelMapper.map(question, QuestionMultipleChoiceResponse.class);
             response.setLessonId(question.getLesson() != null ? question.getLesson().getId() : null);
             response.setGrammarSectionId(question.getGrammarSection() != null ? question.getGrammarSection().getId() : null);
-
+            response.setOptions(options);
             return response;
         } catch (Exception e) {
             log.error("requestId="+requestId+", failed to create question multiple choice, err="+e.getMessage());

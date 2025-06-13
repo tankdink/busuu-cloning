@@ -2,6 +2,7 @@ package com.busuu.app.controllers.question.multiple_choice;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.questions.QuestionDTO;
+import com.busuu.app.dtos.requests.questions.multiple_choice.QuestionMultipleChoiceDTO;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.question.multiple_choice.QuestionMultipleChoiceResponse;
 import com.busuu.app.services.question.multiple_choice.IQuestionMultipleChoiceService;
@@ -31,7 +32,7 @@ public class QuestionMultipleChoiceController {
     @PostMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertQuestion (@RequestParam(value = "req-id", required = false) String requestId,
-                                                    @Valid @ModelAttribute QuestionDTO questionDTO,
+                                                    @Valid @ModelAttribute QuestionMultipleChoiceDTO questionDTO,
                                                     BindingResult result) {
         try {
             if (requestId == null || requestId.isEmpty()) {
@@ -104,7 +105,7 @@ public class QuestionMultipleChoiceController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateQuest (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String questionId,
-                                                 @Valid @ModelAttribute QuestionDTO questionDTO,
+                                                 @Valid @ModelAttribute QuestionMultipleChoiceDTO questionDTO,
                                                  BindingResult result) {
         try {
             if (requestId == null || requestId.isEmpty()) {

@@ -1,12 +1,14 @@
 package com.busuu.app.controllers.question;
 
 import com.busuu.app.configs.constant.Constants;
+import com.busuu.app.dtos.requests.questions.QuestionDTO;
 import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.question.QuestionResponse;
 import com.busuu.app.services.question.IQuestionService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +35,6 @@ public class QuestionController {
     @GetMapping(Constants.LESSON + Constants.PATH_PARAM_ID)
     public ResponseEntity<Response> getQuestionsByLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                           @PathVariable("id") String lessonId,
-
                                                           @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                           @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                           @RequestParam(value = "sort_by", defaultValue = "default", required = false) String sortBy,

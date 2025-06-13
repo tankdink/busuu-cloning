@@ -4,6 +4,7 @@ import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.User;
+import com.busuu.app.exceptions.DataNotFoundException;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -23,4 +24,8 @@ public interface IUserService {
     Page<UserResponse> getUsersByRole (String requestId, String roleName, int page, int size, String sortBy, String sortDirection);
 
     UserResponse getUserById (String requestId, String userId);
+
+    int generateOTP(String email) throws DataNotFoundException;
+
+    int activeAccount(String email, String activeCode) throws DataNotFoundException;
 }

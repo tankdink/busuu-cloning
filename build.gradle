@@ -78,6 +78,9 @@ dependencies {
 	implementation("org.flywaydb:flyway-core:11.9.0")
 	implementation("org.flywaydb:flyway-mysql:11.9.0")
 
+	// Mail
+	implementation("org.springframework.boot:spring-boot-starter-mail:3.5.0")
+
 }
 
 tasks.named('test') {

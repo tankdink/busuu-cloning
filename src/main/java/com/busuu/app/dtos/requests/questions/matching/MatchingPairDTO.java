@@ -29,6 +29,5 @@ public class MatchingPairDTO {
     private Integer partOrder;
 
     @JsonProperty("question_matching_id")
-    @NotBlank(message = "Question matching ID cannot be empty")
     private String questionMatchingId;
 }

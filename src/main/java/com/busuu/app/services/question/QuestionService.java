@@ -1,6 +1,12 @@
 package com.busuu.app.services.question;
 
 import com.busuu.app.configs.constant.Constants;
+import com.busuu.app.dtos.requests.questions.QuestionDTO;
+import com.busuu.app.dtos.requests.questions.QuestionFillBlankDTO;
+import com.busuu.app.dtos.requests.questions.QuestionTrueFalseDTO;
+import com.busuu.app.dtos.requests.questions.matching.QuestionMatchingDTO;
+import com.busuu.app.dtos.requests.questions.multiple_choice.QuestionMultipleChoiceDTO;
+import com.busuu.app.dtos.requests.questions.ordering.QuestionOrderingDTO;
 import com.busuu.app.dtos.responses.question.QuestionFillBlankResponse;
 import com.busuu.app.dtos.responses.question.QuestionResponse;
 import com.busuu.app.dtos.responses.question.QuestionTrueFalseResponse;
@@ -17,6 +23,11 @@ import com.busuu.app.entities.questions.ordering.QuestionOrdering;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.questions.QuestionRepository;
+import com.busuu.app.services.question.fill_blank.IQuestionFillBlankService;
+import com.busuu.app.services.question.matching.IQuestionMatchingService;
+import com.busuu.app.services.question.multiple_choice.IQuestionMultipleChoiceService;
+import com.busuu.app.services.question.ordering.IQuestionOrderingService;
+import com.busuu.app.services.question.true_false.IQuestionTrueFalseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -35,7 +46,9 @@ import java.util.List;
 @Slf4j
 public class QuestionService implements IQuestionService {
     private final QuestionRepository questionRepository;
+
     private final ModelMapper modelMapper;
+
 
     @Override
     public Page<QuestionResponse> getByLessonId(String requestId, String lessonId, int page, int size, String sortBy, String sortDirection) {

@@ -13,6 +13,7 @@ import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.PermissionDenyException;
 import com.busuu.app.repositories.RoleRepository;
 import com.busuu.app.repositories.UserRepository;
+import com.busuu.app.services.email.IEmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,6 +45,7 @@ public class UserService implements IUserService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper modelMapper;
+    private final IEmailService emailService;
 
     @Override
     @Transactional
@@ -78,13 +81,13 @@ public class UserService implements IUserService {
 
             // Active code to active account
             newUser.setActiveCode(UUID.randomUUID().toString());
-            newUser.setActive(true);
+            newUser.setActive(false);
 
             // Save new user to db
             userRepository.save(newUser);
 
             // Send email active account here!
-
+            emailService.sendEmailActive(newUser.getEmail(), newUser.getActiveCode());
             return modelMapper.map(newUser, UserResponse.class);
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to register user, err="+e.getMessage());
@@ -169,6 +172,44 @@ public class UserService implements IUserService {
             log.error("requestId="+requestId+",failed to get user by id, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public int activeAccount(String email, String activeCode) throws DataNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + email));
+
+        if (user.isActive()) {
+            return 1;
+        }
+
+        if (activeCode.equals(user.getActiveCode())) {
+            user.setActive(true);
+            userRepository.save(user);
+            return 2;
+        }
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int generateOTP(String email) throws DataNotFoundException {
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + email));
+        if (existingUser.getOtp() != null) {
+            existingUser.setOtp(null);
+            userRepository.save(existingUser);
+            return 1;
+        }
+        else {
+            SecureRandom random = new SecureRandom();
+            int otp = 100000 + random.nextInt(900000);
+            existingUser.setOtp(String.valueOf(otp));
+            emailService.sendEmailForgotPassword(existingUser.getEmail(), String.valueOf(otp));
+            userRepository.save(existingUser);
+            return 2;
         }
     }
 }

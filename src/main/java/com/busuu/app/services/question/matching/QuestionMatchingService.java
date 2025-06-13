@@ -2,6 +2,7 @@ package com.busuu.app.services.question.matching;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.questions.QuestionDTO;
+import com.busuu.app.dtos.requests.questions.matching.QuestionMatchingDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.question.matching.MatchingPairResponse;
 import com.busuu.app.dtos.responses.question.matching.QuestionMatchingResponse;
@@ -38,11 +39,12 @@ public class QuestionMatchingService implements IQuestionMatchingService {
     private final LessonRepository lessonRepository;
     private final GrammarSectionRepository grammarSectionRepository;
     private final IUploadCloudinaryService uploadCloudinaryService;
+    private final IMatchingPairService matchingPairService;
     private final ModelMapper modelMapper;
 
     @Override
     @Transactional
-    public QuestionMatchingResponse insertQuestion(String requestId, QuestionDTO questionDTO) {
+    public QuestionMatchingResponse insertQuestion(String requestId, QuestionMatchingDTO questionDTO) {
         try {
             Lesson existingLesson = questionDTO.getLessonId() != null ?
                     lessonRepository.findById(questionDTO.getLessonId()).orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID = " + questionDTO.getLessonId()))
@@ -76,10 +78,19 @@ public class QuestionMatchingService implements IQuestionMatchingService {
 
             question = questionMatchingRepository.save(question);
 
+            // Save ans
+            QuestionMatching finalQuestion = question;
+            List<MatchingPairResponse> pairs = questionDTO.getPairs().stream().map(
+                    pair -> {
+                       pair.setQuestionMatchingId(finalQuestion.getId());
+                       return matchingPairService.insertMatchingPair(requestId, pair);
+                    }
+            ).toList();
+
             QuestionMatchingResponse response = modelMapper.map(question, QuestionMatchingResponse.class);
             response.setLessonId(question.getLesson() != null ? question.getLesson().getId() : null);
             response.setGrammarSectionId(question.getGrammarSection() != null ? question.getGrammarSection().getId() : null);
-
+            response.setPairs(pairs);
             return response;
         } catch (Exception e) {
             log.error("requestId="+requestId+", failed to create question matching, err="+e.getMessage());

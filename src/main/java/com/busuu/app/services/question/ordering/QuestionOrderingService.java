@@ -2,6 +2,7 @@ package com.busuu.app.services.question.ordering;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.questions.QuestionFillBlankDTO;
+import com.busuu.app.dtos.requests.questions.ordering.QuestionOrderingDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.question.ordering.OrderingPartResponse;
 import com.busuu.app.dtos.responses.question.ordering.QuestionOrderingResponse;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,11 +39,12 @@ public class QuestionOrderingService implements IQuestionOrderingService {
     private final LessonRepository lessonRepository;
     private final GrammarSectionRepository grammarSectionRepository;
     private final IUploadCloudinaryService uploadCloudinaryService;
+    private final IOrderingPartService orderingPartService;
     private final ModelMapper modelMapper;
 
     @Override
     @Transactional
-    public QuestionOrderingResponse insertQuestion(String requestId, QuestionFillBlankDTO questionDTO) {
+    public QuestionOrderingResponse insertQuestion(String requestId, QuestionOrderingDTO questionDTO) {
         try {
             Lesson existingLesson = questionDTO.getLessonId() != null ?
                     lessonRepository.findById(questionDTO.getLessonId()).orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID = " + questionDTO.getLessonId()))
@@ -75,10 +78,19 @@ public class QuestionOrderingService implements IQuestionOrderingService {
 
             question = questionOrderingRepository.save(question);
 
+            // Save ans
+            QuestionOrdering finalQuestion = question;
+            List<OrderingPartResponse> parts = questionDTO.getParts().stream().map(
+                    part -> {
+                        part.setQuestionOrderingId(finalQuestion.getId());
+                        return orderingPartService.insertOrderingPart(requestId, part);
+                    }
+            ).toList();
+
             QuestionOrderingResponse response = modelMapper.map(question, QuestionOrderingResponse.class);
             response.setLessonId(question.getLesson() != null ? question.getLesson().getId() : null);
             response.setGrammarSectionId(question.getGrammarSection() != null ? question.getGrammarSection().getId() : null);
-
+            response.setParts(parts);
             return response;
         } catch (Exception e) {
             log.error("requestId="+requestId+", failed to create question ordering, err="+e.getMessage());
@@ -116,7 +128,7 @@ public class QuestionOrderingService implements IQuestionOrderingService {
 
     @Override
     @Transactional
-    public QuestionOrderingResponse updateQuestion(String requestId, String questionId, QuestionFillBlankDTO questionDTO) {
+    public QuestionOrderingResponse updateQuestion(String requestId, String questionId, QuestionOrderingDTO questionDTO) {
         try {
 
             QuestionOrdering existingQuestion = questionOrderingRepository.findById(questionId)

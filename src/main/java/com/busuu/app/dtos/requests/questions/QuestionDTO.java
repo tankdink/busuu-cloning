@@ -1,5 +1,8 @@
 package com.busuu.app.dtos.requests.questions;
 
+import com.busuu.app.dtos.requests.questions.matching.QuestionMatchingDTO;
+import com.busuu.app.dtos.requests.questions.multiple_choice.QuestionMultipleChoiceDTO;
+import com.busuu.app.dtos.requests.questions.ordering.QuestionOrderingDTO;
 import com.busuu.app.entities.questions.QuestionType;
 import com.busuu.app.entities.questions.ShowType;
 import com.busuu.app.entities.questions.multiple_choice.QuestionMultipleChoice;
@@ -21,9 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = QuestionTrueFalseDTO.class, name = "TRUE_FALSE"),
         @JsonSubTypes.Type(value = QuestionFillBlankDTO.class, name = "FILL_BLANK"),
-//        @JsonSubTypes.Type(value = QuestionMultiChoiceDTO.class, name = "MULTI_CHOICE"),
-//        @JsonSubTypes.Type(value = QuestionOrderingDTO.class, name = "ORDERING"),
-//        @JsonSubTypes.Type(value = QuestionMatchingDTO.class, name = "MATCHING"),
+        @JsonSubTypes.Type(value = QuestionMultipleChoiceDTO.class, name = "MULTI_CHOICE"),
+        @JsonSubTypes.Type(value = QuestionOrderingDTO.class, name = "ORDERING"),
+        @JsonSubTypes.Type(value = QuestionMatchingDTO.class, name = "MATCHING"),
 })
 public class QuestionDTO {
 

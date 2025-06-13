@@ -29,6 +29,5 @@ public class MultipleChoiceOptionDTO {
     private Integer optionOrder;
 
     @JsonProperty("question_multiple_choice_id")
-    @NotBlank(message = "Question multiple choice ID cannot be empty")
     private String questionMultipleChoiceId;
 }

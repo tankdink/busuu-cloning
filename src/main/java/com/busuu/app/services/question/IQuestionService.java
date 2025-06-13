@@ -1,5 +1,6 @@
 package com.busuu.app.services.question;
 
+import com.busuu.app.dtos.requests.questions.QuestionDTO;
 import com.busuu.app.dtos.responses.question.QuestionResponse;
 import org.springframework.data.domain.Page;
 

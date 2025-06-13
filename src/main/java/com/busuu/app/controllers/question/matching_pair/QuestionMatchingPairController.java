@@ -2,6 +2,7 @@ package com.busuu.app.controllers.question.matching_pair;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.questions.QuestionDTO;
+import com.busuu.app.dtos.requests.questions.matching.QuestionMatchingDTO;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.question.matching.QuestionMatchingResponse;
 import com.busuu.app.services.question.matching.IQuestionMatchingService;
@@ -31,7 +32,7 @@ public class QuestionMatchingPairController {
     @PostMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertQuestion (@RequestParam(value = "req-id", required = false) String requestId,
-                                                    @Valid @ModelAttribute QuestionDTO questionDTO,
+                                                    @Valid @ModelAttribute QuestionMatchingDTO questionDTO,
                                                     BindingResult result) {
         try {
             if (requestId == null || requestId.isEmpty()) {
@@ -104,7 +105,7 @@ public class QuestionMatchingPairController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateQuest (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String questionId,
-                                                 @Valid @ModelAttribute QuestionDTO questionDTO,
+                                                 @Valid @ModelAttribute QuestionMatchingDTO questionDTO,
                                                  BindingResult result) {
         try {
             if (requestId == null || requestId.isEmpty()) {

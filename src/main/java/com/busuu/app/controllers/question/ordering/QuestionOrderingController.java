@@ -3,6 +3,7 @@ package com.busuu.app.controllers.question.ordering;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.questions.QuestionDTO;
 import com.busuu.app.dtos.requests.questions.QuestionFillBlankDTO;
+import com.busuu.app.dtos.requests.questions.ordering.QuestionOrderingDTO;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.question.ordering.QuestionOrderingResponse;
 import com.busuu.app.services.question.ordering.IQuestionOrderingService;
@@ -32,7 +33,7 @@ public class QuestionOrderingController {
     @PostMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertQuestion (@RequestParam(value = "req-id", required = false) String requestId,
-                                                    @Valid @ModelAttribute QuestionFillBlankDTO questionDTO,
+                                                    @Valid @ModelAttribute QuestionOrderingDTO questionDTO,
                                                     BindingResult result) {
         try {
             if (requestId == null || requestId.isEmpty()) {
@@ -105,7 +106,7 @@ public class QuestionOrderingController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateQuest (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String questionId,
-                                                 @Valid @ModelAttribute QuestionFillBlankDTO questionDTO,
+                                                 @Valid @ModelAttribute QuestionOrderingDTO questionDTO,
                                                  BindingResult result) {
         try {
             if (requestId == null || requestId.isEmpty()) {

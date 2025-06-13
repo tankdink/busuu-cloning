@@ -30,6 +30,5 @@ public class OrderingPartDTO {
     private Integer partOrder;
 
     @JsonProperty("question_ordering_id")
-    @NotBlank(message = "Question ordering ID cannot be empty")
     private String questionOrderingId;
 }

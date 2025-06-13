@@ -1,13 +1,14 @@
 package com.busuu.app.services.question.multiple_choice;
 
 import com.busuu.app.dtos.requests.questions.QuestionDTO;
+import com.busuu.app.dtos.requests.questions.multiple_choice.QuestionMultipleChoiceDTO;
 import com.busuu.app.dtos.responses.question.multiple_choice.QuestionMultipleChoiceResponse;
 
 import java.util.List;
 
 public interface IQuestionMultipleChoiceService {
 
-    QuestionMultipleChoiceResponse insertQuestion (String requestId, QuestionDTO questionDTO);
+    QuestionMultipleChoiceResponse insertQuestion (String requestId, QuestionMultipleChoiceDTO questionDTO);
 
     QuestionMultipleChoiceResponse getQuestion (String requestId, String questionId);
 
