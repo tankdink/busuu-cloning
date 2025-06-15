@@ -161,21 +161,45 @@ public class QuestionMultipleChoiceService implements IQuestionMultipleChoiceSer
             modelMapper.map(questionDTO, existingQuestion);
 
             if (questionDTO.getImage() != null) {
-                CloudinaryResponse cloudinaryResponse = uploadMedia(questionDTO.getImage(), "image");
-                existingQuestion.setImageUrl(cloudinaryResponse.getUrl());
-                existingQuestion.setImageName(cloudinaryResponse.getPublicId());
+                boolean isRemove = true;
+                if (existingQuestion.getImageName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingQuestion.getImageName());
+                }
+                if (isRemove) {
+                    CloudinaryResponse cloudinaryResponse = uploadMedia(questionDTO.getImage(), "image");
+                    if (cloudinaryResponse != null) {
+                        existingQuestion.setImageUrl(cloudinaryResponse.getUrl());
+                        existingQuestion.setImageName(cloudinaryResponse.getPublicId());
+                    }
+                }
             }
 
             if (questionDTO.getVideo() != null) {
-                CloudinaryResponse cloudinaryResponse = uploadMedia(questionDTO.getVideo(), "video");
-                existingQuestion.setVideoUrl(cloudinaryResponse.getUrl());
-                existingQuestion.setVideoName(cloudinaryResponse.getPublicId());
+                boolean isRemove = true;
+                if (existingQuestion.getVideoName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingQuestion.getVideoName());
+                }
+                if (isRemove) {
+                    CloudinaryResponse cloudinaryResponse = uploadMedia(questionDTO.getVideo(), "video");
+                    if (cloudinaryResponse != null) {
+                        existingQuestion.setVideoUrl(cloudinaryResponse.getUrl());
+                        existingQuestion.setVideoName(cloudinaryResponse.getPublicId());
+                    }
+                }
             }
 
             if (questionDTO.getAudio() != null) {
-                CloudinaryResponse cloudinaryResponse = uploadMedia(questionDTO.getAudio(), "audio");
-                existingQuestion.setAudioUrl(cloudinaryResponse.getUrl());
-                existingQuestion.setAudioName(cloudinaryResponse.getPublicId());
+                boolean isRemove = true;
+                if (existingQuestion.getAudioName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingQuestion.getAudioName());
+                }
+                if (isRemove) {
+                    CloudinaryResponse cloudinaryResponse = uploadMedia(questionDTO.getAudio(), "audio");
+                    if (cloudinaryResponse != null) {
+                        existingQuestion.setAudioUrl(cloudinaryResponse.getUrl());
+                        existingQuestion.setAudioName(cloudinaryResponse.getPublicId());
+                    }
+                }
             }
 
             // Handle ans

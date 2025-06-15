@@ -136,21 +136,45 @@ public class QuestionTrueFalseService implements IQuestionTrueFalseService {
             modelMapper.map(questionTrueFalseDTO, existingQuestion);
 
             if (questionTrueFalseDTO.getImage() != null) {
-                CloudinaryResponse cloudinaryResponse = uploadMedia(questionTrueFalseDTO.getImage(), "image");
-                existingQuestion.setImageUrl(cloudinaryResponse.getUrl());
-                existingQuestion.setImageName(cloudinaryResponse.getPublicId());
+                boolean isRemove = true;
+                if (existingQuestion.getImageName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingQuestion.getImageName());
+                }
+                if (isRemove) {
+                    CloudinaryResponse cloudinaryResponse = uploadMedia(questionTrueFalseDTO.getImage(), "image");
+                    if (cloudinaryResponse != null) {
+                        existingQuestion.setImageUrl(cloudinaryResponse.getUrl());
+                        existingQuestion.setImageName(cloudinaryResponse.getPublicId());
+                    }
+                }
             }
 
             if (questionTrueFalseDTO.getVideo() != null) {
-                CloudinaryResponse cloudinaryResponse = uploadMedia(questionTrueFalseDTO.getVideo(), "video");
-                existingQuestion.setVideoUrl(cloudinaryResponse.getUrl());
-                existingQuestion.setVideoName(cloudinaryResponse.getPublicId());
+                boolean isRemove = true;
+                if (existingQuestion.getVideoName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingQuestion.getVideoName());
+                }
+                if (isRemove) {
+                    CloudinaryResponse cloudinaryResponse = uploadMedia(questionTrueFalseDTO.getVideo(), "video");
+                    if (cloudinaryResponse != null) {
+                        existingQuestion.setVideoUrl(cloudinaryResponse.getUrl());
+                        existingQuestion.setVideoName(cloudinaryResponse.getPublicId());
+                    }
+                }
             }
 
             if (questionTrueFalseDTO.getAudio() != null) {
-                CloudinaryResponse cloudinaryResponse = uploadMedia(questionTrueFalseDTO.getAudio(), "audio");
-                existingQuestion.setAudioUrl(cloudinaryResponse.getUrl());
-                existingQuestion.setAudioName(cloudinaryResponse.getPublicId());
+                boolean isRemove = true;
+                if (existingQuestion.getAudioName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(existingQuestion.getAudioName());
+                }
+                if (isRemove) {
+                    CloudinaryResponse cloudinaryResponse = uploadMedia(questionTrueFalseDTO.getAudio(), "audio");
+                    if (cloudinaryResponse != null) {
+                        existingQuestion.setAudioUrl(cloudinaryResponse.getUrl());
+                        existingQuestion.setAudioName(cloudinaryResponse.getPublicId());
+                    }
+                }
             }
 
             existingQuestion = questionTrueFalseRepository.save(existingQuestion);
