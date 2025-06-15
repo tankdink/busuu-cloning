@@ -15,12 +15,12 @@ public class MatchingPairResponse {
     @JsonProperty("matching_pair_id")
     private String id;
 
-    @JsonProperty("part_text")
-    private String partText;
+    @JsonProperty("pair_text")
+    private String pairText;
 
     @JsonProperty("pair_key")
     private String pairKey;
 
-    @JsonProperty("part_order")
-    private Integer partOrder;
+    @JsonProperty("pair_order")
+    private Integer pairOrder;
 }
