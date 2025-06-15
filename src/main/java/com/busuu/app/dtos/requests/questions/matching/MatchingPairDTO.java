@@ -15,18 +15,18 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MatchingPairDTO {
 
-    @JsonProperty("part_text")
-    @NotBlank(message = "Part text cannot be empty")
-    private String partText;
+    @JsonProperty("pair_text")
+    @NotBlank(message = "Pair text cannot be empty")
+    private String pairText;
 
     @JsonProperty("pair_key")
     @NotBlank(message = "Pair key cannot be empty")
     private String pairKey;
 
-    @JsonProperty("part_order")
-    @NotNull(message = "Part order is required")
-    @Min(value = 1, message = "Part order must be at least 1")
-    private Integer partOrder;
+    @JsonProperty("pair_order")
+    @NotNull(message = "Pair order is required")
+    @Min(value = 1, message = "Pair order must be at least 1")
+    private Integer pairOrder;
 
     @JsonProperty("question_matching_id")
     private String questionMatchingId;

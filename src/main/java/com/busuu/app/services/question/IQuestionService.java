@@ -19,4 +19,6 @@ public interface IQuestionService {
     void deleteByLessonId (String requestId, String lessonId);
 
     void deleteByGrammarSectionId (String requestId, String grammarSectionId);
+
+    void deleteByQuestionId (String requestId, String questionId);
 }

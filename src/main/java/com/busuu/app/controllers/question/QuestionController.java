@@ -245,4 +245,34 @@ public class QuestionController {
             );
         }
     }
+
+    @DeleteMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Response> deleteQuestionById (@RequestParam(value = "req-id", required = false) String requestId,
+                                                        @PathVariable("id") String questionId) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            questionService.deleteByQuestionId(requestId, questionId);
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when deleting question with ID: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
+    }
 }
