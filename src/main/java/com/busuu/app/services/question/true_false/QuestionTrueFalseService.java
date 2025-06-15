@@ -107,16 +107,30 @@ public class QuestionTrueFalseService implements IQuestionTrueFalseService {
             QuestionTrueFalse existingQuestion = questionTrueFalseRepository.findById(questionId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Question with ID = " + questionId));
 
-            if (!existingQuestion.getLesson().getId().equals(questionTrueFalseDTO.getLessonId())) {
-                Lesson existingLesson = lessonRepository.findById(questionTrueFalseDTO.getLessonId())
-                        .orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID = " + questionTrueFalseDTO.getLessonId()));
-                existingQuestion.setLesson(existingLesson);
+            // Handle Lesson
+            if (questionTrueFalseDTO.getLessonId() == null) {
+                if (existingQuestion.getLesson() != null) {
+                    existingQuestion.setLesson(null);
+                }
+            } else {
+                if (existingQuestion.getLesson() == null || !existingQuestion.getLesson().getId().equals(questionTrueFalseDTO.getLessonId())) {
+                    Lesson newLesson = lessonRepository.findById(questionTrueFalseDTO.getLessonId())
+                            .orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID = " + questionTrueFalseDTO.getLessonId()));
+                    existingQuestion.setLesson(newLesson);
+                }
             }
 
-            if (!existingQuestion.getGrammarSection().getId().equals(questionTrueFalseDTO.getGrammarSectionId())) {
-                GrammarSection existingGrammarSection = grammarSectionRepository.findById(questionTrueFalseDTO.getGrammarSectionId())
-                        .orElseThrow(() -> new DataNotFoundException("Cannot find Grammar section with ID = " + questionTrueFalseDTO.getGrammarSectionId()));
-                existingQuestion.setGrammarSection(existingGrammarSection);
+            // Handle Grammar Section
+            if (questionTrueFalseDTO.getGrammarSectionId() == null) {
+                if (existingQuestion.getGrammarSection() != null) {
+                    existingQuestion.setGrammarSection(null);
+                }
+            } else {
+                if (existingQuestion.getGrammarSection() == null || !existingQuestion.getGrammarSection().getId().equals(questionTrueFalseDTO.getGrammarSectionId())) {
+                    GrammarSection newGrammarSection = grammarSectionRepository.findById(questionTrueFalseDTO.getGrammarSectionId())
+                            .orElseThrow(() -> new DataNotFoundException("Cannot find Grammar section with ID = " + questionTrueFalseDTO.getGrammarSectionId()));
+                    existingQuestion.setGrammarSection(newGrammarSection);
+                }
             }
 
             modelMapper.map(questionTrueFalseDTO, existingQuestion);

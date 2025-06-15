@@ -51,7 +51,6 @@ public class UserController {
                                                 @Valid @RequestBody UserDTO userDTO,
                                                 BindingResult result) {
         try {
-
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -522,6 +521,4 @@ public class UserController {
             );
         }
     }
-
-
 }
