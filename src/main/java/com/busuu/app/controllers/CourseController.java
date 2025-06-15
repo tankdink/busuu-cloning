@@ -79,6 +79,7 @@ public class CourseController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getCourses (@RequestParam(value = "req-id", required = false) String requestId,
 
                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -117,6 +118,7 @@ public class CourseController {
     }
 
     @GetMapping(value = Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getCourse (@RequestParam(value = "req-id", required = false) String requestId,
                                                 @PathVariable("id") String courseId) {
         try {

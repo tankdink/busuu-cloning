@@ -23,7 +23,4 @@ public class MatchingPairResponse {
 
     @JsonProperty("part_order")
     private Integer partOrder;
-
-    @JsonProperty("question_id")
-    private String questionId;
 }

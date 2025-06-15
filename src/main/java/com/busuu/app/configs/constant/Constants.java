@@ -29,6 +29,13 @@ public class Constants {
     public static final String LOGIN = "/login";
     public static final String DETAILS = "/details";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
+    public static final String EMAIL_UNIQUE = "/email-unique";
+    public static final String ACTIVE_ACCOUNT = "/active-account";
+    public static final String REFRESH_TOKEN = "/refresh_token";
+    public static final String CHANGE_PASSWORD = "/change_password";
+    public static final String GENERATE_OTP = "/generate_otp";
+    public static final String CHECK_OTP = "/check_otp";
+    public static final String BLOCK = "/block";
 
     public static final String PATH_PARAM_ID = "/{id}";
 
@@ -41,8 +48,12 @@ public class Constants {
         public static final String ERR_CREATE_USER = "ERR_CREATE_USER";
         public static final String ERR_REGISTER_USER = "ERR_REGISTER_USER";
         public static final String ERR_LOGIN_USER = "ERR_LOGIN_USER";
-
         public static final String ERR_GET_USER = "ERR_GET_USER";
+
+        public static final String ERR_ACTIVE_ACCOUNT = "ERR_ACTIVE_ACCOUNT";
+        public static final String ERR_CHANGE_PASSWORD = "ERR_CHANGE_PASSWORD";
+        public static final String ERR_GENERATE_OTP = "ERR_GENERATE_OTP";
+        public static final String ERR_CHECK_OTP = "ERR_CHECK_OTP";
 
         // Role
         public static final String ERR_CREATE_ROLE = "ERR_CREATE_ROLE";

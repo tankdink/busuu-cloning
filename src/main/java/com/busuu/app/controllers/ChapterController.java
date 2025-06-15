@@ -67,6 +67,7 @@ public class ChapterController
 
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                              @PathVariable("id") String chapterId)
     {
@@ -101,6 +102,7 @@ public class ChapterController
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getListChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                                    @RequestParam(value = "course_id",required = false) String courseId,
                                                    @RequestParam(value = "level_id",required = false) String levelId,

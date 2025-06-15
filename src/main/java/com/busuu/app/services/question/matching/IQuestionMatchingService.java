@@ -11,8 +11,7 @@ public interface IQuestionMatchingService {
 
     QuestionMatchingResponse getQuestion (String requestId, String questionId);
 
-
-    QuestionMatchingResponse updateQuestion (String requestId, String questionId, QuestionDTO questionDTO);
+    QuestionMatchingResponse updateQuestion (String requestId, String questionId, QuestionMatchingDTO questionDTO);
 
     void deleteQuestion (String requestId, String questionId);
 }

@@ -76,6 +76,7 @@ public class QuestionOrderingController {
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getQuestion (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String questionId) {
         try {

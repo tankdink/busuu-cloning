@@ -35,7 +35,7 @@ public class ProgressController {
     @PostMapping(Constants.COURSE)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> upSertCourseProgress(@RequestParam(value = "req-id", required = false) String requestId,
-                                                         @Valid @RequestBody CourseProgressDTO courseProgressRequest,
+                                                         @Valid @RequestBody CourseProgressDTO courseProgressDTO,
                                                          BindingResult result)
     {
         try {
@@ -61,7 +61,7 @@ public class ProgressController {
             }
 
             ProgressResponse progressResponse = progressService.upSertCourseProgress(
-                    requestId, courseProgressRequest.getUserId(), courseProgressRequest.getCourseId(), courseProgressRequest.getLevelId(), courseProgressRequest.getChapterId(), courseProgressRequest.getLessonId());
+                    requestId, courseProgressDTO);
 
             //Return response
             return ResponseEntity.ok().body(
@@ -86,7 +86,7 @@ public class ProgressController {
     @PostMapping(Constants.GRAMMAR)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> upSertGrammarProgress(@RequestParam(value = "req-id", required = false) String requestId,
-                                                         @Valid @RequestBody GrammarProgressDTO grammarProgressRequest,
+                                                         @Valid @RequestBody GrammarProgressDTO grammarProgressDTO,
                                                          BindingResult result)
     {
         try {
@@ -112,7 +112,7 @@ public class ProgressController {
             }
 
             ProgressResponse progressResponse = progressService.upSertGrammarProgress(
-                    requestId, grammarProgressRequest.getUserId(), grammarProgressRequest.getGrammarSectionId(), grammarProgressRequest.getGrammarId());
+                    requestId, grammarProgressDTO);
 
             //Return response
             return ResponseEntity.ok().body(

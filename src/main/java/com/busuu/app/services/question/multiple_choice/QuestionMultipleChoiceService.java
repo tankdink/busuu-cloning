@@ -8,6 +8,7 @@ import com.busuu.app.dtos.responses.question.multiple_choice.MultipleChoiceOptio
 import com.busuu.app.dtos.responses.question.multiple_choice.QuestionMultipleChoiceResponse;
 import com.busuu.app.entities.GrammarSection;
 import com.busuu.app.entities.Lesson;
+import com.busuu.app.entities.questions.matching.MatchingPair;
 import com.busuu.app.entities.questions.multiple_choice.MultipleChoiceOption;
 import com.busuu.app.entities.questions.multiple_choice.QuestionMultipleChoice;
 import com.busuu.app.exceptions.DataNotFoundException;
@@ -38,7 +39,6 @@ public class QuestionMultipleChoiceService implements IQuestionMultipleChoiceSer
     private final LessonRepository lessonRepository;
     private final GrammarSectionRepository grammarSectionRepository;
     private final IUploadCloudinaryService uploadCloudinaryService;
-    private final IMultipleChoiceOptionService multipleChoiceOptionService;
     private final ModelMapper modelMapper;
 
     @Override
@@ -75,21 +75,25 @@ public class QuestionMultipleChoiceService implements IQuestionMultipleChoiceSer
                 question.setAudioName(cloudinaryResponse.getPublicId());
             }
 
-            question = questionMultipleChoiceRepository.save(question);
-
-            // Save ans
+            // Handle ans to save
             QuestionMultipleChoice finalQuestion = question;
-            List<MultipleChoiceOptionResponse> options = questionDTO.getOptions().stream().map(
+            question.getOptions().forEach(
                     option -> {
-                       option.setQuestionMultipleChoiceId(finalQuestion.getId());
-                       return multipleChoiceOptionService.insertMultipleChoiceOption(requestId, option);
+                        option.setId(UUID.randomUUID().toString());
+                        option.setQuestionMultipleChoice(finalQuestion);
                     }
-            ).toList();
+            );
+
+            question = questionMultipleChoiceRepository.save(question);
 
             QuestionMultipleChoiceResponse response = modelMapper.map(question, QuestionMultipleChoiceResponse.class);
             response.setLessonId(question.getLesson() != null ? question.getLesson().getId() : null);
             response.setGrammarSectionId(question.getGrammarSection() != null ? question.getGrammarSection().getId() : null);
-            response.setOptions(options);
+
+            // Handle ans res
+            response.setOptions(question.getOptions().stream().map(
+                    option -> modelMapper.map(option, MultipleChoiceOptionResponse.class)
+            ).toList());
             return response;
         } catch (Exception e) {
             log.error("requestId="+requestId+", failed to create question multiple choice, err="+e.getMessage());
@@ -104,17 +108,12 @@ public class QuestionMultipleChoiceService implements IQuestionMultipleChoiceSer
             QuestionMultipleChoice existingQuestion = questionMultipleChoiceRepository.findById(questionId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Question with ID = " + questionId));
 
-            List<MultipleChoiceOption> existingMultipleChoiceOptions = multipleChoiceOptionRepository.findByQuestionMultipleChoice(existingQuestion);
-
             QuestionMultipleChoiceResponse response = modelMapper.map(existingQuestion, QuestionMultipleChoiceResponse.class);
             response.setLessonId(existingQuestion.getLesson() != null ? existingQuestion.getLesson().getId() : null);
             response.setGrammarSectionId(existingQuestion.getGrammarSection() != null ? existingQuestion.getGrammarSection().getId() : null);
-            response.setOptions(existingMultipleChoiceOptions.stream().map(
-                    multipleChoiceOption -> {
-                        MultipleChoiceOptionResponse multipleChoiceOptionResponse = modelMapper.map(multipleChoiceOption, MultipleChoiceOptionResponse.class);
-                        multipleChoiceOptionResponse.setQuestionId(response.getId());
-                        return multipleChoiceOptionResponse;
-                    }).toList()
+            response.setOptions(existingQuestion.getOptions().stream().map(
+                    multipleChoiceOption ->  modelMapper.map(multipleChoiceOption, MultipleChoiceOptionResponse.class)
+                    ).toList()
             );
 
             return response;
@@ -127,7 +126,7 @@ public class QuestionMultipleChoiceService implements IQuestionMultipleChoiceSer
 
     @Override
     @Transactional
-    public QuestionMultipleChoiceResponse updateQuestion(String requestId, String questionId, QuestionDTO questionDTO) {
+    public QuestionMultipleChoiceResponse updateQuestion(String requestId, String questionId, QuestionMultipleChoiceDTO questionDTO) {
         try {
 
             QuestionMultipleChoice existingQuestion = questionMultipleChoiceRepository.findById(questionId)
@@ -165,19 +164,25 @@ public class QuestionMultipleChoiceService implements IQuestionMultipleChoiceSer
                 existingQuestion.setAudioName(cloudinaryResponse.getPublicId());
             }
 
-            existingQuestion = questionMultipleChoiceRepository.save(existingQuestion);
+            // Handle ans
+            existingQuestion.getOptions().clear();
 
-            List<MultipleChoiceOption> existingMultipleChoiceOptions = multipleChoiceOptionRepository.findByQuestionMultipleChoice(existingQuestion);
+            QuestionMultipleChoice finalExistingQuestion = existingQuestion;
+            questionDTO.getOptions().forEach(optionDto -> {
+                MultipleChoiceOption option = modelMapper.map(optionDto, MultipleChoiceOption.class);
+                option.setId(UUID.randomUUID().toString());
+                option.setQuestionMultipleChoice(finalExistingQuestion);
+                finalExistingQuestion.getOptions().add(option);
+            });
+
+            existingQuestion = questionMultipleChoiceRepository.save(existingQuestion);
 
             QuestionMultipleChoiceResponse response = modelMapper.map(existingQuestion, QuestionMultipleChoiceResponse.class);
             response.setLessonId(existingQuestion.getLesson() != null ? existingQuestion.getLesson().getId() : null);
             response.setGrammarSectionId(existingQuestion.getGrammarSection() != null ? existingQuestion.getGrammarSection().getId() : null);
-            response.setOptions(existingMultipleChoiceOptions.stream().map(
-                    multipleChoiceOption -> {
-                        MultipleChoiceOptionResponse multipleChoiceOptionResponse = modelMapper.map(multipleChoiceOption, MultipleChoiceOptionResponse.class);
-                        multipleChoiceOptionResponse.setQuestionId(response.getId());
-                        return multipleChoiceOptionResponse;
-                    }).toList()
+            response.setOptions(existingQuestion.getOptions().stream().map(
+                    multipleChoiceOption -> modelMapper.map(multipleChoiceOption, MultipleChoiceOptionResponse.class)
+                    ).toList()
             );
             return response;
         } catch (Exception e) {

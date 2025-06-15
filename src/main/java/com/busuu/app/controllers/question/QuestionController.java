@@ -1,14 +1,12 @@
 package com.busuu.app.controllers.question;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.requests.questions.QuestionDTO;
 import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.question.QuestionResponse;
 import com.busuu.app.services.question.IQuestionService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,11 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 
@@ -33,6 +28,7 @@ public class QuestionController {
     private final LocalizationUtils localizationUtils;
 
     @GetMapping(Constants.LESSON + Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getQuestionsByLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                           @PathVariable("id") String lessonId,
                                                           @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -74,6 +70,7 @@ public class QuestionController {
     }
 
     @GetMapping(Constants.GRAMMAR_SECTION + Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getQuestionsByGrammarSection (@RequestParam(value = "req-id", required = false) String requestId,
                                                                   @PathVariable("id") String grammarSectionId,
 
@@ -116,6 +113,7 @@ public class QuestionController {
     }
 
     @GetMapping(Constants.QUESTION_TYPE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getQuestionsByQuestionType(@RequestParam(value = "req-id", required = false) String requestId,
                                                                @PathVariable("type") String questionType,
                                                                @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -158,6 +156,7 @@ public class QuestionController {
 
     //This controller should be used for question with type KNOWLEDGE only, if use with other question type, it won't return the question's result
     @GetMapping(Constants.KNOWLEDGE + Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getQuestionKnowledgeById(@RequestParam(value = "req-id", required = false) String requestId,
                                                           @PathVariable("id") String questionId) {
         try {

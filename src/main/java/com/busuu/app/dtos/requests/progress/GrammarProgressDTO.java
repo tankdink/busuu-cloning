@@ -2,6 +2,7 @@ package com.busuu.app.dtos.requests.progress;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +25,8 @@ public class GrammarProgressDTO {
     @JsonProperty("grammar_section_id")
     @NotBlank(message = "Grammar Section's ID is required")
     private String grammarSectionId;
+
+    @JsonProperty("number_questions")
+    @NotNull(message = "Number question is required")
+    private Integer numberQuestions;
 }

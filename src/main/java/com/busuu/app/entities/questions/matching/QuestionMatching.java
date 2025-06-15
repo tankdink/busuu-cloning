@@ -17,6 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @OnDelete(action = OnDeleteAction.CASCADE)
 public class QuestionMatching extends Question {
-    @OneToMany(mappedBy = "questionMatching", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "questionMatching", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchingPair> pairs;
 }

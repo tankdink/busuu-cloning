@@ -3,15 +3,18 @@ package com.busuu.app.services.user;
 
 import com.busuu.app.components.JwtTokenUtil;
 import com.busuu.app.configs.constant.Constants;
+import com.busuu.app.dtos.requests.user.UserActionPasswordDTO;
 import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.Role;
+import com.busuu.app.entities.Token;
 import com.busuu.app.entities.User;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.PermissionDenyException;
 import com.busuu.app.repositories.RoleRepository;
+import com.busuu.app.repositories.TokenRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.email.IEmailService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +46,7 @@ public class UserService implements IUserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final TokenRepository tokenRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper modelMapper;
     private final IEmailService emailService;
@@ -86,7 +90,7 @@ public class UserService implements IUserService {
             // Save new user to db
             userRepository.save(newUser);
 
-            // Send email active account here!
+            // Send email the active account here!
             emailService.sendEmailActive(newUser.getEmail(), newUser.getActiveCode());
             return modelMapper.map(newUser, UserResponse.class);
         } catch (Exception e) {
@@ -139,8 +143,39 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserResponse updateUser(String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception {
+    public UserResponse updateUser(String requestId, String userId, UserUpdateDTO userUpdateDTO) {
         return null;
+    }
+
+    @Override
+    @Transactional
+    public boolean changePassword (String requestId, UserActionPasswordDTO userActionPasswordDTO) {
+        try {
+            User user = userRepository.findByEmail(userActionPasswordDTO.getEmail())
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + userActionPasswordDTO.getEmail()));
+            if (passwordEncoder.matches(userActionPasswordDTO.getOldPassword(), user.getPassword())) {
+                if (userActionPasswordDTO.getPassword().equals(userActionPasswordDTO.getRetypePassword())) {
+                    String encodedNewPassword = passwordEncoder.encode(userActionPasswordDTO.getPassword());
+                    user.setPassword(encodedNewPassword);
+                    userRepository.save(user);
+                    List<Token> tokens = tokenRepository.findByUser(user);
+                    for (Token tokenItem : tokens) {
+                        tokenRepository.delete(tokenItem);
+                    }
+                    emailService.sendEmailChangedPassword(user.getEmail());
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            return false;
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to change password, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_CHANGE_PASSWORD, requestId);
+        }
     }
 
     @Override
@@ -177,39 +212,86 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public int activeAccount(String email, String activeCode) throws DataNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + email));
+    public int activeAccount(String requestId, String email, String activeCode) throws DataNotFoundException {
+        try {
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + email));
 
-        if (user.isActive()) {
-            return 1;
-        }
+            if (user.isActive()) {
+                return 1;
+            }
 
-        if (activeCode.equals(user.getActiveCode())) {
-            user.setActive(true);
-            userRepository.save(user);
-            return 2;
+            if (activeCode.equals(user.getActiveCode())) {
+                user.setActive(true);
+                userRepository.save(user);
+                return 2;
+            }
+            return 0;
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to active account, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_ACTIVE_ACCOUNT, requestId);
         }
-        return 0;
+    }
+
+
+    // Handle -> Use redis
+    @Override
+    @Transactional
+    public int generateOTP(String requestId, String email) throws DataNotFoundException {
+        try {
+            User existingUser = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + email));
+            if (existingUser.getOtp() != null) {
+                existingUser.setOtp(null);
+                userRepository.save(existingUser);
+                return 1;
+            }
+            else {
+                SecureRandom random = new SecureRandom();
+                int otp = 100000 + random.nextInt(900000);
+                existingUser.setOtp(String.valueOf(otp));
+                emailService.sendEmailOtp(existingUser.getEmail(), String.valueOf(otp));
+                userRepository.save(existingUser);
+                return 2;
+            }
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to generate otp, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GENERATE_OTP, requestId);
+        }
     }
 
     @Override
     @Transactional
-    public int generateOTP(String email) throws DataNotFoundException {
-        User existingUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + email));
-        if (existingUser.getOtp() != null) {
-            existingUser.setOtp(null);
-            userRepository.save(existingUser);
-            return 1;
+    public boolean checkOTP (String requestId, String email, String OTP) throws DataNotFoundException {
+        try {
+            User existingUser = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + email));
+            if (existingUser.getOtp().equals(OTP)) {
+                existingUser.setOtp(null);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to check otp, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_CHECK_OTP, requestId);
         }
-        else {
-            SecureRandom random = new SecureRandom();
-            int otp = 100000 + random.nextInt(900000);
-            existingUser.setOtp(String.valueOf(otp));
-            emailService.sendEmailForgotPassword(existingUser.getEmail(), String.valueOf(otp));
-            userRepository.save(existingUser);
-            return 2;
+    }
+
+    @Override
+    @Transactional
+    public User blockOrEnable(String requestId, String userId) throws DataNotFoundException {
+        try {
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
+            existingUser.setActive(!existingUser.isActive());
+            return userRepository.save(existingUser);
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to block or enable user, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_CHECK_OTP, requestId);
         }
     }
 }

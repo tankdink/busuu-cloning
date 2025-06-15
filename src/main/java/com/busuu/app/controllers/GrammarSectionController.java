@@ -68,6 +68,7 @@ public class GrammarSectionController
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getGrammarSections(@RequestParam(value = "req-id", required = false) String requestId,
 
                                                        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -111,6 +112,7 @@ public class GrammarSectionController
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getGrammarSection(@RequestParam(value = "req-id", required = false) String requestId,
                                                @PathVariable("id") String grammarSectionId)
     {
@@ -145,6 +147,7 @@ public class GrammarSectionController
     }
 
     @GetMapping(Constants.GRAMMAR + Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getByGrammarId(@RequestParam(value = "req-id", required = false) String requestId,
                                                             @PathVariable("id") String grammarId)
     {

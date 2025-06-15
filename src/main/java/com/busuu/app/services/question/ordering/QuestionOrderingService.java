@@ -8,6 +8,7 @@ import com.busuu.app.dtos.responses.question.ordering.OrderingPartResponse;
 import com.busuu.app.dtos.responses.question.ordering.QuestionOrderingResponse;
 import com.busuu.app.entities.GrammarSection;
 import com.busuu.app.entities.Lesson;
+import com.busuu.app.entities.questions.multiple_choice.MultipleChoiceOption;
 import com.busuu.app.entities.questions.ordering.OrderingPart;
 import com.busuu.app.entities.questions.ordering.QuestionOrdering;
 import com.busuu.app.exceptions.DataNotFoundException;
@@ -39,7 +40,6 @@ public class QuestionOrderingService implements IQuestionOrderingService {
     private final LessonRepository lessonRepository;
     private final GrammarSectionRepository grammarSectionRepository;
     private final IUploadCloudinaryService uploadCloudinaryService;
-    private final IOrderingPartService orderingPartService;
     private final ModelMapper modelMapper;
 
     @Override
@@ -76,21 +76,25 @@ public class QuestionOrderingService implements IQuestionOrderingService {
                 question.setAudioName(cloudinaryResponse.getPublicId());
             }
 
-            question = questionOrderingRepository.save(question);
-
-            // Save ans
+            // Handle ans to save
             QuestionOrdering finalQuestion = question;
-            List<OrderingPartResponse> parts = questionDTO.getParts().stream().map(
+            question.getParts().forEach(
                     part -> {
-                        part.setQuestionOrderingId(finalQuestion.getId());
-                        return orderingPartService.insertOrderingPart(requestId, part);
+                        part.setId(UUID.randomUUID().toString());
+                        part.setQuestionOrdering(finalQuestion);
                     }
-            ).toList();
+            );
+
+            question = questionOrderingRepository.save(question);
 
             QuestionOrderingResponse response = modelMapper.map(question, QuestionOrderingResponse.class);
             response.setLessonId(question.getLesson() != null ? question.getLesson().getId() : null);
             response.setGrammarSectionId(question.getGrammarSection() != null ? question.getGrammarSection().getId() : null);
-            response.setParts(parts);
+
+            // Handle ans res
+            response.setParts(question.getParts().stream().map(
+                    part -> modelMapper.map(part, OrderingPartResponse.class)
+            ).toList());
             return response;
         } catch (Exception e) {
             log.error("requestId="+requestId+", failed to create question ordering, err="+e.getMessage());
@@ -105,17 +109,12 @@ public class QuestionOrderingService implements IQuestionOrderingService {
             QuestionOrdering existingQuestion = questionOrderingRepository.findById(questionId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Question with ID = " + questionId));
 
-            List<OrderingPart> existingOrderingParts = orderingPartRepository.findByQuestionOrdering(existingQuestion);
-
             QuestionOrderingResponse response = modelMapper.map(existingQuestion, QuestionOrderingResponse.class);
             response.setLessonId(existingQuestion.getLesson() != null ? existingQuestion.getLesson().getId() : null);
             response.setGrammarSectionId(existingQuestion.getGrammarSection() != null ? existingQuestion.getGrammarSection().getId() : null);
-            response.setParts(existingOrderingParts.stream().map(
-                    orderingPart -> {
-                        OrderingPartResponse orderingPartResponse = modelMapper.map(orderingPart, OrderingPartResponse.class);
-                        orderingPartResponse.setQuestionId(response.getId());
-                        return orderingPartResponse;
-                    }).toList()
+            response.setParts(existingQuestion.getParts().stream().map(
+                    orderingPart -> modelMapper.map(orderingPart, OrderingPartResponse.class)
+                    ).toList()
             );
 
             return response;
@@ -166,19 +165,25 @@ public class QuestionOrderingService implements IQuestionOrderingService {
                 existingQuestion.setAudioName(cloudinaryResponse.getPublicId());
             }
 
-            existingQuestion = questionOrderingRepository.save(existingQuestion);
+            // Handle ans
+            existingQuestion.getParts().clear();
 
-            List<OrderingPart> existingOrderingParts = orderingPartRepository.findByQuestionOrdering(existingQuestion);
+            QuestionOrdering finalExistingQuestion = existingQuestion;
+            questionDTO.getParts().forEach(partDto -> {
+                OrderingPart part = modelMapper.map(partDto, OrderingPart.class);
+                part.setId(UUID.randomUUID().toString());
+                part.setQuestionOrdering(finalExistingQuestion);
+                finalExistingQuestion.getParts().add(part);
+            });
+
+            existingQuestion = questionOrderingRepository.save(existingQuestion);
 
             QuestionOrderingResponse response = modelMapper.map(existingQuestion, QuestionOrderingResponse.class);
             response.setLessonId(existingQuestion.getLesson() != null ? existingQuestion.getLesson().getId() : null);
             response.setGrammarSectionId(existingQuestion.getGrammarSection() != null ? existingQuestion.getGrammarSection().getId() : null);
-            response.setParts(existingOrderingParts.stream().map(
-                    orderingPart -> {
-                        OrderingPartResponse orderingPartResponse = modelMapper.map(orderingPart, OrderingPartResponse.class);
-                        orderingPartResponse.setQuestionId(response.getId());
-                        return orderingPartResponse;
-                    }).toList()
+            response.setParts(existingQuestion.getParts().stream().map(
+                    orderingPart -> modelMapper.map(orderingPart, OrderingPartResponse.class)
+                    ).toList()
             );
             return response;
         } catch (Exception e) {

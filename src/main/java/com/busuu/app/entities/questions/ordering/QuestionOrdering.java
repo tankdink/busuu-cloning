@@ -21,7 +21,7 @@ public class QuestionOrdering extends Question {
     @Column(name = "correct_answer")
     private String correctAnswer;
 
-    @OneToMany(mappedBy = "questionOrdering", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "questionOrdering", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderingPart> parts;
 }
 

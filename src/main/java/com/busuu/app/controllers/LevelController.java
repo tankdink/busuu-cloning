@@ -67,6 +67,7 @@ public class LevelController
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getLevels(@RequestParam(value = "req-id", required = false) String requestId,
                                               @RequestParam(value = "code", required = false) String code,
                                               @RequestParam(value = "course_id", required = false) String courseId)
@@ -150,6 +151,7 @@ public class LevelController
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getLevel(@RequestParam(value = "req-id", required = false) String requestId,
                                              @PathVariable("id") String levelId)
     {

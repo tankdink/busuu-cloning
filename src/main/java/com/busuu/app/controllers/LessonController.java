@@ -79,6 +79,7 @@ public class LessonController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getLesson (@RequestParam(value = "req-id", required = false) String requestId,
 
                                                @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -117,6 +118,7 @@ public class LessonController {
     }
 
     @GetMapping(value = Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                @PathVariable("id") String lessonId) {
         try {
@@ -144,6 +146,7 @@ public class LessonController {
     }
 
     @GetMapping(value = Constants.CHAPTER + Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getByChapterId (@RequestParam(value = "req-id", required = false) String requestId,
                                                @PathVariable("id") String chapterId) {
         try {
@@ -171,6 +174,7 @@ public class LessonController {
     }
 
     @PutMapping(value = Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String lessonId,
                                                   @Valid @ModelAttribute LessonDTO lessonDTO,
@@ -216,6 +220,7 @@ public class LessonController {
     }
 
     @DeleteMapping(value = Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String lessonId) {
         try {

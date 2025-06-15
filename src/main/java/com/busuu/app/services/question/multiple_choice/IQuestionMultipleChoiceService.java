@@ -12,7 +12,7 @@ public interface IQuestionMultipleChoiceService {
 
     QuestionMultipleChoiceResponse getQuestion (String requestId, String questionId);
 
-    QuestionMultipleChoiceResponse updateQuestion (String requestId, String questionId, QuestionDTO questionDTO);
+    QuestionMultipleChoiceResponse updateQuestion (String requestId, String questionId, QuestionMultipleChoiceDTO questionDTO);
 
     void deleteQuestion (String requestId, String questionId);
 }

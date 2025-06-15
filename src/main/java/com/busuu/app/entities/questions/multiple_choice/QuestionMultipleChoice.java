@@ -18,6 +18,6 @@ import java.util.List;
 @OnDelete(action = OnDeleteAction.CASCADE)
 public class QuestionMultipleChoice extends Question {
 
-    @OneToMany(mappedBy = "questionMultipleChoice", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "questionMultipleChoice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MultipleChoiceOption> options;
 }

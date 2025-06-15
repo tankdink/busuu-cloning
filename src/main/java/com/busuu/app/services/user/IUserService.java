@@ -1,5 +1,6 @@
 package com.busuu.app.services.user;
 
+import com.busuu.app.dtos.requests.user.UserActionPasswordDTO;
 import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
 import com.busuu.app.dtos.responses.UserResponse;
@@ -25,7 +26,13 @@ public interface IUserService {
 
     UserResponse getUserById (String requestId, String userId);
 
-    int generateOTP(String email) throws DataNotFoundException;
+    int generateOTP(String requestId, String email) throws DataNotFoundException;
 
-    int activeAccount(String email, String activeCode) throws DataNotFoundException;
+    int activeAccount(String requestId, String email, String activeCode) throws DataNotFoundException;
+
+    boolean changePassword (String requestId, UserActionPasswordDTO userActionPasswordDTO) throws Exception;
+
+    boolean checkOTP (String requestId, String email, String OTP) throws DataNotFoundException;
+
+    User blockOrEnable(String requestId, String userId) throws DataNotFoundException;
 }

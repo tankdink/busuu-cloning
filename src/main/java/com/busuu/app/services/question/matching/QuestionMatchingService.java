@@ -39,7 +39,6 @@ public class QuestionMatchingService implements IQuestionMatchingService {
     private final LessonRepository lessonRepository;
     private final GrammarSectionRepository grammarSectionRepository;
     private final IUploadCloudinaryService uploadCloudinaryService;
-    private final IMatchingPairService matchingPairService;
     private final ModelMapper modelMapper;
 
     @Override
@@ -76,21 +75,25 @@ public class QuestionMatchingService implements IQuestionMatchingService {
                 question.setAudioName(cloudinaryResponse.getPublicId());
             }
 
-            question = questionMatchingRepository.save(question);
-
-            // Save ans
+            // Handle ans to save
             QuestionMatching finalQuestion = question;
-            List<MatchingPairResponse> pairs = questionDTO.getPairs().stream().map(
+            question.getPairs().forEach(
                     pair -> {
-                       pair.setQuestionMatchingId(finalQuestion.getId());
-                       return matchingPairService.insertMatchingPair(requestId, pair);
-                    }
-            ).toList();
+                        pair.setId(UUID.randomUUID().toString());
+                        pair.setQuestionMatching(finalQuestion);
+                    });
+
+            question = questionMatchingRepository.save(question);
 
             QuestionMatchingResponse response = modelMapper.map(question, QuestionMatchingResponse.class);
             response.setLessonId(question.getLesson() != null ? question.getLesson().getId() : null);
             response.setGrammarSectionId(question.getGrammarSection() != null ? question.getGrammarSection().getId() : null);
-            response.setPairs(pairs);
+
+            // Handle ans res
+            response.setPairs(question.getPairs().stream().map(
+                    pair -> modelMapper.map(pair, MatchingPairResponse.class)
+            ).toList());
+
             return response;
         } catch (Exception e) {
             log.error("requestId="+requestId+", failed to create question matching, err="+e.getMessage());
@@ -105,17 +108,12 @@ public class QuestionMatchingService implements IQuestionMatchingService {
             QuestionMatching existingQuestion = questionMatchingRepository.findById(questionId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Question with ID = " + questionId));
 
-            List<MatchingPair> existingMatchingPair = matchingPairRepository.findByQuestionMatching(existingQuestion);
-
             QuestionMatchingResponse response = modelMapper.map(existingQuestion, QuestionMatchingResponse.class);
             response.setLessonId(existingQuestion.getLesson() != null ? existingQuestion.getLesson().getId() : null);
             response.setGrammarSectionId(existingQuestion.getGrammarSection() != null ? existingQuestion.getGrammarSection().getId() : null);
-            response.setPairs(existingMatchingPair.stream().map(
-                    matchingPair -> {
-                        MatchingPairResponse matchingPairResponse = modelMapper.map(matchingPair, MatchingPairResponse.class);
-                        matchingPairResponse.setQuestionId(response.getId());
-                        return matchingPairResponse;
-                    }).toList()
+            response.setPairs(existingQuestion.getPairs().stream().map(
+                    matchingPair -> modelMapper.map(matchingPair, MatchingPairResponse.class)
+                        ).toList()
             );
 
             return response;
@@ -128,7 +126,7 @@ public class QuestionMatchingService implements IQuestionMatchingService {
 
     @Override
     @Transactional
-    public QuestionMatchingResponse updateQuestion(String requestId, String questionId, QuestionDTO questionDTO) {
+    public QuestionMatchingResponse updateQuestion(String requestId, String questionId, QuestionMatchingDTO questionDTO) {
         try {
 
             QuestionMatching existingQuestion = questionMatchingRepository.findById(questionId)
@@ -166,19 +164,26 @@ public class QuestionMatchingService implements IQuestionMatchingService {
                 existingQuestion.setAudioName(cloudinaryResponse.getPublicId());
             }
 
+            // Handle ans
+            existingQuestion.getPairs().clear();
+
+            QuestionMatching finalExistingQuestion = existingQuestion;
+            questionDTO.getPairs().forEach(pairDto -> {
+                MatchingPair newPair = modelMapper.map(pairDto, MatchingPair.class);
+                newPair.setId(UUID.randomUUID().toString());
+                newPair.setQuestionMatching(finalExistingQuestion);
+                finalExistingQuestion.getPairs().add(newPair);
+            });
+
             existingQuestion = questionMatchingRepository.save(existingQuestion);
 
-            List<MatchingPair> existingMatchingPair = matchingPairRepository.findByQuestionMatching(existingQuestion);
 
             QuestionMatchingResponse response = modelMapper.map(existingQuestion, QuestionMatchingResponse.class);
             response.setLessonId(existingQuestion.getLesson() != null ? existingQuestion.getLesson().getId() : null);
             response.setGrammarSectionId(existingQuestion.getGrammarSection() != null ? existingQuestion.getGrammarSection().getId() : null);
-            response.setPairs(existingMatchingPair.stream().map(
-                    matchingPair -> {
-                        MatchingPairResponse matchingPairResponse = modelMapper.map(matchingPair, MatchingPairResponse.class);
-                        matchingPairResponse.setQuestionId(response.getId());
-                        return matchingPairResponse;
-                    }).toList()
+            response.setPairs(existingQuestion.getPairs().stream().map(
+                    matchingPair -> modelMapper.map(matchingPair, MatchingPairResponse.class))
+                    .toList()
             );
             return response;
         } catch (Exception e) {

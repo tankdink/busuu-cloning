@@ -1,6 +1,8 @@
 package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
+import com.busuu.app.dtos.requests.user.RefreshTokenDTO;
+import com.busuu.app.dtos.requests.user.UserActionPasswordDTO;
 import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserLoginDTO;
 import com.busuu.app.dtos.responses.LoginResponse;
@@ -9,6 +11,7 @@ import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.Token;
 import com.busuu.app.entities.User;
+import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.services.token.ITokenService;
 import com.busuu.app.services.user.IUserService;
@@ -214,6 +217,206 @@ public class UserController {
         }
     }
 
+    @PostMapping(Constants.REFRESH_TOKEN)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> refreshToken(@RequestParam(value = "req-id", required = false) String requestId,
+                                                      @Valid @RequestBody RefreshTokenDTO refreshTokenDTO,
+                                                      BindingResult result) {
+
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            if (result.hasErrors()) {
+                List<String> errorMessages = result.getFieldErrors().stream()
+                        .map(FieldError::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .status(HttpStatus.BAD_REQUEST)
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
+                                .build()
+                );
+            }
+            User userDetail = userService.getUserDetailsFromToken(requestId, refreshTokenDTO.getRefreshToken());
+            Token jwtToken = tokenService.refreshToken(refreshTokenDTO.getRefreshToken(), userDetail);
+
+            LoginResponse loginResponse = LoginResponse.builder()
+                    .token(jwtToken.getToken())
+                    .tokenType(jwtToken.getTokenType())
+                    .username(userDetail.getUsername())
+                    .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .id(userDetail.getId())
+                    .build();
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message("Refresh token successfully")
+                            .data(loginResponse)
+                            .status(HttpStatus.OK)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+    @PutMapping(Constants.CHANGE_PASSWORD)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> changePassword (@RequestParam(value = "req-id", required = false) String requestId,
+                                                    @Valid @RequestBody UserActionPasswordDTO userActionPasswordDTO,
+                                                    BindingResult result) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            if (result.hasErrors()) {
+                List<String> errorMessages = result.getFieldErrors().stream()
+                        .map(FieldError::getDefaultMessage)
+                        .toList();
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build()
+                );
+            }
+            boolean isChange = userService.changePassword(requestId, userActionPasswordDTO);
+            if (isChange) {
+                return ResponseEntity.ok(
+                        Response.builder()
+                                .data(true)
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.CHANGE_PASSWORD_SUCCESSFULLY))
+                                .status(HttpStatus.OK)
+                                .build()
+                );
+            }
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .data(false)
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.CHANGE_PASSWORD_FAILED))
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+    @PutMapping(Constants.GENERATE_OTP)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> generateOTP(@RequestParam(value = "req-id", required = false) String requestId,
+                                                @RequestParam("email") String email) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            int isGenerateOTP = userService.generateOTP(requestId, email);
+            if (isGenerateOTP == 2) {
+                return ResponseEntity.ok(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.OTP_SUCCESSFULLY))
+                                .status(HttpStatus.OK)
+                                .build()
+                );
+            }
+            else  {
+                return ResponseEntity.ok(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_OTP_SUCCESSFULLY))
+                                .status(HttpStatus.OK)
+                                .build()
+                );
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+    @PutMapping(Constants.CHECK_OTP)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> checkOTP(@RequestParam(value = "req-id", required = false) String requestId,
+                                             @RequestParam("email") String email,
+                                             @RequestParam("otp") String otp) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            boolean isCheck = userService.checkOTP(requestId, email, otp);
+            if (isCheck) {
+                return ResponseEntity.ok(
+                        Response.builder()
+                                .data(true)
+                                .status(HttpStatus.OK)
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.CHECK_OTP_SUCCESSFULLY))
+                                .build()
+                );
+            }
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .data(false)
+                            .status(HttpStatus.BAD_REQUEST)
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.CHECK_OTP_FAILED))
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+    @PutMapping(Constants.BLOCK + Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Response> blockOrEnable(@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @PathVariable("id") String userId) {
+
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            User user = userService.blockOrEnable(requestId, userId);
+            String message = user.isActive() ? "Successfully enabled the user." : "Successfully blocked the user.";
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(message)
+                            .status(HttpStatus.OK)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+
     @GetMapping(Constants.PATH_PARAM_ID)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getUserById (@RequestParam(value = "req-id", required = false) String requestId,
@@ -241,5 +444,84 @@ public class UserController {
             );
         }
     }
+
+    @GetMapping(Constants.EMAIL_UNIQUE)
+    public ResponseEntity<Response> emailUnique(@RequestParam(value = "req-id", required = false) String requestId,
+                                                @RequestParam("email") String email) {
+
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            boolean isUnique = userService.emailUnique(requestId, email);
+            if (!isUnique) {
+                return ResponseEntity.ok(
+                        Response.builder()
+                                .status(HttpStatus.OK)
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.EMAIL_NOT_EXIST))
+                                .data(false)
+                                .build()
+                );
+            }
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.EMAIL_EXIST))
+                            .status(HttpStatus.OK)
+                            .data(true)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.ACTIVE_ACCOUNT)
+    public ResponseEntity<?> activeAccount(@RequestParam(value = "req-id", required = false) String requestId,
+                                           @RequestParam("email") String email,
+                                           @RequestParam("active-code") String activeCode) throws DataNotFoundException {
+
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            int isActive = userService.activeAccount(requestId, email, activeCode);
+            if (isActive == 1) {
+                return ResponseEntity.ok(
+                        Response.builder()
+                                .status(HttpStatus.OK)
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATED_ACCOUNT))
+                                .build()
+                );
+            } else if (isActive == 2) {
+                return ResponseEntity.ok(
+                        Response.builder()
+                                .status(HttpStatus.OK)
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATION_SUCCESSFULLY))
+                                .build()
+                );
+            }
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .status(HttpStatus.OK)
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATION_FAILED))
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
 
 }
