@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GrammarProgressRepository extends JpaRepository<GrammarProgress, String> {
 
-    GrammarProgress findGrammarProgressByIdAndUserId(String progressId, String userId);
+    GrammarProgress findByGrammarIdAndUserId(String grammarId, String userId);
 }

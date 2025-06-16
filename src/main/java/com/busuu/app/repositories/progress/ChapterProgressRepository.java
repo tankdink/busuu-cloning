@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChapterProgressRepository extends JpaRepository<ChapterProgress, String> {
 
-    ChapterProgress findChapterProgressByIdAndUserId(String progressId, String userId);
+    ChapterProgress findByChapterIdAndUserId(String progressId, String userId);
 }

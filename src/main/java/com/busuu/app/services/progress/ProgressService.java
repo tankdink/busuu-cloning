@@ -74,7 +74,7 @@ public class ProgressService implements IProgressService {
                 throw new DataNotFoundException("Cannot find list Question with Lesson ID = " + progressDTO.getLessonId());
             }
 
-            LessonProgress lessonProgress = lessonProgressRepository.findLessonProgressByIdAndUserId(progressDTO.getLessonId(), progressDTO.getUserId());
+            LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(progressDTO.getLessonId(), progressDTO.getUserId());
             double progressL = ((double) progressDTO.getNumberQuestions() / existingLesson.getQuestions().size()) * 100;
             if (lessonProgress == null) {
                 lessonProgress = LessonProgress.builder()
@@ -93,7 +93,7 @@ public class ProgressService implements IProgressService {
             Chapter existingChapter = chapterRepository.findById(progressDTO.getChapterId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Chapter with ID = " + progressDTO.getChapterId()));
 
-            ChapterProgress chapterProgress = chapterProgressRepository.findChapterProgressByIdAndUserId(progressDTO.getChapterId(), progressDTO.getUserId());
+            ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(progressDTO.getChapterId(), progressDTO.getUserId());
             if (chapterProgress == null) {
                 double progressC = newLessonProgress.getIsCompleted() ? ((double) 1 / existingChapter.getLessons().size()) * 100 : 0.0;
                 chapterProgress = ChapterProgress.builder()
@@ -114,7 +114,7 @@ public class ProgressService implements IProgressService {
             Level existingLevel = levelRepository.findById(progressDTO.getLevelId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Level with ID = " + progressDTO.getLevelId()));
 
-            LevelProgress levelProgress = levelProgressRepository.findLevelProgressByIdAndUserId(progressDTO.getLevelId(), progressDTO.getUserId());
+            LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(progressDTO.getLevelId(), progressDTO.getUserId());
             if (levelProgress == null) {
                 double progressLe = newChapterProgress.getIsCompleted() ? ((double) 1 / existingLevel.getChapters().size()) * 100 : 0.0;
                 levelProgress = LevelProgress.builder()
@@ -135,7 +135,7 @@ public class ProgressService implements IProgressService {
             Course existingCourse = courseRepository.findById(progressDTO.getCourseId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Course with ID = " + progressDTO.getCourseId()));
 
-            CourseProgress courseProgress = courseProgressRepository.findCourseProgressByIdAndUserId(progressDTO.getCourseId(), progressDTO.getUserId());
+            CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(progressDTO.getCourseId(), progressDTO.getUserId());
             if (courseProgress == null) {
                 double progressCo = newLevelProgress.getIsCompleted() ? ((double) 1 / existingCourse.getCourseLevels().size()) * 100 : 0.0;
                 courseProgress = CourseProgress.builder()
@@ -184,7 +184,7 @@ public class ProgressService implements IProgressService {
             GrammarSection existingGrammarSection = grammarSectionRepository.findById(progressDTO.getGrammarSectionId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot found Grammar Section with ID = " + progressDTO.getGrammarSectionId()));
 
-            GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findGrammarSectionProgressByIdAndUserId(progressDTO.getGrammarSectionId(), progressDTO.getUserId());
+            GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(progressDTO.getGrammarSectionId(), progressDTO.getUserId());
             double progressGs = ((double) progressDTO.getNumberQuestions() / existingGrammarSection.getQuestions().size()) * 100;
             if (grammarSectionProgress == null) {
                 grammarSectionProgress = GrammarSectionProgress.builder()
@@ -203,7 +203,7 @@ public class ProgressService implements IProgressService {
             Grammar existingGrammar = grammarRepository.findById(progressDTO.getGrammarId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Grammar with ID = " + progressDTO.getGrammarId()));
 
-            GrammarProgress grammarProgress = grammarProgressRepository.findGrammarProgressByIdAndUserId(progressDTO.getGrammarId(), progressDTO.getUserId());
+            GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(progressDTO.getGrammarId(), progressDTO.getUserId());
             if (grammarProgress == null) {
                 double progressG = newGrammarSectionProgress.getIsCompleted() ? ((double) 1 / existingGrammar.getGrammarSections().size()) * 100 : 0.0;
                 grammarProgress = GrammarProgress.builder()
@@ -214,7 +214,7 @@ public class ProgressService implements IProgressService {
                         .progress(progressG)
                         .build();
             } else {
-                if (!grammarProgress.getIsCompleted() && newGrammarSectionProgress.getIsCompleted()) {
+                if (!grammarSectionProgress.getIsCompleted() && newGrammarSectionProgress.getIsCompleted()) {
                     grammarProgress.setProgress(grammarProgress.getProgress() + 100 / existingGrammar.getGrammarSections().size());
                     grammarProgress.setIsCompleted(grammarProgress.getProgress() >= 80);
                 }
@@ -242,7 +242,7 @@ public class ProgressService implements IProgressService {
         try {
             switch (objectName) {
                 case "COURSE" -> {
-                    CourseProgress courseProgress = courseProgressRepository.findCourseProgressByIdAndUserId(objectId, userId);
+                    CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(objectId, userId);
                     if (courseProgress != null) {
                         return ProgressResponse.builder()
                                 .id(courseProgress.getId())
@@ -256,7 +256,7 @@ public class ProgressService implements IProgressService {
                     return null;
                 }
                 case "LEVEL" -> {
-                    LevelProgress levelProgress = levelProgressRepository.findLevelProgressByIdAndUserId(objectId, userId);
+                    LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(objectId, userId);
                     if (levelProgress != null) {
                         return ProgressResponse.builder()
                                 .id(levelProgress.getId())
@@ -270,7 +270,7 @@ public class ProgressService implements IProgressService {
                     return null;
                 }
                 case "CHAPTER" -> {
-                    ChapterProgress chapterProgress = chapterProgressRepository.findChapterProgressByIdAndUserId(objectId, userId);
+                    ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(objectId, userId);
                     if (chapterProgress != null) {
                         return ProgressResponse.builder()
                                 .id(chapterProgress.getId())
@@ -284,7 +284,7 @@ public class ProgressService implements IProgressService {
                     return null;
                 }
                 case "LESSON" -> {
-                    LessonProgress lessonProgress = lessonProgressRepository.findLessonProgressByIdAndUserId(objectId, userId);
+                    LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(objectId, userId);
                     if (lessonProgress != null) {
                         return ProgressResponse.builder()
                                 .id(lessonProgress.getId())
@@ -298,7 +298,7 @@ public class ProgressService implements IProgressService {
                     return null;
                 }
                 case "GRAMMAR" -> {
-                    GrammarProgress grammarProgress = grammarProgressRepository.findGrammarProgressByIdAndUserId(objectId, userId);
+                    GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(objectId, userId);
                     if (grammarProgress != null) {
                         return ProgressResponse.builder()
                                 .id(grammarProgress.getId())
@@ -312,7 +312,7 @@ public class ProgressService implements IProgressService {
                     return null;
                 }
                 case "GRAMMAR_SECTION" -> {
-                    GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findGrammarSectionProgressByIdAndUserId(objectId, userId);
+                    GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(objectId, userId);
                     if (grammarSectionProgress != null) {
                         return ProgressResponse.builder()
                                 .id(grammarSectionProgress.getId())

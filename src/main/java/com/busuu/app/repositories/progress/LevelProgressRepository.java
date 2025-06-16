@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LevelProgressRepository extends JpaRepository<LevelProgress, String> {
-    LevelProgress findLevelProgressByIdAndUserId(String progressId, String userId);
+    LevelProgress findByLevelIdAndUserId(String progressId, String userId);
 }

@@ -22,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +52,13 @@ public class QuestionFillBlankService implements IQuestionFillBlankService {
             question.setId(UUID.randomUUID().toString());
             question.setLesson(existingLesson);
             question.setGrammarSection(existingGrammarSection);
+
+            // Handle ans
+            Set<String> correctAnswers = Arrays.stream(questionFillBlankDTO.getCorrectAnswer().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+            question.setCorrectAnswer(correctAnswers);
 
             if (questionFillBlankDTO.getImage() != null) {
                 CloudinaryResponse cloudinaryResponse = uploadMedia(questionFillBlankDTO.getImage(), "image");
@@ -133,6 +143,13 @@ public class QuestionFillBlankService implements IQuestionFillBlankService {
                 }
             }
             modelMapper.map(questionFillBlankDTO, existingQuestion);
+
+            // Handle ans
+            Set<String> correctAnswers = Arrays.stream(questionFillBlankDTO.getCorrectAnswer().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+            existingQuestion.setCorrectAnswer(correctAnswers);
 
             if (questionFillBlankDTO.getImage() != null) {
                 boolean isRemove = true;

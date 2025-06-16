@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LessonProgressRepository extends JpaRepository<LessonProgress, String> {
 
-    LessonProgress findLessonProgressByIdAndUserId(String progressId, String userId);
+    LessonProgress findByLessonIdAndUserId(String lessonId, String userId);
 }
