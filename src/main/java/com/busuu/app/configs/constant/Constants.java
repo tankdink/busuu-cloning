@@ -29,8 +29,8 @@ public class Constants {
     public static final String LOGIN = "/login";
     public static final String DETAILS = "/details";
     public static final String UPLOAD_AVATAR = "/upload_avatar";
-    public static final String EMAIL_UNIQUE = "/email-unique";
-    public static final String ACTIVE_ACCOUNT = "/active-account";
+    public static final String EMAIL_UNIQUE = "/email_unique";
+    public static final String ACTIVE_ACCOUNT = "/active_account";
     public static final String REFRESH_TOKEN = "/refresh_token";
     public static final String CHANGE_PASSWORD = "/change_password";
     public static final String GENERATE_OTP = "/generate_otp";
