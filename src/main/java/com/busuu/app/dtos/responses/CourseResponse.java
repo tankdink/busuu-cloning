@@ -35,4 +35,10 @@ public class CourseResponse extends BaseResponse {
 
     @JsonProperty("level_ids")
     private List<String> levelIds;
+
+    @JsonProperty("progress")
+    private Double progress;
+
+    @JsonProperty("is_completed")
+    private Boolean isCompleted;
 }

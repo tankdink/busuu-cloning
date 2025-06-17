@@ -26,4 +26,10 @@ public class LevelResponse extends BaseResponse {
 
     @JsonProperty("description")
     private String description;
+
+    @JsonProperty("progress")
+    private Double progress;
+
+    @JsonProperty("is_completed")
+    private Boolean isCompleted;
 }

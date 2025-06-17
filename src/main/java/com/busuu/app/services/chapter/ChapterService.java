@@ -6,12 +6,16 @@ import com.busuu.app.dtos.responses.ChapterResponse;
 import com.busuu.app.entities.Chapter;
 import com.busuu.app.entities.Course;
 import com.busuu.app.entities.Level;
+import com.busuu.app.entities.User;
+import com.busuu.app.entities.progresses.ChapterProgress;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.ChapterRepository;
 import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
+import com.busuu.app.repositories.progress.ChapterProgressRepository;
+import com.busuu.app.repositories.progress.CourseProgressRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +47,8 @@ public class ChapterService implements IChapterService
     private final CourseRepository courseRepository;
 
     private final ChapterRepository chapterRepository;
+
+    private final ChapterProgressRepository chapterProgressRepository;
 
     @Override
     @Transactional
@@ -102,6 +110,9 @@ public class ChapterService implements IChapterService
     public Page<ChapterResponse> getChapters(String requestId, int page, int size, String sortBy, String sortDirection)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             //Pageable
             Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
@@ -111,11 +122,15 @@ public class ChapterService implements IChapterService
             return (chapterRepository.findAll(pageable))
                     .map(chapter ->
                     {
+                        ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), userId);
                         ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
 
                         response.setCourseId(chapter.getCourse().getId());
                         response.setLevelId(chapter.getLevel().getId());
-
+                        if (chapterProgress != null) {
+                            response.setProgress(chapterProgress.getProgress());
+                            response.setIsCompleted(chapterProgress.getIsCompleted());
+                        }
                         return response;
 
                     });

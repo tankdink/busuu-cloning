@@ -7,12 +7,15 @@ import com.busuu.app.dtos.responses.CourseResponse;
 import com.busuu.app.entities.Course;
 import com.busuu.app.entities.CourseLevel;
 import com.busuu.app.entities.Level;
+import com.busuu.app.entities.User;
+import com.busuu.app.entities.progresses.CourseProgress;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.course.CourseLevelRepository;
 import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
+import com.busuu.app.repositories.progress.CourseProgressRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +44,7 @@ public class CourseService implements ICourseService {
     private final LevelRepository levelRepository;
     private final ModelMapper modelMapper;
     private final IUploadCloudinaryService uploadCloudinaryService;
+    private final CourseProgressRepository courseProgressRepository;
 
     @Override
     @Transactional
@@ -108,6 +114,10 @@ public class CourseService implements ICourseService {
     @Override
     public CourseResponse getCourse(String requestId, String courseId) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
             Course course = courseRepository.findById(courseId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Course with ID = " + courseId));
 
@@ -117,8 +127,15 @@ public class CourseService implements ICourseService {
                     courseLevel -> courseLevel.getLevel().getId()
             ).toList();
 
+            CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(courseId, userId);
+
             CourseResponse courseResponse = modelMapper.map(course, CourseResponse.class);
             courseResponse.setLevelIds(levels);
+
+            if (courseProgress != null) {
+                courseResponse.setIsCompleted(courseProgress.getIsCompleted());
+                courseResponse.setProgress(courseProgress.getProgress());
+            }
             return courseResponse;
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get course, err="+e.getMessage());
@@ -130,6 +147,9 @@ public class CourseService implements ICourseService {
     @Override
     public Page<CourseResponse> getCourses(String requestId, int page, int size, String sortBy, String sortDirection) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             //Pageable
             Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
@@ -145,8 +165,14 @@ public class CourseService implements ICourseService {
                                 courseLevel -> courseLevel.getLevel().getId()
                         ).toList();
 
+                        CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(course.getId(), userId);
+
                         CourseResponse courseResponse = modelMapper.map(course, CourseResponse.class);
                         courseResponse.setLevelIds(levels);
+                        if (courseProgress != null) {
+                            courseResponse.setIsCompleted(courseProgress.getIsCompleted());
+                            courseResponse.setProgress(courseProgress.getProgress());
+                        }
                         return courseResponse;
                     });
 

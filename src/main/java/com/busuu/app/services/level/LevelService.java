@@ -6,16 +6,21 @@ import com.busuu.app.dtos.requests.level.LevelDTO;
 import com.busuu.app.dtos.responses.LevelResponse;
 import com.busuu.app.entities.CourseLevel;
 import com.busuu.app.entities.Level;
+import com.busuu.app.entities.User;
+import com.busuu.app.entities.progresses.LevelProgress;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.course.CourseLevelRepository;
 import com.busuu.app.repositories.LevelRepository;
+import com.busuu.app.repositories.progress.LevelProgressRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +36,7 @@ public class LevelService implements ILevelService
     private final ModelMapper modelMapper;
     private final LevelRepository levelRepository;
     private final CourseLevelRepository courseLevelRepository;
+    private final LevelProgressRepository levelProgressRepository;
 
     @Override
     @Transactional
@@ -64,10 +70,22 @@ public class LevelService implements ILevelService
     public List<LevelResponse> getLevels(String requestId)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             return levelRepository.findAll().stream().map(
-                    level -> modelMapper.map(level, LevelResponse.class
-                    )).toList();
+                    level -> {
+                        LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(level.getId(), userId);
+
+                        LevelResponse levelResponse = modelMapper.map(level, LevelResponse.class);
+
+                        if (levelProgress != null) {
+                            levelResponse.setIsCompleted(levelProgress.getIsCompleted());
+                            levelResponse.setProgress(levelProgress.getProgress());
+                        }
+                        return levelResponse;
+                    }).toList();
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get level list, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -80,11 +98,21 @@ public class LevelService implements ILevelService
     public LevelResponse getLevel(String requestId, String levelID)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             Level existingLevel = levelRepository.findById(levelID)
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find level with ID " + levelID) );
 
-            return modelMapper.map(existingLevel, LevelResponse.class);
+            LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(existingLevel.getId(), userId);
+
+            LevelResponse levelResponse =  modelMapper.map(existingLevel, LevelResponse.class);
+            if (levelProgress != null) {
+                levelResponse.setIsCompleted(levelProgress.getIsCompleted());
+                levelResponse.setProgress(levelProgress.getProgress());
+            }
+            return levelResponse;
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get level with ID " +  levelID + ", err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -96,6 +124,9 @@ public class LevelService implements ILevelService
     public List<LevelResponse> getLevelsByCourseId(String requestId, String courseId)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             //Get Course - Level list
             //Get each level entity then collect to list
@@ -105,7 +136,16 @@ public class LevelService implements ILevelService
                     .toList());
 
             return levels.stream().map(
-                    level -> modelMapper.map(level, LevelResponse.class)
+                    level -> {
+                        LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(level.getId(), userId);
+
+                        LevelResponse levelResponse = modelMapper.map(level, LevelResponse.class);
+                        if (levelProgress != null) {
+                            levelResponse.setIsCompleted(levelProgress.getIsCompleted());
+                            levelResponse.setProgress(levelProgress.getProgress());
+                        }
+                        return levelResponse;
+                    }
             ).toList();
 
         } catch (Exception e) {

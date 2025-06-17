@@ -7,6 +7,8 @@ import com.busuu.app.entities.Grammar;
 import com.busuu.app.entities.GrammarSection;
 import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.Level;
+import com.busuu.app.entities.User;
+import com.busuu.app.entities.progresses.GrammarSectionProgress;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
@@ -14,6 +16,7 @@ import com.busuu.app.repositories.grammar.GrammarRepository;
 import com.busuu.app.repositories.grammar.GrammarSectionRepository;
 import com.busuu.app.repositories.LessonRepository;
 import com.busuu.app.repositories.LevelRepository;
+import com.busuu.app.repositories.progress.GrammarSectionProgressRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,6 +49,8 @@ public class GrammarSectionService implements IGrammarSectionService
     private final LessonRepository lessonRepository;
 
     private final LevelRepository levelRepository;
+
+    private final GrammarSectionProgressRepository grammarSectionProgressRepository;
     
     
     @Override
@@ -118,6 +125,10 @@ public class GrammarSectionService implements IGrammarSectionService
     public Page<GrammarSectionResponse>getGrammarSections(String requestId, int page, int size, String sortBy, String sortDirection) {
         try {
 
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
             //Pageable
             Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
             Pageable pageable = PageRequest.of(page, size, sort);
@@ -126,12 +137,18 @@ public class GrammarSectionService implements IGrammarSectionService
             return (grammarSectionRepository.findAll(pageable))
                     .map(grammarSection ->
                     {
+                        GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(grammarSection.getId(), userId);
+
                         GrammarSectionResponse response = modelMapper.map(grammarSection, GrammarSectionResponse.class);
 
                         response.setGrammarId(grammarSection.getGrammar().getId());
                         if (grammarSection.getLesson() != null ) response.setLessonId(grammarSection.getLesson().getId());
                         response.setLevelId(grammarSection.getLevel().getId());
 
+                        if (grammarSectionProgress != null) {
+                            response.setIsCompleted(grammarSectionProgress.getIsCompleted());
+                            response.setProgress(grammarSectionProgress.getProgress());
+                        }
                         return response;
 
                     });
@@ -148,16 +165,25 @@ public class GrammarSectionService implements IGrammarSectionService
     public GrammarSectionResponse getGrammarSection(String requestId, String grammarSectionId)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             GrammarSection gettedGrammarSection = grammarSectionRepository.findById(grammarSectionId)
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find grammar section with ID " + grammarSectionId) );
 
+            GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(gettedGrammarSection.getId(), userId);
 
             //Return
             GrammarSectionResponse response = modelMapper.map(gettedGrammarSection, GrammarSectionResponse.class);
             response.setGrammarId(gettedGrammarSection.getGrammar().getId());
             response.setLessonId(gettedGrammarSection.getLesson() != null ? gettedGrammarSection.getLesson().getId() : null);
             response.setLevelId(gettedGrammarSection.getLevel().getId());
+
+            if (grammarSectionProgress != null) {
+                response.setIsCompleted(grammarSectionProgress.getIsCompleted());
+                response.setProgress(grammarSectionProgress.getProgress());
+            }
             return response;
 
         } catch (Exception e) {
@@ -171,6 +197,9 @@ public class GrammarSectionService implements IGrammarSectionService
     public List<GrammarSectionResponse> getByGrammarId(String requestId, String grammarId)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             List<GrammarSection> gettedGrammarSectionList = grammarSectionRepository.findByGrammarId(grammarId);
             if (gettedGrammarSectionList.isEmpty()) throw new DataNotFoundException("No grammar section found with grammar ID " + grammarId);
@@ -180,12 +209,18 @@ public class GrammarSectionService implements IGrammarSectionService
             return (gettedGrammarSectionList.stream()
                     .map(grammarSection ->
                     {
+                        GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(grammarSection.getId(), userId);
+
                         GrammarSectionResponse response = modelMapper.map(grammarSection, GrammarSectionResponse.class);
 
                         response.setGrammarId(grammarSection.getGrammar().getId());
                         response.setLessonId(grammarSection.getLesson() != null ? grammarSection.getLesson().getId() : null);
                         response.setLevelId(grammarSection.getLevel().getId());
 
+                        if (grammarSectionProgress != null) {
+                            response.setIsCompleted(grammarSectionProgress.getIsCompleted());
+                            response.setProgress(grammarSectionProgress.getProgress());
+                        }
                         return response;
                     })
                     .collect(Collectors.toList()));

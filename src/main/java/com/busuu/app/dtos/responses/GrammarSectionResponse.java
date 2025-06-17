@@ -37,4 +37,10 @@ public class GrammarSectionResponse extends BaseResponse
 
     @JsonProperty("level_id")
     private String levelId;
+
+    @JsonProperty("progress")
+    private Double progress;
+
+    @JsonProperty("is_completed")
+    private Boolean isCompleted;
 }

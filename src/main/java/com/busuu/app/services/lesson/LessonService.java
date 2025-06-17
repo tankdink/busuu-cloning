@@ -6,11 +6,13 @@ import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.CourseResponse;
 import com.busuu.app.dtos.responses.LessonResponse;
 import com.busuu.app.entities.*;
+import com.busuu.app.entities.progresses.LessonProgress;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.ChapterRepository;
 import com.busuu.app.repositories.LessonRepository;
+import com.busuu.app.repositories.progress.LessonProgressRepository;
 import com.busuu.app.services.cloudinary.UploadCloudinaryService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +39,7 @@ public class LessonService implements ILessonService {
     private final LessonRepository lessonRepository;
     private final ChapterRepository chapterRepository;
     private final UploadCloudinaryService uploadCloudinaryService;
+    private final LessonProgressRepository lessonProgressRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -90,12 +95,21 @@ public class LessonService implements ILessonService {
     @Override
     public LessonResponse getLesson(String requestId, String lessonId) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
             Lesson existingLesson = lessonRepository.findById(lessonId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID = " + lessonId));
 
+            LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lessonId, userId);
+
             LessonResponse lessonResponse = modelMapper.map(existingLesson, LessonResponse.class);
             lessonResponse.setChapterId(existingLesson.getChapter().getId());
-
+            if (lessonProgress != null) {
+                lessonResponse.setProgress(lessonProgress.getProgress());
+                lessonResponse.setIsCompleted(lessonProgress.getIsCompleted());
+            }
             return lessonResponse;
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get lesson, err="+e.getMessage());
@@ -107,6 +121,9 @@ public class LessonService implements ILessonService {
     @Override
     public Page<LessonResponse> getLessons(String requestId, int page, int size, String sortBy, String sortDirection) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             //Pageable
             Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
@@ -115,8 +132,15 @@ public class LessonService implements ILessonService {
             Page<Lesson> lessons = lessonRepository.findAll(pageable);
 
             return lessons.map(lesson -> {
+                LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lesson.getId(), userId);
+
                 LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);
                 lessonResponse.setChapterId(lesson.getChapter().getId());
+
+                if (lessonProgress != null) {
+                    lessonResponse.setProgress(lessonProgress.getProgress());
+                    lessonResponse.setIsCompleted(lessonProgress.getIsCompleted());
+                }
                 return lessonResponse;
             });
 
@@ -201,11 +225,22 @@ public class LessonService implements ILessonService {
     @Override
     public List<LessonResponse> getByChapterId(String requestId, String chapterId) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
             List<Lesson> lessons = lessonRepository.findByChapterId(chapterId, Sort.by(Sort.Direction.ASC, "lessonOrder"));
 
             return lessons.stream().map(lesson -> {
+                LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lesson.getId(), userId);
+
                 LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);
                 lessonResponse.setChapterId(lesson.getChapter().getId());
+
+                if (lessonProgress != null) {
+                    lessonResponse.setProgress(lessonProgress.getProgress());
+                    lessonResponse.setIsCompleted(lessonProgress.getIsCompleted());
+                }
                 return lessonResponse;
             }).toList();
         } catch (Exception e) {

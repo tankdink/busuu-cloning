@@ -13,11 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CourseProgressDTO {
-
-    @JsonProperty("user_id")
-    @NotBlank(message = "User's ID is required")
-    private String userId;
-
     @JsonProperty("course_id")
     @NotBlank(message = "Course's ID is required")
     private String courseId;

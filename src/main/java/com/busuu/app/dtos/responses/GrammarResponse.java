@@ -34,4 +34,10 @@ public class GrammarResponse extends BaseResponse
 
     @JsonProperty("language_id")
     private String languageId;
+
+    @JsonProperty("progress")
+    private Double progress;
+
+    @JsonProperty("is_completed")
+    private Boolean isCompleted;
 }

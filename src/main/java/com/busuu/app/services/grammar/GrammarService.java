@@ -6,11 +6,14 @@ import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.GrammarResponse;
 import com.busuu.app.entities.Grammar;
 import com.busuu.app.entities.Language;
+import com.busuu.app.entities.User;
+import com.busuu.app.entities.progresses.GrammarProgress;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.grammar.GrammarRepository;
 import com.busuu.app.repositories.LanguageRepository;
+import com.busuu.app.repositories.progress.GrammarProgressRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import jakarta.transaction.Transactional;
@@ -22,6 +25,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +48,8 @@ public class GrammarService implements IGrammarService
     private final GrammarRepository grammarRepository;
 
     private final IUploadCloudinaryService uploadCloudinaryService;
+
+    private final GrammarProgressRepository grammarProgressRepository;
 
     @Override
     @Transactional
@@ -108,6 +115,9 @@ public class GrammarService implements IGrammarService
     public Page<GrammarResponse> getGrammars(String requestId, int page, int size, String sortBy, String sortDirection)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             //Paging
             Sort sort;
@@ -125,10 +135,15 @@ public class GrammarService implements IGrammarService
             return (grammarRepository.findAll(pageable))
                     .map(grammar ->
                     {
+                        GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(grammar.getId(), userId);
+
                         GrammarResponse response = modelMapper.map(grammar, GrammarResponse.class);
-                        
                         response.setLanguageId(grammar.getLanguage().getId());
 
+                        if (grammarProgress != null) {
+                            response.setIsCompleted(grammarProgress.getIsCompleted());
+                            response.setProgress(grammarProgress.getProgress());
+                        }
                         return response;
                     });
 
@@ -144,15 +159,22 @@ public class GrammarService implements IGrammarService
     public GrammarResponse getGrammar(String requestId, String grammarID) 
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             Grammar gettedGrammar = grammarRepository.findById(grammarID)
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find grammar with ID " + grammarID) );
 
+            GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(gettedGrammar.getId(), userId);
 
             //Return
             GrammarResponse response = modelMapper.map(gettedGrammar, GrammarResponse.class);
             response.setLanguageId(gettedGrammar.getLanguage().getId());
-            
+            if (grammarProgress != null) {
+                response.setIsCompleted(grammarProgress.getIsCompleted());
+                response.setProgress(grammarProgress.getProgress());
+            }
             return response;
 
         } catch (Exception e) {
@@ -166,6 +188,9 @@ public class GrammarService implements IGrammarService
     public Page<GrammarResponse> getByLanguageId(String requestId, String languageID, int page, int size, String sortBy, String sortDirection)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             //Paging
             Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
@@ -179,10 +204,15 @@ public class GrammarService implements IGrammarService
             return (gettedGrammarList
                     .map(grammar ->
                     {
-                        GrammarResponse response = modelMapper.map(grammar, GrammarResponse.class);
+                        GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(grammar.getId(), userId);
 
+                        GrammarResponse response = modelMapper.map(grammar, GrammarResponse.class);
                         response.setLanguageId(grammar.getLanguage().getId());
 
+                        if (grammarProgress != null) {
+                            response.setIsCompleted(grammarProgress.getIsCompleted());
+                            response.setProgress(grammarProgress.getProgress());
+                        }
                         return response;
                     }));
 

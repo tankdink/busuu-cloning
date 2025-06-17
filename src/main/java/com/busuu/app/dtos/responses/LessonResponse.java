@@ -33,4 +33,10 @@ public class LessonResponse extends BaseResponse {
 
     @JsonProperty("chapter_id")
     private String chapterId;
+
+    @JsonProperty("progress")
+    private Double progress;
+
+    @JsonProperty("is_completed")
+    private Boolean isCompleted;
 }

@@ -13,11 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class GrammarProgressDTO {
-
-    @JsonProperty("user_id")
-    @NotBlank(message = "User's ID is required")
-    private String userId;
-
     @JsonProperty("grammar_id")
     @NotBlank(message = "Grammar's ID is required")
     private String grammarId;
