@@ -147,15 +147,23 @@ public class ChapterService implements IChapterService
     public ChapterResponse getChapter(String requestId, String chapterID) 
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             Chapter gettedChapter = chapterRepository.findById(chapterID)
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find chapter with ID " + chapterID) );
 
+            ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(gettedChapter.getId(), userId);
 
             //Return
             ChapterResponse response = modelMapper.map(gettedChapter, ChapterResponse.class);
             response.setCourseId(gettedChapter.getCourse().getId());
             response.setLevelId(gettedChapter.getLevel().getId());
+            if (chapterProgress != null) {
+                response.setProgress(chapterProgress.getProgress());
+                response.setIsCompleted(chapterProgress.getIsCompleted());
+            }
             return response;
 
         } catch (Exception e) {
@@ -169,6 +177,9 @@ public class ChapterService implements IChapterService
     public List<ChapterResponse> getByCourseIdAndLevelId(String requestId, String courseID, String levelId)
     {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
 
             List<Chapter> gettedChapterList = chapterRepository.findByCourseIdAndLevelId(courseID, levelId, Sort.by(Sort.Direction.ASC, "chapterOrder"));
             if (gettedChapterList.isEmpty()) throw new DataNotFoundException("There are no chapter found with courseID " + courseID + " and levelID " + levelId);
@@ -178,11 +189,16 @@ public class ChapterService implements IChapterService
             return (gettedChapterList.stream()
                     .map(chapter ->
                     {
+                        ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), userId);
+
                         ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
 
                         response.setCourseId(chapter.getCourse().getId());
                         response.setLevelId(chapter.getLevel().getId());
-
+                        if (chapterProgress != null) {
+                            response.setProgress(chapterProgress.getProgress());
+                            response.setIsCompleted(chapterProgress.getIsCompleted());
+                        }
                         return response;
                     })
                     .collect(Collectors.toList()));
