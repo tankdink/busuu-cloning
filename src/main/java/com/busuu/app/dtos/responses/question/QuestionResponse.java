@@ -55,6 +55,9 @@ public class QuestionResponse extends BaseResponse {
     @JsonProperty("audio_name")
     private String audioName;
 
+    @JsonProperty("script_audio")
+    private String scriptAudio;
+
     @JsonProperty("question_order")
     private Integer questionOrder;
 

@@ -27,7 +27,7 @@ public interface IQuestionService {
 
     String extractQuestionFileWord(MultipartFile file) throws IOException;
 
-    String extractQuestionFilePDF(MultipartFile file) throws IOException;
+    List<QuestionResponse> extractQuestionFilePDF(MultipartFile file) throws IOException;
 
     List<Map<String, Object>> extractQuestionFileExcel(MultipartFile file) throws IOException;
 }

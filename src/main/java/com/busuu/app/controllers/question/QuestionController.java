@@ -290,6 +290,7 @@ public class QuestionController {
                 requestId = UUID.randomUUID().toString();
             }
 
+
             String extractedDataString;
             List<Map<String, Object>> extractedDataCell;
 
@@ -319,11 +320,11 @@ public class QuestionController {
                 }
                 case "PDF":
                 {
-                    extractedDataString = questionService.extractQuestionFilePDF(file);
+                    List<QuestionResponse> extractedDataList = questionService.extractQuestionFilePDF(file);
                     return ResponseEntity.ok(
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                    .data(extractedDataString)
+                                    .data(extractedDataList)
                                     .status(HttpStatus.OK)
                                     .build()
                     );

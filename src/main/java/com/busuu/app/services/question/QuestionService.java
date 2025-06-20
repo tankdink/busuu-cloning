@@ -4,13 +4,17 @@ import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.question.QuestionFillBlankResponse;
 import com.busuu.app.dtos.responses.question.QuestionResponse;
 import com.busuu.app.dtos.responses.question.QuestionTrueFalseResponse;
+import com.busuu.app.dtos.responses.question.matching.MatchingPairResponse;
 import com.busuu.app.dtos.responses.question.matching.QuestionMatchingResponse;
+import com.busuu.app.dtos.responses.question.multiple_choice.MultipleChoiceOptionResponse;
 import com.busuu.app.dtos.responses.question.multiple_choice.QuestionMultipleChoiceResponse;
+import com.busuu.app.dtos.responses.question.ordering.OrderingPartResponse;
 import com.busuu.app.dtos.responses.question.ordering.QuestionOrderingResponse;
 import com.busuu.app.entities.questions.Question;
 import com.busuu.app.entities.questions.QuestionFillBlank;
 import com.busuu.app.entities.questions.QuestionTrueFalse;
 import com.busuu.app.entities.questions.QuestionType;
+import com.busuu.app.entities.questions.ShowType;
 import com.busuu.app.entities.questions.matching.QuestionMatching;
 import com.busuu.app.entities.questions.multiple_choice.QuestionMultipleChoice;
 import com.busuu.app.entities.questions.ordering.QuestionOrdering;
@@ -54,6 +58,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -313,7 +319,7 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public String extractQuestionFilePDF(MultipartFile file) throws IOException
+    public List<QuestionResponse> extractQuestionFilePDF(MultipartFile file) throws IOException
     {
         File pdfFile = toTempFile(file);
         try (PDDocument pdf = Loader.loadPDF(pdfFile))
@@ -326,10 +332,7 @@ public class QuestionService implements IQuestionService {
             validSyntaxPdf(pdf);
 
             //Passed
-            PDFTextStripper stripper = new PDFTextStripper();
-            String text = stripper.getText(pdf);
-
-            return text;
+            return getQuestionFromFilePdf(pdf);
 
         } finally {
             //Clean up temp file
@@ -499,6 +502,8 @@ public class QuestionService implements IQuestionService {
                 "Question type", "Show type", "Question request",
                 "Question text", "Explanation", "Script audio", "Answer"
         };
+        List<String> showType = Arrays.asList("TIP","VOCAB","NORMAL");
+        List<String> trueFalseAnswer = Arrays.asList("true","false","TRUE","FALSE");
 
         //Validate syntax for each line/question
         //Ignore first line for language
@@ -530,12 +535,16 @@ public class QuestionService implements IQuestionService {
                         );
                     }
 
+                    if (j == 1 && !showType.contains(p)) throw new InvalidFileException(" Show type must be TIP, VOCAB or NORMAL");
+
                     parts[j] = p;
 
                 }
 
                 String questionType = parts[0];
                 String answer = parts[6];
+                if (questionType == "TRUE_FALSE" && !trueFalseAnswer.contains(answer)) throw new InvalidFileException(" Answer for TRUE_FALSE question must be [true] or [false] (case-insensitive)");
+
 
                 //Validate answer's syntax
                 validSyntaxAnswer(answer, questionType);
@@ -551,6 +560,265 @@ public class QuestionService implements IQuestionService {
             String errorList = errors.stream().collect(Collectors.joining("\n"));
             throw new InvalidFileException("Invalid syntax in file:\n" + errorList);
         }
+
+    }
+
+    private List<QuestionResponse> getQuestionFromFilePdf(PDDocument pdf) throws IOException {
+        PDFTextStripper stripper = new PDFTextStripper();
+        String content = stripper.getText(pdf);
+
+        List<String> lines = Arrays.stream(content.split("\\r?\\n\\s*\\r?\\n"))
+                .map(String::trim)
+                .filter(l -> !l.isEmpty())
+                .toList();
+
+
+        //Ignore language field
+        List<String> questionLines = lines.subList(1, lines.size());
+        List<QuestionResponse> result = new ArrayList<>();
+
+        //Dummy data
+        Question dummyQuestion = new Question();
+        String dummyAnswer = null;
+
+        for (int i = 0; i < questionLines.size(); i++)
+        {
+            String line = questionLines.get(i);
+
+            try {
+
+                //Split by ];[
+                String[] parts = line.split("\\]\\s*;\\s*\\[", -1);
+
+
+                //Pass each field
+                for (int j = 0; j < 7; j++) {
+                    String p = parts[j].trim();
+                    if (j == 0 && p.startsWith("[")) p = p.substring(1);
+                    else if (j == 6 && p.endsWith("]")) p = p.substring(0, p.length() - 1);
+                    p = p.trim();
+
+                    //Add data to dummy
+                    switch (j)
+                    {
+                        case 0:
+                        {
+                            dummyQuestion.setQuestionType(QuestionType.valueOf(p));
+                            break;
+                        }
+                        case 1:
+                        {
+                            dummyQuestion.setShowType(ShowType.valueOf(p));
+                            break;
+                        }
+                        case 2:
+                        {
+                            dummyQuestion.setRequest(p);
+                            break;
+                        }
+                        case 3:
+                        {
+                            dummyQuestion.setQuestionText(p);
+                            break;
+                        }
+                        case 4:
+                        {
+                            dummyQuestion.setExplanation(p);
+                            break;
+                        }
+                        case 5:
+                        {
+                            dummyQuestion.setScriptAudio(p);
+                            break;
+                        }
+                        case 6:
+                        {
+                            dummyAnswer = p;
+                            break;
+                        }
+                        default: break;
+
+                    }
+
+                }
+
+                switch (dummyQuestion.getQuestionType()) {
+                    case FILL_BLANK:
+                    {
+                        QuestionFillBlankResponse response = modelMapper.map(dummyQuestion, QuestionFillBlankResponse.class);
+                        Set<String> answer = Arrays.stream(dummyAnswer.split(","))
+                                        .map(String::trim)
+                                        .collect(Collectors.toSet());
+                        response.setCorrectAnswer(answer);
+                        result.add(response);
+                        break;
+                    }
+                    case TRUE_FALSE:
+                    {
+                        QuestionTrueFalseResponse response = modelMapper.map(dummyQuestion, QuestionTrueFalseResponse.class);
+                        response.setCorrectAnswer(Boolean.parseBoolean(dummyAnswer));
+                        result.add(response);
+                        break;
+                    }
+                    case ORDERING:
+                    {
+                        QuestionOrderingResponse response = modelMapper.map(dummyQuestion, QuestionOrderingResponse.class);
+
+                        List<OrderingPartResponse> part = new ArrayList<>();
+
+
+                        //Split the answer
+                        String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        //Remove [ and ]
+                        String listPart = answerSplit[0].trim();
+                        if (listPart.startsWith("[")) {
+                            listPart = listPart.substring(1).trim();
+                        }
+
+                        String answerPart = answerSplit[1].trim();
+                        if (answerPart.endsWith("]")) {
+                            answerPart = answerPart.substring(0, answerPart.length() - 1).trim();
+                        }
+
+                        //Part process
+                        List<String> items = Arrays.stream(listPart.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        for (String item : items)
+                        {
+                            OrderingPartResponse partResponse = new OrderingPartResponse();
+                            partResponse.setSentencePart(item);
+                            part.add(partResponse);
+                        }
+
+                        response.setCorrectAnswer(answerPart);
+                        response.setParts(part);
+                        result.add(response);
+                        break;
+                    }
+                    case MULTIPLE_CHOICE:
+                    {
+                        QuestionMultipleChoiceResponse response = modelMapper.map(dummyQuestion, QuestionMultipleChoiceResponse.class);
+
+                        List<MultipleChoiceOptionResponse> optionResponseList = new ArrayList<>();
+
+                        //Split the answer
+                        String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        //Remove [ and ]
+                        String option = answerSplit[0].trim();
+                        if (option.startsWith("[")) {
+                            option = option.substring(1).trim();
+                        }
+
+                        String answer = answerSplit[1].trim();
+                        if (answer.endsWith("]")) {
+                            answer = answer.substring(0, answer.length() - 1).trim();
+                        }
+
+                        //Option - Answer process
+                        List<String> optionList = Arrays.stream(option.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        List<String> answerList = Arrays.stream(answer.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        if (optionList.size() != answerList.size()) throw new InvalidFileException(" Invalid number of pair in question " + (i+1) +": Both side must be equal!");
+
+
+
+                        for (int j = 0; j < optionList.size(); j++)
+                        {
+                            MultipleChoiceOptionResponse optionResponse = new MultipleChoiceOptionResponse();
+                            optionResponse.setOptionText(optionList.get(j));
+                            optionResponse.setIsCorrect(Boolean.parseBoolean(answerList.get(j)));
+                            optionResponseList.add(optionResponse);
+                        }
+
+                        response.setOptions(optionResponseList);
+                        result.add(response);
+                        break;
+                    }
+                    case MATCHING:
+                    {
+                        QuestionMatchingResponse response = modelMapper.map(dummyQuestion, QuestionMatchingResponse.class);
+
+                        List<MatchingPairResponse> pairsList = new ArrayList<>();
+
+                        //Split the answer
+                        String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        //Remove [ and ]
+                        String option = answerSplit[0].trim();
+                        if (option.startsWith("[")) {
+                            option = option.substring(1).trim();
+                        }
+
+                        String answer = answerSplit[1].trim();
+                        if (answer.endsWith("]")) {
+                            answer = answer.substring(0, answer.length() - 1).trim();
+                        }
+
+                        //Option - Answer process
+                        List<String> optionListLeft = Arrays.stream(option.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        List<String> optionListRight = Arrays.stream(answer.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        if (optionListLeft.size() != optionListRight.size()) throw new InvalidFileException(" Invalid number of pair in question " + (i+1) +": Both side must be equal!");
+
+                        for (int j = 0; j < optionListLeft.size(); j++)
+                        {
+                            UUID uuid = UUID.randomUUID();
+
+                            MatchingPairResponse pairResponse1 = new MatchingPairResponse();
+                            pairResponse1.setPairText(optionListLeft.get(j));
+                            pairResponse1.setPairOrder(1);
+                            pairResponse1.setPairKey(uuid.toString());
+                            pairsList.add(pairResponse1);
+
+                            MatchingPairResponse pairResponse2 = new MatchingPairResponse();
+                            pairResponse2.setPairText(optionListRight.get(j));
+                            pairResponse2.setPairOrder(2);
+                            pairResponse2.setPairKey(uuid.toString());
+                            pairsList.add(pairResponse2);
+                        }
+
+                        response.setPairs(pairsList);
+                        result.add(response);
+                        break;
+                    }
+                    case KNOWLEDGE:
+                    {
+                        QuestionResponse response = modelMapper.map(dummyQuestion, QuestionResponse.class);
+                        result.add(response);
+                        break;
+                    }
+                    default:
+                    {
+                        throw new InvalidFileException("There are errors in getting question type");
+                    }
+
+                }
+
+            } catch (Exception ex) {
+                throw new InvalidFileException("There are errors in reading file process: " + ex.getMessage());
+            }
+        }
+
+        return result;
 
     }
 
@@ -577,16 +845,16 @@ public class QuestionService implements IQuestionService {
             case "TRUE_FALSE":
                 //Only one bracketed value
                 if (!answer.matches("^\\s*[^\\]]+\\s*$")) {
-                    throw new InvalidFileException("Answer for " + questionType + " must be true or false or nan with KNOWLEDGE type");
+                    throw new InvalidFileException("Answer for " + questionType + " must be [true] or [false] or [nan] with KNOWLEDGE type");
                 }
                 break;
 
-            case "MULTIPLE_CHOICES":
+            case "MULTIPLE_CHOICE":
             case "ORDERING":
             case "MATCHING":
-                //Two bracketed items inside an outer bracket: [[value1],[value2]]
+                //Two bracketed items  [value1],[value2]
                 if (!answer.matches("^\\s*\\s*\\[[^\\]]+\\]\\s*,\\s*\\[[^\\]]+\\]\\s*\\s*$")) {
-                    throw new InvalidFileException("Answer for " + questionType + " must be [part1],[part2]");
+                    throw new InvalidFileException("Answer for " + questionType + " must be [[part1],[part2]]");
                 }
                 break;
 
