@@ -50,6 +50,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -321,6 +322,9 @@ public class QuestionService implements IQuestionService {
             //Valid pdf type
             validPdfType(pdf);
 
+            //Valid syntax PDF
+            validSyntaxPdf(pdf);
+
             //Passed
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(pdf);
@@ -350,7 +354,7 @@ public class QuestionService implements IQuestionService {
             List<String> headers =
                     StreamSupport.stream(headerRow.spliterator(), false)
                             .map(cell -> cell.getStringCellValue())
-                            .collect(Collectors.toList());
+                            .toList();
 
             //Data row process
             for (int i = 1; i <= sheet.getLastRowNum(); i++)
@@ -457,8 +461,96 @@ public class QuestionService implements IQuestionService {
 
     }
 
-    private void validSyntaxPdf(PDDocument pdf)
+    private void validSyntaxPdf(PDDocument pdf) throws IOException
     {
+
+        final int MAX_CONTENT_LENGTH = 200000;
+        final int MAX_QUESTIONS = 100;
+        final int MAX_FIELD_LENGTH = 300;
+
+        PDFTextStripper stripper = new PDFTextStripper();
+        String content = stripper.getText(pdf);
+
+        //Spam check
+        if (content == null || content.trim().isEmpty()) {
+            throw new InvalidFileException("File is empty or contains only whitespace/newlines");
+        }
+        if (content.length() > MAX_CONTENT_LENGTH) {
+            throw new InvalidFileException("File too long (exceeds " + MAX_CONTENT_LENGTH + " chars)");
+        }
+
+
+        //Split the whole file content to each line and collect to a list
+        List<String> lines = Arrays.stream(content.split("\\r?\\n\\s*\\r?\\n"))
+                .map(String::trim)
+                .filter(l -> !l.isEmpty())
+                .toList();
+
+        if (lines.size() > MAX_QUESTIONS + 1) {
+            throw new InvalidFileException("Too many questions in file (max " + MAX_QUESTIONS + ")");
+        }
+
+        if (lines.size() <= 1) {
+            throw new InvalidFileException("No questions found (missing content after header)");
+        }
+
+        //Field name for checking field length
+        String[] fieldNames = {
+                "Question type", "Show type", "Question request",
+                "Question text", "Explanation", "Script audio", "Answer"
+        };
+
+        //Validate syntax for each line/question
+        //Ignore first line for language
+        List<String> questionLines = lines.subList(1, lines.size());
+        List<String> errors = new ArrayList<>();
+
+        for (int i = 0; i < questionLines.size(); i++)
+        {
+            String line = questionLines.get(i);
+            try {
+
+                //Split by ];[
+                String[] parts = line.split("\\]\\s*;\\s*\\[", -1);
+                if (parts.length != 7) throw new IllegalArgumentException("Expected 7 fields but found " + parts.length);
+
+
+                //Trim and remove the [ of the question type and the ] of answer to validate answer in next step, trim other part
+                //This part code is duplicate with reading data for whole question, can be remove in the future
+                for (int j = 0; j < 7; j++)
+                {
+                    String p = parts[j].trim();
+                    if (j == 0 && p.startsWith("[")) p = p.substring(1);
+                    if (j == 6 && p.endsWith("]")) p = p.substring(0, p.length() - 1);
+                    p = p.trim();
+
+                    if (p.length() > MAX_FIELD_LENGTH) {
+                        throw new IllegalArgumentException(
+                                fieldNames[j] + " exceeds max length of " + MAX_FIELD_LENGTH + " chars"
+                        );
+                    }
+
+                    parts[j] = p;
+
+                }
+
+                String questionType = parts[0];
+                String answer = parts[6];
+
+                //Validate answer's syntax
+                validSyntaxAnswer(answer, questionType);
+
+            } catch (Exception ex) {
+                errors.add("Question " + (i+1) + ": " + ex.getMessage());
+            }
+        }
+
+        //Return all error
+        if (!errors.isEmpty())
+        {
+            String errorList = errors.stream().collect(Collectors.joining("\n"));
+            throw new InvalidFileException("Invalid syntax in file:\n" + errorList);
+        }
 
     }
 
@@ -475,5 +567,31 @@ public class QuestionService implements IQuestionService {
     private void validSyntaxExcel(Workbook wb)
     {
 
+    }
+
+    private void validSyntaxAnswer(String answer, String questionType)
+    {
+        switch (questionType) {
+            case "FILL_BLANK":
+            case "KNOWLEDGE":
+            case "TRUE_FALSE":
+                //Only one bracketed value
+                if (!answer.matches("^\\s*[^\\]]+\\s*$")) {
+                    throw new InvalidFileException("Answer for " + questionType + " must be true or false or nan with KNOWLEDGE type");
+                }
+                break;
+
+            case "MULTIPLE_CHOICES":
+            case "ORDERING":
+            case "MATCHING":
+                //Two bracketed items inside an outer bracket: [[value1],[value2]]
+                if (!answer.matches("^\\s*\\s*\\[[^\\]]+\\]\\s*,\\s*\\[[^\\]]+\\]\\s*\\s*$")) {
+                    throw new InvalidFileException("Answer for " + questionType + " must be [part1],[part2]");
+                }
+                break;
+
+            default:
+                throw new InvalidFileException("Unknown question type: " + questionType);
+        }
     }
 }
