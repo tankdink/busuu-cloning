@@ -36,10 +36,10 @@ public class WebSecurityConfig {
                             .requestMatchers(
                                     "/users/register",
                                     "/users/login",
-                                    "/users/refresh-token",
+                                    "/users/refresh_token",
                                     "/users/details",
-                                    "/users/email-unique",
-                                    "/users/active-account",
+                                    "/users/email_unique",
+                                    "/users/active_account",
 
                                     //swagger
                                     //"/v3/api-docs",

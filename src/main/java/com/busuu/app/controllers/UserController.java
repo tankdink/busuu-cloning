@@ -217,7 +217,6 @@ public class UserController {
     }
 
     @PostMapping(Constants.REFRESH_TOKEN)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> refreshToken(@RequestParam(value = "req-id", required = false) String requestId,
                                                       @Valid @RequestBody RefreshTokenDTO refreshTokenDTO,
                                                       BindingResult result) {
