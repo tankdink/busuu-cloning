@@ -90,4 +90,16 @@ public class GlobalExceptionsHandler
 
     }
 
+    @ExceptionHandler(value = InvalidFileException.class)
+    ResponseEntity<Response> handlingInvalidFileException(InvalidFileException exception)
+    {
+        return ResponseEntity.badRequest().body(
+                Response.builder()
+                        .message(exception.getMessage())
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build()
+        );
+
+    }
+
 }

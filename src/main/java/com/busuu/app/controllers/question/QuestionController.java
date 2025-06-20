@@ -12,10 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -274,5 +278,99 @@ public class QuestionController {
                             .build()
             );
         }
+    }
+
+    @PostMapping(value = Constants.FILE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Response> extractQuestionByFile(@RequestParam(value = "req-id", required = false) String requestId,
+                                                          @RequestParam("file") MultipartFile file) {
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            String extractedDataString;
+            List<Map<String, Object>> extractedDataCell;
+
+            String fileType = detectFileType(file);
+            switch(fileType) {
+                case "EXCEL":
+                {
+                    extractedDataCell = questionService.extractQuestionFileExcel(file);
+                    return ResponseEntity.ok(
+                            Response.builder()
+                                    .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                                    .data(extractedDataCell)
+                                    .status(HttpStatus.OK)
+                                    .build()
+                    );
+                }
+                case "WORD":
+                {
+                    extractedDataString = questionService.extractQuestionFileWord(file);
+                    return ResponseEntity.ok(
+                            Response.builder()
+                                    .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                                    .data(extractedDataString)
+                                    .status(HttpStatus.OK)
+                                    .build()
+                    );
+                }
+                case "PDF":
+                {
+                    extractedDataString = questionService.extractQuestionFilePDF(file);
+                    return ResponseEntity.ok(
+                            Response.builder()
+                                    .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                                    .data(extractedDataString)
+                                    .status(HttpStatus.OK)
+                                    .build()
+                    );
+                }
+                default:
+                {
+                    return ResponseEntity.ok(
+                            Response.builder()
+                                    .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": File type is not supported! (Supported file types: .xlsx, .xls, .doc, .docx, .pdf (text-based pdf only)")
+                                    .data(null)
+                                    .status(HttpStatus.OK)
+                                    .build()
+                    );
+                }
+            }
+
+
+        } catch (Exception e) {
+            log.error("Error when extract question with file, " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
+    }
+
+    public String detectFileType(MultipartFile file)
+    {
+        // Check content-type header first to detect file type
+        String ct = file.getContentType();
+        if (ct != null) {
+            if (ct.equals("application/pdf"))
+                return "PDF";
+            if (ct.equals("application/vnd.ms-excel") || ct.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                return "EXCEL";
+            if (ct.equals("application/msword") || ct.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
+                return "WORD";
+        }
+
+
+        // If there is no content-type header, check the file name extension instead
+        String name = file.getOriginalFilename().toLowerCase();
+        if (name.endsWith(".pdf")) return "PDF";
+        if (name.endsWith(".xls") || name.endsWith(".xlsx")) return "EXCEL";
+        if (name.endsWith(".doc") || name.endsWith(".docx")) return "WORD";
+        return "UNSUPPORTED";
     }
 }

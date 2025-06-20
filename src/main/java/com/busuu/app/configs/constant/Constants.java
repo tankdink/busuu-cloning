@@ -14,6 +14,7 @@ public class Constants {
     public static final String PROGRESS = "/progresses";
 
     public static final String QUESTION = "/questions";
+    public static final String FILE = "/file";
     public static final String ANSWER = "/answers";
     public static final String QUESTION_TYPE = "/{type}";
     public static final String FILL_BLANK = "/fill_blank";
