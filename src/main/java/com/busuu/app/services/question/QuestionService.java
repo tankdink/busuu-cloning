@@ -565,6 +565,7 @@ public class QuestionService implements IQuestionService {
 
     private List<QuestionResponse> getQuestionFromFilePdf(PDDocument pdf) throws IOException {
         PDFTextStripper stripper = new PDFTextStripper();
+
         String content = stripper.getText(pdf);
 
         List<String> lines = Arrays.stream(content.split("\\r?\\n\\s*\\r?\\n"))
@@ -585,6 +586,7 @@ public class QuestionService implements IQuestionService {
         {
             String line = questionLines.get(i);
 
+
             try {
 
                 //Split by ];[
@@ -592,11 +594,13 @@ public class QuestionService implements IQuestionService {
 
 
                 //Pass each field
-                for (int j = 0; j < 7; j++) {
-                    String p = parts[j].trim();
-                    if (j == 0 && p.startsWith("[")) p = p.substring(1);
-                    else if (j == 6 && p.endsWith("]")) p = p.substring(0, p.length() - 1);
-                    p = p.trim();
+                for (int j = 0; j < 7; j++)
+                {
+                    String s = parts[j].trim();
+                    if (j == 0 && s.startsWith("[")) s = s.substring(1);
+                    else if (j == 6 && s.endsWith("]")) s = s.substring(0, s.length() - 1);
+                    s = s.trim();
+                    String p = s.replaceAll("\r\n","");
 
                     //Add data to dummy
                     switch (j)
