@@ -60,6 +60,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -309,10 +311,13 @@ public class QuestionService implements IQuestionService {
         {
             try (XWPFDocument docx = new XWPFDocument(file.getInputStream()))
             {
-                return docx.getParagraphs()
-                        .stream()
-                        .map(XWPFParagraph::getText)
-                        .collect(Collectors.joining("\n"));
+
+                //Valid overall syntax
+                validSyntaxWordDocx(docx);
+
+                //Return data if passed
+                return getQuestionFromFileDocx(docx);
+
             }
         }
 
@@ -469,7 +474,7 @@ public class QuestionService implements IQuestionService {
 
         final int MAX_CONTENT_LENGTH = 200000;
         final int MAX_QUESTIONS = 100;
-        final int MAX_FIELD_LENGTH = 300;
+        final int MAX_FIELD_LENGTH = 5000;
 
         PDFTextStripper stripper = new PDFTextStripper();
         String content = stripper.getText(pdf);
@@ -829,6 +834,61 @@ public class QuestionService implements IQuestionService {
     private void validSyntaxWordDocx(XWPFDocument docx)
     {
 
+        final int MAX_CONTENT_LENGTH = 200000;
+        final int MAX_QUESTIONS = 100;
+
+        //Get all content as a String
+        String content = docx.getParagraphs().stream()
+                .map(XWPFParagraph::getText)
+                .collect(Collectors.joining("\n"));
+
+        //Spam checks
+        if (content.trim().isEmpty()) {
+            throw new InvalidFileException("File is empty or contains only whitespace/newlines");
+        }
+        if (content.length() > MAX_CONTENT_LENGTH) {
+            throw new InvalidFileException("File too long (exceeds " + MAX_CONTENT_LENGTH + " chars)");
+        }
+
+        //Split into blocks on blank-line boundaries
+        List<String> blocks = Arrays.stream(content.split("\\r?\\n\\s*\\r?\\n"))
+                .map(String::trim)
+                .filter(b -> !b.isEmpty())
+                .collect(Collectors.toList());
+
+        //Valid number of question
+        if (blocks.size() <= 1) {
+            throw new InvalidFileException("No questions found (missing content after header)");
+        }
+        int questionCount = blocks.size() - 1;
+        if (questionCount > MAX_QUESTIONS) {
+            throw new InvalidFileException("Too many questions in file (max " + MAX_QUESTIONS + ")");
+        }
+
+        //Validate labels for each question type
+        List<String> errors = new ArrayList<>();
+
+        for (int i = 1; i < blocks.size(); i++)
+        {
+            String block = blocks.get(i);
+            List<String> missing = validLabelAnswer(block);
+            for (String m : missing) {
+                errors.add("Error in question " + (i) + ": \n" + m);
+            }
+        }
+
+        if (!errors.isEmpty())
+        {
+            String errorList = errors.stream().collect(Collectors.joining("\n"));
+            throw new InvalidFileException("Invalid syntax in file:\n" + errorList);
+        }
+    }
+
+    private String getQuestionFromFileDocx(XWPFDocument docx)
+    {
+        return docx.getParagraphs().stream()
+                .map(XWPFParagraph::getText)
+                .collect(Collectors.joining("\n"));
     }
 
     private void validSyntaxWordDoc(HWPFDocument doc)
@@ -865,5 +925,82 @@ public class QuestionService implements IQuestionService {
             default:
                 throw new InvalidFileException("Unknown question type: " + questionType);
         }
+    }
+
+    private List<String> validLabelAnswer(String block)
+    {
+
+        //Error store
+        List<String> missing = new ArrayList<>();
+
+        //Split for each line end
+        String[] lines = block.split("\\r?\\n");
+
+        //Get the header of question
+        Pattern hdr = Pattern.compile("^Question\\s+\\d+:\\s*\\[(.+?)],\\s*\\[(.+?)]");
+
+        //Find the header, except the question request
+        Matcher mh = hdr.matcher(lines[0].trim());
+
+        //Found header or not
+        if (!mh.find()) {
+            missing.add("Malformed header; expected “Question x: [TYPE], [SHOW] …” but found: " + lines[0]);
+        }
+        else
+        {
+            //Get the question type, which is the capture group 1 in regex
+            String type = mh.group(1);
+
+            //Label for each type
+            switch (type)
+            {
+                case "KNOWLEDGE":
+                    break;
+                case "MULTIPLE_CHOICE":
+                    if (!containsLabel(lines, "Hint:"))
+                        missing.add("Missing label: Hint:");
+                    if (!containsLabel(lines, "Explanation:"))
+                        missing.add("Missing label: Explanation:");
+                    break;
+                case "ORDERING":
+                    if (!containsLabel(lines, "Answer:"))
+                        missing.add("Missing label: Answer:");
+                    if (!containsLabel(lines, "Correct answer:"))
+                        missing.add("Missing label: Correct answer:");
+                    if (!containsLabel(lines, "Hint:"))
+                        missing.add("Missing label: Hint:");
+                    if (!containsLabel(lines, "Explanation:"))
+                        missing.add("Missing label: Explanation:");
+                    break;
+                case "MATCHING":
+                    if (!containsLabel(lines, "Answer A:"))
+                        missing.add("Missing label: Answer A:");
+                    if (!containsLabel(lines, "Answer B:"))
+                        missing.add("Missing label: Answer B:");
+                    if (!containsLabel(lines, "Hint:"))
+                        missing.add("Missing label: Hint:");
+                    if (!containsLabel(lines, "Explanation:"))
+                        missing.add("Missing label: Explanation:");
+                    break;
+                case "FILL_BLANK":
+                case "TRUE_FALSE":
+                    if (!containsLabel(lines, "Answer:"))
+                        missing.add("Missing label: Answer:");
+                    if (!containsLabel(lines, "Hint:"))
+                        missing.add("Missing label: Hint:");
+                    if (!containsLabel(lines, "Explanation:"))
+                        missing.add("Missing label: Explanation:");
+                    break;
+                default:
+                    missing.add("Unknown question type: " + type);
+            }
+        }
+
+        return missing;
+    }
+
+    private boolean containsLabel(String[] lines, String label)
+    {
+        return Arrays.stream(lines).anyMatch(l -> l.trim().startsWith(label));
     }
 }
