@@ -25,7 +25,7 @@ public interface IQuestionService {
 
     void deleteByQuestionId (String requestId, String questionId);
 
-    String extractQuestionFileWord(MultipartFile file) throws IOException;
+    List<QuestionResponse> extractQuestionFileWord(MultipartFile file) throws IOException;
 
     List<QuestionResponse> extractQuestionFilePDF(MultipartFile file) throws IOException;
 

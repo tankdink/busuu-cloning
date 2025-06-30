@@ -295,7 +295,7 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public String extractQuestionFileWord(MultipartFile file) throws IOException
+    public List<QuestionResponse> extractQuestionFileWord(MultipartFile file) throws IOException
     {
         String name = file.getOriginalFilename().toLowerCase();
 
@@ -304,7 +304,8 @@ public class QuestionService implements IQuestionService {
         {
             try (HWPFDocument doc = new HWPFDocument(file.getInputStream()))
             {
-                return doc.getDocumentText();
+                return null;
+                //return doc.getDocumentText();
             }
         }
         else //.docx file
@@ -884,11 +885,221 @@ public class QuestionService implements IQuestionService {
         }
     }
 
-    private String getQuestionFromFileDocx(XWPFDocument docx)
+    private List<QuestionResponse> getQuestionFromFileDocx(XWPFDocument docx)
     {
-        return docx.getParagraphs().stream()
+        //Get all content as a String
+        String content = docx.getParagraphs().stream()
                 .map(XWPFParagraph::getText)
                 .collect(Collectors.joining("\n"));
+
+        //Split into blocks on blank-line boundaries
+        List<String> blocks = Arrays.stream(content.split("\\r?\\n\\s*\\r?\\n"))
+                .map(String::trim)
+                .filter(b -> !b.isEmpty())
+                .collect(Collectors.toList());
+
+        //Skip the first block (language header)
+        List<String> questions = blocks.subList(1, blocks.size());
+
+        //Result list
+        List<QuestionResponse> result = new ArrayList<>();
+
+        Pattern headerPat = Pattern.compile(
+                "^Question\\s+\\d+:\\s*\\[(.+?)],\\s*\\[(.+?)]\\s*(.*)$"
+        );
+
+        //Dummy data
+        Question dummyQuestion = new Question();
+        String dummyAnswer = null;
+
+        for (String block : questions)
+        {
+            String[] lines = block.split("\\r?\\n");
+
+            try {
+
+            // .. common data ...
+
+
+            // ... answer process down here ...
+                switch (dummyQuestion.getQuestionType()) {
+                    case FILL_BLANK:
+                    {
+                        QuestionFillBlankResponse response = modelMapper.map(dummyQuestion, QuestionFillBlankResponse.class);
+                        Set<String> answer = Arrays.stream(dummyAnswer.split(","))
+                                .map(String::trim)
+                                .collect(Collectors.toSet());
+                        response.setCorrectAnswer(answer);
+                        result.add(response);
+                        break;
+                    }
+                    case TRUE_FALSE:
+                    {
+                        QuestionTrueFalseResponse response = modelMapper.map(dummyQuestion, QuestionTrueFalseResponse.class);
+                        response.setCorrectAnswer(Boolean.parseBoolean(dummyAnswer));
+                        result.add(response);
+                        break;
+                    }
+                    case ORDERING:
+                    {
+                        QuestionOrderingResponse response = modelMapper.map(dummyQuestion, QuestionOrderingResponse.class);
+
+                        List<OrderingPartResponse> part = new ArrayList<>();
+
+
+                        //Split the answer
+                        String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        //Remove [ and ]
+                        String listPart = answerSplit[0].trim();
+                        if (listPart.startsWith("[")) {
+                            listPart = listPart.substring(1).trim();
+                        }
+
+                        String answerPart = answerSplit[1].trim();
+                        if (answerPart.endsWith("]")) {
+                            answerPart = answerPart.substring(0, answerPart.length() - 1).trim();
+                        }
+
+                        //Part process
+                        List<String> items = Arrays.stream(listPart.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        for (String item : items)
+                        {
+                            OrderingPartResponse partResponse = new OrderingPartResponse();
+                            partResponse.setSentencePart(item);
+                            part.add(partResponse);
+                        }
+
+                        response.setCorrectAnswer(answerPart);
+                        response.setParts(part);
+                        result.add(response);
+                        break;
+                    }
+                    case MULTIPLE_CHOICE:
+                    {
+                        QuestionMultipleChoiceResponse response = modelMapper.map(dummyQuestion, QuestionMultipleChoiceResponse.class);
+
+                        List<MultipleChoiceOptionResponse> optionResponseList = new ArrayList<>();
+
+                        //Split the answer
+                        String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        //Remove [ and ]
+                        String option = answerSplit[0].trim();
+                        if (option.startsWith("[")) {
+                            option = option.substring(1).trim();
+                        }
+
+                        String answer = answerSplit[1].trim();
+                        if (answer.endsWith("]")) {
+                            answer = answer.substring(0, answer.length() - 1).trim();
+                        }
+
+                        //Option - Answer process
+                        List<String> optionList = Arrays.stream(option.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        List<String> answerList = Arrays.stream(answer.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        if (optionList.size() != answerList.size()) throw new InvalidFileException(" Invalid number of pair in question: Both side must be equal!");
+
+
+
+                        for (int j = 0; j < optionList.size(); j++)
+                        {
+                            MultipleChoiceOptionResponse optionResponse = new MultipleChoiceOptionResponse();
+                            optionResponse.setOptionText(optionList.get(j));
+                            optionResponse.setIsCorrect(Boolean.parseBoolean(answerList.get(j)));
+                            optionResponseList.add(optionResponse);
+                        }
+
+                        response.setOptions(optionResponseList);
+                        result.add(response);
+                        break;
+                    }
+                    case MATCHING:
+                    {
+                        QuestionMatchingResponse response = modelMapper.map(dummyQuestion, QuestionMatchingResponse.class);
+
+                        List<MatchingPairResponse> pairsList = new ArrayList<>();
+
+                        //Split the answer
+                        String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        //Remove [ and ]
+                        String option = answerSplit[0].trim();
+                        if (option.startsWith("[")) {
+                            option = option.substring(1).trim();
+                        }
+
+                        String answer = answerSplit[1].trim();
+                        if (answer.endsWith("]")) {
+                            answer = answer.substring(0, answer.length() - 1).trim();
+                        }
+
+                        //Option - Answer process
+                        List<String> optionListLeft = Arrays.stream(option.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        List<String> optionListRight = Arrays.stream(answer.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+
+                        if (optionListLeft.size() != optionListRight.size()) throw new InvalidFileException(" Invalid number of pair in question Both side must be equal!");
+
+                        for (int j = 0; j < optionListLeft.size(); j++)
+                        {
+                            UUID uuid = UUID.randomUUID();
+
+                            MatchingPairResponse pairResponse1 = new MatchingPairResponse();
+                            pairResponse1.setPairText(optionListLeft.get(j));
+                            pairResponse1.setPairOrder(1);
+                            pairResponse1.setPairKey(uuid.toString());
+                            pairsList.add(pairResponse1);
+
+                            MatchingPairResponse pairResponse2 = new MatchingPairResponse();
+                            pairResponse2.setPairText(optionListRight.get(j));
+                            pairResponse2.setPairOrder(2);
+                            pairResponse2.setPairKey(uuid.toString());
+                            pairsList.add(pairResponse2);
+                        }
+
+                        response.setPairs(pairsList);
+                        result.add(response);
+                        break;
+                    }
+                    case KNOWLEDGE:
+                    {
+                        QuestionResponse response = modelMapper.map(dummyQuestion, QuestionResponse.class);
+                        result.add(response);
+                        break;
+                    }
+                    default:
+                    {
+                        throw new InvalidFileException("There are errors in getting question type");
+                    }
+
+                }
+
+            } catch (Exception ex) {
+                throw new InvalidFileException("There are errors in reading file process: " + ex.getMessage());
+            }
+        }
+
+
+        return result;
     }
 
     private void validSyntaxWordDoc(HWPFDocument doc)

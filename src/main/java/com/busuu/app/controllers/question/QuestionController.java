@@ -309,11 +309,11 @@ public class QuestionController {
                 }
                 case "WORD":
                 {
-                    extractedDataString = questionService.extractQuestionFileWord(file);
+                    List<QuestionResponse> extractedDataList = questionService.extractQuestionFileWord(file);
                     return ResponseEntity.ok(
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                    .data(extractedDataString)
+                                    .data(extractedDataList)
                                     .status(HttpStatus.OK)
                                     .build()
                     );
