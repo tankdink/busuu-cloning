@@ -20,6 +20,8 @@ public interface IUserService {
 
     User getUserDetailsFromToken (String requestId, String token) throws Exception;
 
+    User getUserDetailsFromRefreshToken (String requestId, String refreshToken) throws Exception;
+
     UserResponse updateUser (String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception;
 
     Page<UserResponse> getUsersByRole (String requestId, String roleName, int page, int size, String sortBy, String sortDirection);

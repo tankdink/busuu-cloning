@@ -39,9 +39,9 @@ public class QuestionDTO {
     private String questionText;
 
     @JsonProperty("mark")
-    @NotNull(message = "Mark is required")
-    @Min(value = 1, message = "Mark must be at least 1")
-    @Max(value = 10, message = "Mark cannot exceed 10")
+//    @NotNull(message = "Mark is required")
+//    @Min(value = 1, message = "Mark must be at least 1")
+//    @Max(value = 10, message = "Mark cannot exceed 10")
     private Integer mark;
 
     @JsonProperty("explanation")
@@ -64,6 +64,9 @@ public class QuestionDTO {
 
     @JsonProperty("lesson_id")
     private String lessonId;
+
+    @JsonProperty("hint")
+    private String hint;
 
     @JsonProperty("grammar_section_id")
     private String grammarSectionId;

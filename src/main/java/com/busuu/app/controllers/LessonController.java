@@ -9,6 +9,8 @@ import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.lesson.ILessonService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,7 @@ public class LessonController {
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @Valid @ModelAttribute LessonDTO lessonDTO,
@@ -79,6 +82,7 @@ public class LessonController {
     }
 
     @GetMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getLesson (@RequestParam(value = "req-id", required = false) String requestId,
 
@@ -118,6 +122,7 @@ public class LessonController {
     }
 
     @GetMapping(value = Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                @PathVariable("id") String lessonId) {
@@ -146,6 +151,7 @@ public class LessonController {
     }
 
     @GetMapping(value = Constants.CHAPTER + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getByChapterId (@RequestParam(value = "req-id", required = false) String requestId,
                                                @PathVariable("id") String chapterId) {
@@ -174,6 +180,7 @@ public class LessonController {
     }
 
     @PutMapping(value = Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String lessonId,
@@ -220,6 +227,7 @@ public class LessonController {
     }
 
     @DeleteMapping(value = Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String lessonId) {

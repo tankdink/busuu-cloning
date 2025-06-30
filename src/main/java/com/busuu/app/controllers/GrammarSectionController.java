@@ -9,6 +9,8 @@ import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.grammarSection.IGrammarSectionService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,7 @@ public class GrammarSectionController
     private final LocalizationUtils localizationUtils;
 
     @PostMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertGrammarSection(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @Valid @RequestBody GrammarSectionDTO newGrammarSectionDTO)
@@ -68,6 +71,7 @@ public class GrammarSectionController
     }
 
     @GetMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getGrammarSections(@RequestParam(value = "req-id", required = false) String requestId,
 
@@ -112,6 +116,7 @@ public class GrammarSectionController
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getGrammarSection(@RequestParam(value = "req-id", required = false) String requestId,
                                                @PathVariable("id") String grammarSectionId)
@@ -147,6 +152,7 @@ public class GrammarSectionController
     }
 
     @GetMapping(Constants.GRAMMAR + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getByGrammarId(@RequestParam(value = "req-id", required = false) String requestId,
                                                             @PathVariable("id") String grammarId)
@@ -182,6 +188,7 @@ public class GrammarSectionController
     }
 
     @PutMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateGrammarSection(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String grammarSectionId,
@@ -218,6 +225,7 @@ public class GrammarSectionController
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteGrammarSection(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String grammarSectionId)

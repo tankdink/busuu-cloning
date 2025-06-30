@@ -129,16 +129,34 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserDetailsFromToken(String requestId, String token) throws Exception {
-        if (jwtTokenUtil.isTokenExpired(token)) {
-            throw new Exception("Token is expired");
+        try {
+            if (jwtTokenUtil.isTokenExpired(token)) {
+                throw new Exception("Token is expired");
+            }
+            String email = jwtTokenUtil.extractEmail(token);
+            Optional<User> user = userRepository.findByEmail(email);
+            if (user.isPresent()) {
+                return user.get();
+            }
+            else {
+                throw new Exception("User not found");
+            }
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get detail user from token, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
-        String email = jwtTokenUtil.extractEmail(token);
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isPresent()) {
-            return user.get();
-        }
-        else {
-            throw new Exception("User not found");
+    }
+
+    @Override
+    public User getUserDetailsFromRefreshToken(String requestId, String refreshToken) throws Exception {
+        try {
+            Token existingToken = tokenRepository.findByRefreshToken(refreshToken);
+            return getUserDetailsFromToken(requestId, existingToken.getToken());
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get detail user from fresh token, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
     }
 

@@ -237,7 +237,7 @@ public class UserController {
                                 .build()
                 );
             }
-            User userDetail = userService.getUserDetailsFromToken(requestId, refreshTokenDTO.getRefreshToken());
+            User userDetail = userService.getUserDetailsFromRefreshToken(requestId, refreshTokenDTO.getRefreshToken());
             Token jwtToken = tokenService.refreshToken(refreshTokenDTO.getRefreshToken(), userDetail);
 
             LoginResponse loginResponse = LoginResponse.builder()

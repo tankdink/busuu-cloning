@@ -58,8 +58,8 @@ public class Question extends BaseEntity {
     @Column(name = "audio_name")
     private String audioName;
 
-    @Column(name = "script_audio", columnDefinition = "TEXT")
-    private String scriptAudio;
+    @Column(name = "hint", columnDefinition = "TEXT")
+    private String hint;
 
     @Column(name = "question_order")
     private Integer questionOrder;

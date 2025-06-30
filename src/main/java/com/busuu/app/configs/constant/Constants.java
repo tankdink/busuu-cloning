@@ -55,6 +55,7 @@ public class Constants {
         public static final String ERR_GENERATE_OTP = "ERR_GENERATE_OTP";
         public static final String ERR_CHECK_OTP = "ERR_CHECK_OTP";
 
+
         // Role
         public static final String ERR_CREATE_ROLE = "ERR_CREATE_ROLE";
         public static final String ERR_GET_ROLE = "ERR_GET_ROLE";

@@ -9,6 +9,8 @@ import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.progress.IProgressService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ public class ProgressController {
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(Constants.COURSE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> upSertCourseProgress(@RequestParam(value = "req-id", required = false) String requestId,
                                                          @Valid @RequestBody CourseProgressDTO courseProgressDTO,
@@ -84,6 +87,7 @@ public class ProgressController {
     }
 
     @PostMapping(Constants.GRAMMAR)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> upSertGrammarProgress(@RequestParam(value = "req-id", required = false) String requestId,
                                                          @Valid @RequestBody GrammarProgressDTO grammarProgressDTO,
@@ -134,56 +138,57 @@ public class ProgressController {
         }
     }
 
-    @PostMapping()
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<Response> getObjectProgress(@RequestParam(value = "req-id", required = false) String requestId,
-                                                         @RequestParam("object_name") String objectName,
-                                                         @Valid @RequestBody ProgressDTO progressRequest,
-                                                         BindingResult result)
-    {
-        try {
-
-            if (requestId == null || requestId.isEmpty()) {
-                requestId = UUID.randomUUID().toString();
-            }
-
-            if (result.hasErrors()) {
-                List<String> errorMessages = result.getFieldErrors().stream()
-                        .map(FieldError::getDefaultMessage)
-                        .toList();
-
-                // Log error
-                log.error(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()));
-
-                return ResponseEntity.badRequest().body(
-                        Response.builder()
-                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
-                                .status(HttpStatus.BAD_REQUEST)
-                                .build()
-                );
-            }
-
-            ProgressResponse progressResponse = progressService.getObjectProgress(requestId, progressRequest.getObjectId(), progressRequest.getUserId(), objectName);
-
-            //Return response
-            return ResponseEntity.ok().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
-                            .data(progressResponse)
-                            .build()
-            );
-
-        } catch (Exception e) {
-            log.error("Error when get object progress: " + e.getMessage());
-            return ResponseEntity.badRequest().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
-                            .build()
-            );
-        }
-    }
+//    @PostMapping()
+//    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+//    @PreAuthorize("hasRole('ROLE_USER')")
+//    public ResponseEntity<Response> getObjectProgress(@RequestParam(value = "req-id", required = false) String requestId,
+//                                                         @RequestParam("object_name") String objectName,
+//                                                         @Valid @RequestBody ProgressDTO progressRequest,
+//                                                         BindingResult result)
+//    {
+//        try {
+//
+//            if (requestId == null || requestId.isEmpty()) {
+//                requestId = UUID.randomUUID().toString();
+//            }
+//
+//            if (result.hasErrors()) {
+//                List<String> errorMessages = result.getFieldErrors().stream()
+//                        .map(FieldError::getDefaultMessage)
+//                        .toList();
+//
+//                // Log error
+//                log.error(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()));
+//
+//                return ResponseEntity.badRequest().body(
+//                        Response.builder()
+//                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
+//                                .status(HttpStatus.BAD_REQUEST)
+//                                .build()
+//                );
+//            }
+//
+//            ProgressResponse progressResponse = progressService.getObjectProgress(requestId, progressRequest.getObjectId(), progressRequest.getUserId(), objectName);
+//
+//            //Return response
+//            return ResponseEntity.ok().body(
+//                    Response.builder()
+//                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+//                            .status(HttpStatus.OK)
+//                            .data(progressResponse)
+//                            .build()
+//            );
+//
+//        } catch (Exception e) {
+//            log.error("Error when get object progress: " + e.getMessage());
+//            return ResponseEntity.badRequest().body(
+//                    Response.builder()
+//                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+//                            .status(HttpStatus.BAD_REQUEST)
+//                            .build()
+//            );
+//        }
+//    }
 
 
 }

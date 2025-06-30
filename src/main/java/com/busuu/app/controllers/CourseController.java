@@ -8,6 +8,8 @@ import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.course.ICourseService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,7 @@ public class CourseController {
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertCourse (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @Valid @ModelAttribute CourseDTO courseDTO,
@@ -79,6 +82,7 @@ public class CourseController {
     }
 
     @GetMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getCourses (@RequestParam(value = "req-id", required = false) String requestId,
 
@@ -118,6 +122,7 @@ public class CourseController {
     }
 
     @GetMapping(value = Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getCourse (@RequestParam(value = "req-id", required = false) String requestId,
                                                 @PathVariable("id") String courseId) {
@@ -146,6 +151,7 @@ public class CourseController {
     }
 
     @PutMapping(value = Constants.PATH_PARAM_ID, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateCourse (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String courseId,
@@ -192,6 +198,7 @@ public class CourseController {
     }
 
     @DeleteMapping(value = Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Response> deleteCourse (@RequestParam(value = "req-id", required = false) String requestId,
                                                @PathVariable("id") String courseId) {

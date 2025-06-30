@@ -8,6 +8,8 @@ import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.chapter.IChapterService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class ChapterController
     private final LocalizationUtils localizationUtils;
 
     @PostMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                                 @Valid @RequestBody ChapterDTO newChapterDTO)
@@ -67,6 +70,7 @@ public class ChapterController
 
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                              @PathVariable("id") String chapterId)
@@ -102,6 +106,7 @@ public class ChapterController
     }
 
     @GetMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getListChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                                    @RequestParam(value = "course_id",required = false) String courseId,
@@ -173,6 +178,7 @@ public class ChapterController
     }
 
     @PutMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                                 @PathVariable("id") String chapterId,
@@ -209,6 +215,7 @@ public class ChapterController
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteChapter(@RequestParam(value = "req-id", required = false) String requestId,
                                                     @PathVariable("id") String chapterId)

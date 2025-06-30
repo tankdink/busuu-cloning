@@ -18,7 +18,7 @@ public interface LessonRepository extends JpaRepository<Lesson, String> {
 
     boolean existsByLessonOrderAndChapterId (Integer lessonOrder, String chapterId);
 
-    boolean existsByChapterId (String chapterId);
+    boolean existsByIdAndChapterId (String lessonId, String chapterId);
 
     @Query(value = "SELECT MAX(lesson_order) FROM lesson WHERE chapter_id = :chapterId", nativeQuery = true)
     Integer findMaxGrammarSectionOrderByChapterId(@Param("chapterId") String chapterId);
