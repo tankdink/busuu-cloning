@@ -10,5 +10,5 @@ public interface IProgressService {
 
     ProgressResponse upSertGrammarProgress (String requestId, GrammarProgressDTO progressDTO);
 
-    ProgressResponse getObjectProgress (String requestId, String objectId, String userId, String objectName);
+//    ProgressResponse getObjectProgress (String requestId, String objectId, String userId, String objectName);
 }

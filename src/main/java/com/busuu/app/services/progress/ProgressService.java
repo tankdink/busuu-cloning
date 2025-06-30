@@ -17,6 +17,12 @@ import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.grammar.GrammarRepository;
 import com.busuu.app.repositories.grammar.GrammarSectionRepository;
 import com.busuu.app.repositories.progress.*;
+import com.busuu.app.services.progress.chapter.IChapterProgressService;
+import com.busuu.app.services.progress.course.ICourseProgressService;
+import com.busuu.app.services.progress.grammar.IGrammarProgressService;
+import com.busuu.app.services.progress.grammar_section.IGrammarSectionProgressService;
+import com.busuu.app.services.progress.lesson.ILessonProgressService;
+import com.busuu.app.services.progress.level.ILevelProgressService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +32,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -34,12 +42,19 @@ import java.util.UUID;
 public class ProgressService implements IProgressService {
 
     // Repository Progress
-    private final CourseProgressRepository courseProgressRepository;
-    private final LevelProgressRepository levelProgressRepository;
-    private final ChapterProgressRepository chapterProgressRepository;
-    private final LessonProgressRepository lessonProgressRepository;
-    private final GrammarProgressRepository grammarProgressRepository;
-    private final GrammarSectionProgressRepository grammarSectionProgressRepository;
+//    private final CourseProgressRepository courseProgressRepository;
+//    private final LevelProgressRepository levelProgressRepository;
+//    private final ChapterProgressRepository chapterProgressRepository;
+//    private final LessonProgressRepository lessonProgressRepository;
+//    private final GrammarProgressRepository grammarProgressRepository;
+//    private final GrammarSectionProgressRepository grammarSectionProgressRepository;
+
+    private final ICourseProgressService courseProgressService;
+    private final ILevelProgressService levelProgressService;
+    private final IChapterProgressService chapterProgressService;
+    private final ILessonProgressService lessonProgressService;
+    private final IGrammarProgressService grammarProgressService;
+    private final IGrammarSectionProgressService grammarSectionProgressService;
 
     // Repository Entity
     private final LessonRepository lessonRepository;
@@ -57,122 +72,71 @@ public class ProgressService implements IProgressService {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
-
             User existingUser = userRepository.findById(userId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
 
-            // Check constraints
-            boolean constraintCourseLevel = chapterRepository.existsByCourseIdAndLevelId(progressDTO.getCourseId(), progressDTO.getLevelId());
-            if (constraintCourseLevel) {
-                boolean constraintLessonChapter = lessonRepository.existsByChapterId(progressDTO.getChapterId());
-                if (!constraintLessonChapter) {
-                    throw new DataNotFoundException("Cannot find Lesson ID = " + progressDTO.getLessonId() + "of Chapter ID = " + progressDTO.getChapterId());
-                }
-            }
-            else {
-                throw new DataNotFoundException("Cannot find Chapter ID = " + progressDTO.getChapterId() + " of Level ID = " + progressDTO.getLevelId() + " of Course ID = " + progressDTO.getCourseId());
-            }
+            // Validate constraints Course – Level – Chapter – Lesson
+            validateCourseStructure(progressDTO);
 
-            Lesson existingLesson = lessonRepository.findById(progressDTO.getLessonId())
+            // Find lesson
+            Lesson lesson = lessonRepository.findById(progressDTO.getLessonId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID = " + progressDTO.getLessonId()));
 
-            if (existingLesson.getQuestions().isEmpty()) {
+            if (lesson.getQuestions().isEmpty()) {
                 throw new DataNotFoundException("Cannot find list Question with Lesson ID = " + progressDTO.getLessonId());
             }
 
-            LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(progressDTO.getLessonId(), userId);
-            double progressL = ((double) progressDTO.getNumberQuestions() / existingLesson.getQuestions().size()) * 100;
-            if (lessonProgress == null) {
-                lessonProgress = LessonProgress.builder()
-                        .id(UUID.randomUUID().toString())
-                        .isCompleted(progressL >= 80)
-                        .user(existingUser)
-                        .lesson(existingLesson)
-                        .progress(progressL)
-                        .build();
-            } else {
-                lessonProgress.setProgress(progressL >= lessonProgress.getProgress() ? progressL : lessonProgress.getProgress());
-                lessonProgress.setIsCompleted(lessonProgress.getProgress() >= 80);
-            }
-            LessonProgress newLessonProgress = lessonProgressRepository.save(lessonProgress);
+            // UPSERT
 
-            Chapter existingChapter = chapterRepository.findById(progressDTO.getChapterId())
+            // LessonProgress
+            LessonProgress lessonProgress = lessonProgressService.upsertLessonProgress(lesson, existingUser, progressDTO.getNumberQuestions());
+
+            // ChapterProgress
+            Chapter chapter = chapterRepository.findById(progressDTO.getChapterId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Chapter with ID = " + progressDTO.getChapterId()));
+            ChapterProgress chapterProgress = chapterProgressService.upsertChapterProgress(chapter, existingUser);
 
-            ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(progressDTO.getChapterId(), userId);
-            if (chapterProgress == null) {
-                double progressC = newLessonProgress.getIsCompleted() ? ((double) 1 / existingChapter.getLessons().size()) * 100 : 0.0;
-                chapterProgress = ChapterProgress.builder()
-                        .id(UUID.randomUUID().toString())
-                        .isCompleted(progressC >= 80)
-                        .chapter(existingChapter)
-                        .user(existingUser)
-                        .progress(progressC)
-                        .build();
-            } else {
-                if (!lessonProgress.getIsCompleted() && newLessonProgress.getIsCompleted()) {
-                    chapterProgress.setProgress(chapterProgress.getProgress() + 100 / existingChapter.getLessons().size());
-                    chapterProgress.setIsCompleted(chapterProgress.getProgress() >= 80);
-                }
-            }
-            ChapterProgress newChapterProgress = chapterProgressRepository.save(chapterProgress);
-
-            Level existingLevel = levelRepository.findById(progressDTO.getLevelId())
+            // LevelProgress
+            Level level = levelRepository.findById(progressDTO.getLevelId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Level with ID = " + progressDTO.getLevelId()));
+            LevelProgress levelProgress = levelProgressService.upsertLevelProgress(level, existingUser);
 
-            LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(progressDTO.getLevelId(), userId);
-            if (levelProgress == null) {
-                double progressLe = newChapterProgress.getIsCompleted() ? ((double) 1 / existingLevel.getChapters().size()) * 100 : 0.0;
-                levelProgress = LevelProgress.builder()
-                        .id(UUID.randomUUID().toString())
-                        .isCompleted(progressLe >= 80)
-                        .level(existingLevel)
-                        .user(existingUser)
-                        .progress(progressLe)
-                        .build();
-            } else {
-                if (!chapterProgress.getIsCompleted() && newChapterProgress.getIsCompleted()) {
-                    levelProgress.setProgress(levelProgress.getProgress() + 100 / existingLevel.getChapters().size());
-                    levelProgress.setIsCompleted(levelProgress.getProgress() >= 80);
-                }
-            }
-            LevelProgress newLevelProgress = levelProgressRepository.save(levelProgress);
-
-            Course existingCourse = courseRepository.findById(progressDTO.getCourseId())
+            // CourseProgress
+            Course course = courseRepository.findById(progressDTO.getCourseId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Course with ID = " + progressDTO.getCourseId()));
+            CourseProgress courseProgress = courseProgressService.upsertCourseProgress(course, existingUser);
 
-            CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(progressDTO.getCourseId(), userId);
-            if (courseProgress == null) {
-                double progressCo = newLevelProgress.getIsCompleted() ? ((double) 1 / existingCourse.getCourseLevels().size()) * 100 : 0.0;
-                courseProgress = CourseProgress.builder()
-                        .id(UUID.randomUUID().toString())
-                        .isCompleted(progressCo >= 80)
-                        .course(existingCourse)
-                        .user(existingUser)
-                        .progress(progressCo)
-                        .build();
-            } else {
-                if (!levelProgress.getIsCompleted() && newLevelProgress.getIsCompleted()) {
-                    courseProgress.setProgress(courseProgress.getProgress() + 100 / existingCourse.getCourseLevels().size());
-                    courseProgress.setIsCompleted(courseProgress.getProgress() >= 80);
-                }
-            }
-            courseProgress = courseProgressRepository.save(courseProgress);
-
+            // Response
             return ProgressResponse.builder()
                     .userId(userId)
                     .objectName("Lesson Progress")
                     .progress(lessonProgress.getProgress())
-                    .objectId(progressDTO.getLessonId())
+                    .objectId(lesson.getId())
                     .isCompleted(lessonProgress.getIsCompleted())
                     .id(lessonProgress.getId())
                     .build();
+
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to upsert object progress, err="+e.getMessage());
+            log.error("requestId={}, failed to upsert object progress", requestId, e);
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_UPSERT_PROGRESS, requestId);
         }
     }
+
+    private void validateCourseStructure(CourseProgressDTO dto) {
+        boolean courseLevelExists = chapterRepository.existsByCourseIdAndLevelId(dto.getCourseId(), dto.getLevelId());
+        if (!courseLevelExists) {
+            throw new DataNotFoundException("Cannot find Chapter ID = " + dto.getChapterId() +
+                    " of Level ID = " + dto.getLevelId() + " of Course ID = " + dto.getCourseId());
+        }
+
+        boolean lessonInChapter = lessonRepository.existsByIdAndChapterId(dto.getLessonId(), dto.getChapterId());
+        if (!lessonInChapter) {
+            throw new DataNotFoundException("Cannot find Lesson ID = " + dto.getLessonId() +
+                    " of Chapter ID = " + dto.getChapterId());
+        }
+    }
+
 
     @Override
     @Transactional
@@ -185,162 +149,147 @@ public class ProgressService implements IProgressService {
             User existingUser = userRepository.findById(userId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
 
-            // Check constraints
-            boolean constraints = grammarSectionRepository.existsGrammarSectionByGrammarId(progressDTO.getGrammarId());
-            if (!constraints) {
-                throw new DataNotFoundException("Cannot find Grammar Section with ID = " + progressDTO.getGrammarSectionId() + " of Grammar ID = " + progressDTO.getGrammarId());
-            }
+            // Validate Grammar structure
+            validateGrammarStructure(progressDTO);
 
-            GrammarSection existingGrammarSection = grammarSectionRepository.findById(progressDTO.getGrammarSectionId())
-                    .orElseThrow(() -> new DataNotFoundException("Cannot found Grammar Section with ID = " + progressDTO.getGrammarSectionId()));
+            // GrammarSection
+            GrammarSection section = grammarSectionRepository.findById(progressDTO.getGrammarSectionId())
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find Grammar Section with ID = " + progressDTO.getGrammarSectionId()));
 
-            GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(progressDTO.getGrammarSectionId(), userId);
-            double progressGs = ((double) progressDTO.getNumberQuestions() / existingGrammarSection.getQuestions().size()) * 100;
-            if (grammarSectionProgress == null) {
-                grammarSectionProgress = GrammarSectionProgress.builder()
-                        .id(UUID.randomUUID().toString())
-                        .isCompleted(progressGs >= 80)
-                        .progress(progressGs)
-                        .grammarSection(existingGrammarSection)
-                        .user(existingUser)
-                        .build();
-            } else {
-                grammarSectionProgress.setProgress(progressGs >= grammarSectionProgress.getProgress() ? progressGs : grammarSectionProgress.getProgress());
-                grammarSectionProgress.setIsCompleted(grammarSectionProgress.getProgress() >= 80);
-            }
-            GrammarSectionProgress newGrammarSectionProgress = grammarSectionProgressRepository.save(grammarSectionProgress);
+            // UPSERT
+            // GrammarSectionProgress
+            GrammarSectionProgress grammarSectionProgress = grammarSectionProgressService.upsertGrammarSectionProgress(section, existingUser, progressDTO.getNumberQuestions());
 
-            Grammar existingGrammar = grammarRepository.findById(progressDTO.getGrammarId())
+            //  GrammarProgress
+            Grammar grammar = grammarRepository.findById(progressDTO.getGrammarId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Grammar with ID = " + progressDTO.getGrammarId()));
+            GrammarProgress grammarProgress = grammarProgressService.upsertGrammarProgress(grammar, existingUser);
 
-            GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(progressDTO.getGrammarId(), userId);
-            if (grammarProgress == null) {
-                double progressG = newGrammarSectionProgress.getIsCompleted() ? ((double) 1 / existingGrammar.getGrammarSections().size()) * 100 : 0.0;
-                grammarProgress = GrammarProgress.builder()
-                        .id(UUID.randomUUID().toString())
-                        .isCompleted(progressG >= 80)
-                        .grammar(existingGrammar)
-                        .user(existingUser)
-                        .progress(progressG)
-                        .build();
-            } else {
-                if (!grammarSectionProgress.getIsCompleted() && newGrammarSectionProgress.getIsCompleted()) {
-                    grammarProgress.setProgress(grammarProgress.getProgress() + 100 / existingGrammar.getGrammarSections().size());
-                    grammarProgress.setIsCompleted(grammarProgress.getProgress() >= 80);
-                }
-            }
-            grammarProgress = grammarProgressRepository.save(grammarProgress);
-
+            // Trả về response
             return ProgressResponse.builder()
-                    .isCompleted(grammarSectionProgress.getIsCompleted())
-                    .objectId(progressDTO.getGrammarSectionId())
-                    .progress(grammarSectionProgress.getProgress())
-                    .objectName("Grammar Section Progress")
                     .userId(userId)
+                    .objectId(section.getId())
+                    .objectName("Grammar Section Progress")
+                    .progress(grammarSectionProgress.getProgress())
+                    .isCompleted(grammarSectionProgress.getIsCompleted())
                     .id(grammarSectionProgress.getId())
                     .build();
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to upsert object progress, err="+e.getMessage());
+            log.error("requestId={}, failed to upsert grammar progress", requestId, e);
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_UPSERT_PROGRESS, requestId);
         }
     }
 
-    @Override
-    public ProgressResponse getObjectProgress(String requestId, String objectId, String userId, String objectName) {
-        try {
-            switch (objectName) {
-                case "COURSE" -> {
-                    CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(objectId, userId);
-                    if (courseProgress != null) {
-                        return ProgressResponse.builder()
-                                .id(courseProgress.getId())
-                                .isCompleted(courseProgress.getIsCompleted())
-                                .objectId(objectId)
-                                .objectName("Course Progress")
-                                .progress(courseProgress.getProgress())
-                                .userId(userId)
-                                .build();
-                    }
-                    return null;
-                }
-                case "LEVEL" -> {
-                    LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(objectId, userId);
-                    if (levelProgress != null) {
-                        return ProgressResponse.builder()
-                                .id(levelProgress.getId())
-                                .isCompleted(levelProgress.getIsCompleted())
-                                .objectId(objectId)
-                                .objectName("Level Progress")
-                                .progress(levelProgress.getProgress())
-                                .userId(userId)
-                                .build();
-                    }
-                    return null;
-                }
-                case "CHAPTER" -> {
-                    ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(objectId, userId);
-                    if (chapterProgress != null) {
-                        return ProgressResponse.builder()
-                                .id(chapterProgress.getId())
-                                .isCompleted(chapterProgress.getIsCompleted())
-                                .objectId(objectId)
-                                .objectName("Chapter Progress")
-                                .progress(chapterProgress.getProgress())
-                                .userId(userId)
-                                .build();
-                    }
-                    return null;
-                }
-                case "LESSON" -> {
-                    LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(objectId, userId);
-                    if (lessonProgress != null) {
-                        return ProgressResponse.builder()
-                                .id(lessonProgress.getId())
-                                .isCompleted(lessonProgress.getIsCompleted())
-                                .objectId(objectId)
-                                .objectName("Lesson Progress")
-                                .progress(lessonProgress.getProgress())
-                                .userId(userId)
-                                .build();
-                    }
-                    return null;
-                }
-                case "GRAMMAR" -> {
-                    GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(objectId, userId);
-                    if (grammarProgress != null) {
-                        return ProgressResponse.builder()
-                                .id(grammarProgress.getId())
-                                .isCompleted(grammarProgress.getIsCompleted())
-                                .objectId(objectId)
-                                .objectName("Grammar Progress")
-                                .progress(grammarProgress.getProgress())
-                                .userId(userId)
-                                .build();
-                    }
-                    return null;
-                }
-                case "GRAMMAR_SECTION" -> {
-                    GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(objectId, userId);
-                    if (grammarSectionProgress != null) {
-                        return ProgressResponse.builder()
-                                .id(grammarSectionProgress.getId())
-                                .isCompleted(grammarSectionProgress.getIsCompleted())
-                                .objectId(objectId)
-                                .objectName("Grammar Section Progress")
-                                .progress(grammarSectionProgress.getProgress())
-                                .userId(userId)
-                                .build();
-                    }
-                    return null;
-                }
-                default -> throw new ExistDataException("Object name is not valid");
-            }
-        } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get object progress, err="+e.getMessage());
-            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_GET_PROGRESS, requestId);
+    private void validateGrammarStructure(GrammarProgressDTO dto) {
+        boolean exists = grammarSectionRepository.existsGrammarSectionByGrammarId(dto.getGrammarId());
+        if (!exists) {
+            throw new DataNotFoundException("Cannot find Grammar Section with ID = " + dto.getGrammarSectionId()
+                    + " of Grammar ID = " + dto.getGrammarId());
+        }
+
+        boolean sectionExists = grammarSectionRepository.existsById(dto.getGrammarSectionId());
+        if (!sectionExists) {
+            throw new DataNotFoundException("Cannot find Grammar Section with ID = " + dto.getGrammarSectionId());
         }
     }
+
+
+//    @Override
+//    public ProgressResponse getObjectProgress(String requestId, String objectId, String userId, String objectName) {
+//        try {
+//            switch (objectName) {
+//                case "COURSE" -> {
+//                    CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(objectId, userId);
+//                    if (courseProgress != null) {
+//                        return ProgressResponse.builder()
+//                                .id(courseProgress.getId())
+//                                .isCompleted(courseProgress.getIsCompleted())
+//                                .objectId(objectId)
+//                                .objectName("Course Progress")
+//                                .progress(courseProgress.getProgress())
+//                                .userId(userId)
+//                                .build();
+//                    }
+//                    return null;
+//                }
+//                case "LEVEL" -> {
+//                    LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(objectId, userId);
+//                    if (levelProgress != null) {
+//                        return ProgressResponse.builder()
+//                                .id(levelProgress.getId())
+//                                .isCompleted(levelProgress.getIsCompleted())
+//                                .objectId(objectId)
+//                                .objectName("Level Progress")
+//                                .progress(levelProgress.getProgress())
+//                                .userId(userId)
+//                                .build();
+//                    }
+//                    return null;
+//                }
+//                case "CHAPTER" -> {
+//                    ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(objectId, userId);
+//                    if (chapterProgress != null) {
+//                        return ProgressResponse.builder()
+//                                .id(chapterProgress.getId())
+//                                .isCompleted(chapterProgress.getIsCompleted())
+//                                .objectId(objectId)
+//                                .objectName("Chapter Progress")
+//                                .progress(chapterProgress.getProgress())
+//                                .userId(userId)
+//                                .build();
+//                    }
+//                    return null;
+//                }
+//                case "LESSON" -> {
+//                    LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(objectId, userId);
+//                    if (lessonProgress != null) {
+//                        return ProgressResponse.builder()
+//                                .id(lessonProgress.getId())
+//                                .isCompleted(lessonProgress.getIsCompleted())
+//                                .objectId(objectId)
+//                                .objectName("Lesson Progress")
+//                                .progress(lessonProgress.getProgress())
+//                                .userId(userId)
+//                                .build();
+//                    }
+//                    return null;
+//                }
+//                case "GRAMMAR" -> {
+//                    GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(objectId, userId);
+//                    if (grammarProgress != null) {
+//                        return ProgressResponse.builder()
+//                                .id(grammarProgress.getId())
+//                                .isCompleted(grammarProgress.getIsCompleted())
+//                                .objectId(objectId)
+//                                .objectName("Grammar Progress")
+//                                .progress(grammarProgress.getProgress())
+//                                .userId(userId)
+//                                .build();
+//                    }
+//                    return null;
+//                }
+//                case "GRAMMAR_SECTION" -> {
+//                    GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(objectId, userId);
+//                    if (grammarSectionProgress != null) {
+//                        return ProgressResponse.builder()
+//                                .id(grammarSectionProgress.getId())
+//                                .isCompleted(grammarSectionProgress.getIsCompleted())
+//                                .objectId(objectId)
+//                                .objectName("Grammar Section Progress")
+//                                .progress(grammarSectionProgress.getProgress())
+//                                .userId(userId)
+//                                .build();
+//                    }
+//                    return null;
+//                }
+//                default -> throw new ExistDataException("Object name is not valid");
+//            }
+//        } catch (Exception e) {
+//            log.error("requestId="+requestId+",failed to get object progress, err="+e.getMessage());
+//            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+//                    Constants.ERROR_CODE.ERR_GET_PROGRESS, requestId);
+//        }
+//    }
 }

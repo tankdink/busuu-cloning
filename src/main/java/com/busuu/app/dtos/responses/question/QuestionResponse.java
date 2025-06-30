@@ -61,6 +61,9 @@ public class QuestionResponse extends BaseResponse {
     @JsonProperty("question_order")
     private Integer questionOrder;
 
+    @JsonProperty("hint")
+    private String hint;
+
     @JsonProperty("lesson_id")
     private String lessonId;
 

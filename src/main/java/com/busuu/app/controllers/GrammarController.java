@@ -10,6 +10,8 @@ import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.grammar.IGrammarService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class GrammarController
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertGrammar(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @Valid @ModelAttribute GrammarDTO newGrammarDTO,
@@ -88,6 +91,7 @@ public class GrammarController
     }
 
     @GetMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getGrammars(@RequestParam(value = "req-id", required = false) String requestId,
 
@@ -132,6 +136,7 @@ public class GrammarController
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getGrammar(@RequestParam(value = "req-id", required = false) String requestId,
                                              @PathVariable("id") String grammarId)
@@ -168,6 +173,7 @@ public class GrammarController
     }
 
     @GetMapping(Constants.LANGUAGE + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getByLanguageId(@RequestParam(value = "req-id", required = false) String requestId,
                                                     @PathVariable("id") String languageId,
@@ -216,6 +222,7 @@ public class GrammarController
 
 
     @PutMapping(value = Constants.PATH_PARAM_ID, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateGrammar(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String grammarId,
@@ -269,6 +276,7 @@ public class GrammarController
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteGrammar(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String grammarId)

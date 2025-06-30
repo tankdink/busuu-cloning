@@ -7,6 +7,8 @@ import com.busuu.app.dtos.responses.question.QuestionResponse;
 import com.busuu.app.services.question.IQuestionService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +34,7 @@ public class QuestionController {
     private final LocalizationUtils localizationUtils;
 
     @GetMapping(Constants.LESSON + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getQuestionsByLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                           @PathVariable("id") String lessonId,
@@ -74,6 +77,7 @@ public class QuestionController {
     }
 
     @GetMapping(Constants.GRAMMAR_SECTION + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getQuestionsByGrammarSection (@RequestParam(value = "req-id", required = false) String requestId,
                                                                   @PathVariable("id") String grammarSectionId,
@@ -117,6 +121,7 @@ public class QuestionController {
     }
 
     @GetMapping(Constants.QUESTION_TYPE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getQuestionsByQuestionType(@RequestParam(value = "req-id", required = false) String requestId,
                                                                @PathVariable("type") String questionType,
@@ -160,6 +165,7 @@ public class QuestionController {
 
     //This controller should be used for question with type KNOWLEDGE only, if use with other question type, it won't return the question's result
     @GetMapping(Constants.KNOWLEDGE + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getQuestionKnowledgeById(@RequestParam(value = "req-id", required = false) String requestId,
                                                           @PathVariable("id") String questionId) {
@@ -191,6 +197,7 @@ public class QuestionController {
     }
 
     @DeleteMapping(Constants.LESSON + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteQuestionsByLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                              @PathVariable("id") String lessonId) {
@@ -221,6 +228,7 @@ public class QuestionController {
     }
 
     @DeleteMapping(Constants.GRAMMAR_SECTION + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteQuestionsByGrammarSection (@RequestParam(value = "req-id", required = false) String requestId,
                                                                      @PathVariable("id") String grammarSectionId) {
@@ -251,6 +259,7 @@ public class QuestionController {
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteQuestionById (@RequestParam(value = "req-id", required = false) String requestId,
                                                         @PathVariable("id") String questionId) {

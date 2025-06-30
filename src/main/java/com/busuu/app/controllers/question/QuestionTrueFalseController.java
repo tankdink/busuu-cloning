@@ -7,6 +7,8 @@ import com.busuu.app.dtos.responses.question.QuestionTrueFalseResponse;
 import com.busuu.app.services.question.true_false.IQuestionTrueFalseService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class QuestionTrueFalseController {
     private final LocalizationUtils localizationUtils;
 
     @PostMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertQuestion (@RequestParam(value = "req-id", required = false) String requestId,
                                                     @Valid @ModelAttribute QuestionTrueFalseDTO questionTrueFalseDTO,
@@ -74,6 +77,7 @@ public class QuestionTrueFalseController {
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getQuestion (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String questionId) {
@@ -102,6 +106,7 @@ public class QuestionTrueFalseController {
     }
 
     @PutMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateQuest (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String questionId,
@@ -148,6 +153,7 @@ public class QuestionTrueFalseController {
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteQuestion (@RequestParam(value = "req-id", required = false) String requestId,
                                                     @PathVariable("id") String questionId) {

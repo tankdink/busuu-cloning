@@ -9,6 +9,8 @@ import com.busuu.app.entities.Language;
 import com.busuu.app.services.language.ILanguageService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,7 @@ public class LanguageController
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertLanguage(@RequestParam(value = "req-id", required = false) String requestId,
                                                    @Valid @ModelAttribute LanguageDTO newLanguageDTO,
@@ -163,6 +166,7 @@ public class LanguageController
     }
 
     @PutMapping(value = Constants.PATH_PARAM_ID, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateLanguage(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String languageId,
@@ -216,6 +220,7 @@ public class LanguageController
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteLanguage(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String languageId)
