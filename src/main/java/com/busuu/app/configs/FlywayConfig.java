@@ -23,7 +23,7 @@ public class FlywayConfig {
     @Value("${spring.datasource.password}")
     private String datasourcePassword;
 
-    @Bean
+    //@Bean
     public Flyway flyway() {
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource())
@@ -35,7 +35,7 @@ public class FlywayConfig {
         return flyway;
     }
 
-    @Bean
+    //@Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setUrl(datasourceUrl);

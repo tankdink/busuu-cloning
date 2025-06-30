@@ -316,8 +316,9 @@ public class QuestionService implements IQuestionService {
                 //Valid overall syntax
                 validSyntaxWordDocx(docx);
 
-                //Return data if passed
-                return getQuestionFromFileDocx(docx);
+//                Return data if passed
+//                return getQuestionFromFileDocx(docx);
+                return null;
 
             }
         }
@@ -638,7 +639,7 @@ public class QuestionService implements IQuestionService {
                         }
                         case 5:
                         {
-                            dummyQuestion.setScriptAudio(p);
+                            dummyQuestion.setHint(p);
                             break;
                         }
                         case 6:
