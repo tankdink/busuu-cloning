@@ -73,6 +73,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Column(name = "country")
+    private String country;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserLanguage> userLanguages = new HashSet<>();
 

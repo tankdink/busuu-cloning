@@ -81,6 +81,19 @@ dependencies {
 	// Mail
 	implementation("org.springframework.boot:spring-boot-starter-mail:3.5.0")
 
+	// https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-client
+	implementation("org.springframework.security:spring-security-oauth2-client")
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-resource-server
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-client
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+	// https://mvnrepository.com/artifact/com.google.api-client/google-api-client
+	implementation("com.google.api-client:google-api-client:2.6.0")
+	// https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-jetty
+	implementation("com.google.oauth-client:google-oauth-client-jetty:1.36.0")
+	// https://mvnrepository.com/artifact/com.google.apis/google-api-services-people
+	implementation("com.google.apis:google-api-services-people:v1-rev537-1.25.0")
 }
 
 tasks.named('test') {

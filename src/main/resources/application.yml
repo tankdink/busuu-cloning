@@ -38,6 +38,29 @@ spring:
     locations: classpath:/db/migration,classpath:/dev/db/migration
     baseline-on-migrate: true
     baseline-version: 0
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 395250688466-fun0nunkb1audoiv8leiiuediv3365ko.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: "${GOOGLE_REDIRECT_URI:http://localhost:3000/auth/google/callback}"
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            #auth-uri: "https://www.facebook.com/v3.2/dialog/oauth"
+            resource-server:
+              opaque-token:
+                introspection-uri: "https://googleapis.com"
+          facebook:
+            client-id: 1007654770988152
+            client-secret: 5adb1d315754ac7e7e26b09d4c8b8b17
+            redirect-uri: "${FACEBOOK_REDIRECT_URI:http://localhost:3000/auth/facebook/callback}"
+            auth-uri: https://www.facebook.com/v21.0/dialog/oauth
+            token-uri: https://graph.facebook.com/oauth/access_token
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture.type(large)
+            scope:
+              - email
+              - public_profile
 
 server:
   servlet:

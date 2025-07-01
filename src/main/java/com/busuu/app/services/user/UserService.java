@@ -5,7 +5,9 @@ import com.busuu.app.components.JwtTokenUtil;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.user.UserActionPasswordDTO;
 import com.busuu.app.dtos.requests.user.UserDTO;
+import com.busuu.app.dtos.requests.user.UserLoginDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
+import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.Role;
 import com.busuu.app.entities.Token;
@@ -16,7 +18,9 @@ import com.busuu.app.exceptions.PermissionDenyException;
 import com.busuu.app.repositories.RoleRepository;
 import com.busuu.app.repositories.TokenRepository;
 import com.busuu.app.repositories.UserRepository;
+import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.services.email.IEmailService;
+import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,12 +33,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,10 +58,11 @@ public class UserService implements IUserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper modelMapper;
     private final IEmailService emailService;
+    private final IUploadCloudinaryService uploadCloudinaryService;
 
     @Override
     @Transactional
-    public UserResponse register (String requestId, UserDTO userDTO) throws Exception {
+    public UserResponse register(String requestId, UserDTO userDTO) throws Exception {
         try {
             // Check email
             if (userRepository.existsByEmail(userDTO.getEmail())) {
@@ -94,7 +103,7 @@ public class UserService implements IUserService {
             emailService.sendEmailActive(newUser.getEmail(), newUser.getActiveCode());
             return modelMapper.map(newUser, UserResponse.class);
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to register user, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to register user, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_REGISTER_USER, requestId);
         }
@@ -103,10 +112,10 @@ public class UserService implements IUserService {
     @Override
     public String login(String requestId, String email, String password) throws Exception {
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        if(optionalUser.isEmpty()) {
+        if (optionalUser.isEmpty()) {
             throw new DataNotFoundException("Invalid email or password");
         }
-        User existingUser= optionalUser.get();
+        User existingUser = optionalUser.get();
 
         // Check password
         if (!passwordEncoder.matches(password, existingUser.getPassword())) {
@@ -121,6 +130,69 @@ public class UserService implements IUserService {
         authenticationManager.authenticate(authenticationToken);
         return jwtTokenUtil.generateToken(existingUser);
     }
+
+//    @Override
+//    public String loginSocial(UserLoginDTO userLoginDTO) throws Exception {
+//        Optional<User> optionalUser = Optional.empty();
+////        Role roleUser = roleRepository.findByName(Role.USER)
+////                .orElseThrow(() -> new DataNotFoundException(
+////                        localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
+//
+//        // Kiểm tra Google Account ID
+//        if (userLoginDTO.isGoogleAccountIdValid()) {
+//            optionalUser = userRepository.findByGoogleAccountId(userLoginDTO.getGoogleAccountId());
+//
+//            // Tạo người dùng mới nếu không tìm thấy
+//            if (optionalUser.isEmpty()) {
+//                User newUser = User.builder()
+//                        .fullName(Optional.ofNullable(userLoginDTO.getFullname()).orElse(""))
+//                        .email(Optional.ofNullable(userLoginDTO.getEmail()).orElse(""))
+//                        .avatar(Optional.ofNullable(userLoginDTO.getProfileImage()).orElse(""))
+//                        .roles(roleUser)
+//                        .googleAccountId(userLoginDTO.getGoogleAccountId())
+//                        .password("")
+//                        .active(true)
+//                        .build();
+//
+//                // Lưu người dùng mới
+//                newUser = userRepository.save(newUser);
+//                optionalUser = Optional.of(newUser);
+//            }
+//        }
+//        // Kiểm tra Facebook Account ID
+//        else if (userLoginDTO.isFacebookAccountIdValid()) {
+//            optionalUser = userRepository.findByFacebookAccountId(userLoginDTO.getFacebookAccountId());
+//
+//            // Tạo người dùng mới nếu không tìm thấy
+//            if (optionalUser.isEmpty()) {
+//                User newUser = User.builder()
+//                        .fullName(Optional.ofNullable(userLoginDTO.getFullname()).orElse(""))
+//                        .email(Optional.ofNullable(userLoginDTO.getEmail()).orElse(""))
+//                        .avatar(Optional.ofNullable(userLoginDTO.getProfileImage()).orElse(""))
+//                        .roles(roleUser)
+//                        .facebookAccountId(userLoginDTO.getFacebookAccountId())
+//                        .password("") // Mật khẩu trống cho đăng nhập mạng xã hội
+//                        .active(true)
+//                        .build();
+//
+//                // Lưu người dùng mới
+//                newUser = userRepository.save(newUser);
+//                optionalUser = Optional.of(newUser);
+//            }
+//        } else {
+//            throw new IllegalArgumentException("Invalid social account information.");
+//        }
+//
+//        User user = optionalUser.get();
+//
+//        // Kiểm tra nếu tài khoản bị khóa
+//        if (!user.isActive()) {
+//            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
+//        }
+//
+//        // Tạo JWT token cho người dùng
+//        return jwtTokenUtil.generateToken(user);
+//    }
 
     @Override
     public boolean emailUnique(String requestId, String email) {
@@ -137,12 +209,11 @@ public class UserService implements IUserService {
             Optional<User> user = userRepository.findByEmail(email);
             if (user.isPresent()) {
                 return user.get();
-            }
-            else {
+            } else {
                 throw new Exception("User not found");
             }
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get detail user from token, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to get detail user from token, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
@@ -154,43 +225,81 @@ public class UserService implements IUserService {
             Token existingToken = tokenRepository.findByRefreshToken(refreshToken);
             return getUserDetailsFromToken(requestId, existingToken.getToken());
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get detail user from fresh token, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to get detail user from fresh token, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
     }
 
     @Override
-    public UserResponse updateUser(String requestId, String userId, UserUpdateDTO userUpdateDTO) {
-        return null;
+    @Transactional
+    public UserResponse updateUser(String requestId, UserUpdateDTO userUpdateDTO) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
+            User extUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
+
+            modelMapper.map(userUpdateDTO, extUser);
+
+            if (Objects.nonNull(userUpdateDTO.getAvatar())) {
+                boolean isRemove = true;
+                if (extUser.getAvatarName() != null) {
+                    isRemove = uploadCloudinaryService.removeFile(extUser.getAvatarName());
+                }
+                if (isRemove) {
+                    CloudinaryResponse cloudinaryResponse = uploadAvatar(userUpdateDTO.getAvatar());
+                    if (cloudinaryResponse != null) {
+                        extUser.setAvatar(cloudinaryResponse.getUrl());
+                        extUser.setAvatarName(cloudinaryResponse.getPublicId());
+                    }
+                }
+            }
+            extUser.setFullName(extUser.getFirstName() + " " + extUser.getLastName());
+
+            extUser = userRepository.save(extUser);
+
+            return modelMapper.map(extUser, UserResponse.class);
+        } catch (
+                Exception e) {
+            log.error("requestId=" + requestId + ",failed to update user, err=" + e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_UPDATE_USER, requestId);
+        }
     }
 
     @Override
     @Transactional
-    public boolean changePassword (String requestId, UserActionPasswordDTO userActionPasswordDTO) {
+    public boolean changePassword(String requestId, UserActionPasswordDTO userActionPasswordDTO) {
         try {
-            User user = userRepository.findByEmail(userActionPasswordDTO.getEmail())
-                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + userActionPasswordDTO.getEmail()));
-            if (passwordEncoder.matches(userActionPasswordDTO.getOldPassword(), user.getPassword())) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
+            User extUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
+
+            if (passwordEncoder.matches(userActionPasswordDTO.getOldPassword(), extUser.getPassword())) {
                 if (userActionPasswordDTO.getPassword().equals(userActionPasswordDTO.getRetypePassword())) {
                     String encodedNewPassword = passwordEncoder.encode(userActionPasswordDTO.getPassword());
-                    user.setPassword(encodedNewPassword);
-                    userRepository.save(user);
-                    List<Token> tokens = tokenRepository.findByUser(user);
+                    extUser.setPassword(encodedNewPassword);
+                    userRepository.save(extUser);
+                    List<Token> tokens = tokenRepository.findByUser(extUser);
                     for (Token tokenItem : tokens) {
                         tokenRepository.delete(tokenItem);
                     }
-                    emailService.sendEmailChangedPassword(user.getEmail());
+                    emailService.sendEmailChangedPassword(extUser.getEmail());
                     return true;
-                }
-                else {
+                } else {
                     return false;
                 }
             }
             return false;
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to change password, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to change password, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHANGE_PASSWORD, requestId);
         }
@@ -209,7 +318,7 @@ public class UserService implements IUserService {
             );
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get users by role, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to get users by role, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
@@ -222,7 +331,7 @@ public class UserService implements IUserService {
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
             return modelMapper.map(existingUser, UserResponse.class);
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get user by id, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to get user by id, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
@@ -246,7 +355,7 @@ public class UserService implements IUserService {
             }
             return 0;
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to active account, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to active account, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_ACTIVE_ACCOUNT, requestId);
         }
@@ -264,8 +373,7 @@ public class UserService implements IUserService {
                 existingUser.setOtp(null);
                 userRepository.save(existingUser);
                 return 1;
-            }
-            else {
+            } else {
                 SecureRandom random = new SecureRandom();
                 int otp = 100000 + random.nextInt(900000);
                 existingUser.setOtp(String.valueOf(otp));
@@ -274,7 +382,7 @@ public class UserService implements IUserService {
                 return 2;
             }
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to generate otp, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to generate otp, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GENERATE_OTP, requestId);
         }
@@ -282,7 +390,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public boolean checkOTP (String requestId, String email, String OTP) throws DataNotFoundException {
+    public boolean checkOTP(String requestId, String email, String OTP) throws DataNotFoundException {
         try {
             User existingUser = userRepository.findByEmail(email)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with Email = " + email));
@@ -292,7 +400,7 @@ public class UserService implements IUserService {
             }
             return false;
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to check otp, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to check otp, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHECK_OTP, requestId);
         }
@@ -307,9 +415,16 @@ public class UserService implements IUserService {
             existingUser.setActive(!existingUser.isActive());
             return userRepository.save(existingUser);
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to block or enable user, err="+e.getMessage());
+            log.error("requestId=" + requestId + ",failed to block or enable user, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHECK_OTP, requestId);
         }
+    }
+
+    private CloudinaryResponse uploadAvatar(MultipartFile file) throws Exception {
+        UploadCloudinaryUtil.assertAllowed(file, "image");
+        String fileName = UploadCloudinaryUtil.getFileName(file.getOriginalFilename());
+        CloudinaryResponse response = uploadCloudinaryService.uploadFile(file, fileName, "user");
+        return response;
     }
 }

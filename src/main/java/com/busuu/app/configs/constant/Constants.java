@@ -49,6 +49,7 @@ public class Constants {
         public static final String ERR_REGISTER_USER = "ERR_REGISTER_USER";
         public static final String ERR_LOGIN_USER = "ERR_LOGIN_USER";
         public static final String ERR_GET_USER = "ERR_GET_USER";
+        public static final String ERR_UPDATE_USER = "ERR_UPDATE_USER";
 
         public static final String ERR_ACTIVE_ACCOUNT = "ERR_ACTIVE_ACCOUNT";
         public static final String ERR_CHANGE_PASSWORD = "ERR_CHANGE_PASSWORD";

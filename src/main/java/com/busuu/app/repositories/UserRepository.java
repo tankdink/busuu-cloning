@@ -31,4 +31,7 @@ public interface UserRepository extends JpaRepository<User, String> {
         WHERE r.name = :roleName
         """, nativeQuery = true)
     Page<User> findUsersByRoleName(@Param("roleName") String roleName, Pageable pageable);
+
+    Optional<User> findByFacebookAccountId(String facebookAccountId);
+    Optional<User> findByGoogleAccountId(String googleAccountId);
 }

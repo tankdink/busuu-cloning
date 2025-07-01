@@ -58,6 +58,7 @@ public class UploadCloudinaryUtil {
             case "image" -> "busuu/images";
             case "video" -> "busuu/videos";
             case "audio" -> "busuu/audios";
+            case "user" -> "busuu/users";
             default -> "busuu/others";
         };
     }

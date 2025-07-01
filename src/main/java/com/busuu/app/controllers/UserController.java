@@ -5,6 +5,7 @@ import com.busuu.app.dtos.requests.user.RefreshTokenDTO;
 import com.busuu.app.dtos.requests.user.UserActionPasswordDTO;
 import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserLoginDTO;
+import com.busuu.app.dtos.requests.user.UserUpdateDTO;
 import com.busuu.app.dtos.responses.LoginResponse;
 import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
@@ -211,6 +213,51 @@ public class UserController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
                             .status(HttpStatus.UNAUTHORIZED)
+                            .build()
+            );
+        }
+    }
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> updateUser (@RequestParam(value = "req-id", required = false) String requestId,
+                                                @ModelAttribute @Valid UserUpdateDTO userUpdateDTO,
+                                                BindingResult result) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            if (result.hasErrors()) {
+                List<String> errorMessages = result.getFieldErrors().stream()
+                        .map(FieldError::getDefaultMessage)
+                        .toList();
+
+                // Log error
+                log.error(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()));
+
+                return ResponseEntity.badRequest().body(
+                        Response.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build()
+                );
+            }
+
+            UserResponse res = userService.updateUser(requestId, userUpdateDTO);
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
+                            .data(res)
+                            .status(HttpStatus.OK)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED))
+                            .status(HttpStatus.BAD_REQUEST)
                             .build()
             );
         }
@@ -493,6 +540,7 @@ public class UserController {
             if (isActive == 1) {
                 return ResponseEntity.ok(
                         Response.builder()
+                                .data(1)
                                 .status(HttpStatus.OK)
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATED_ACCOUNT))
                                 .build()
@@ -500,6 +548,7 @@ public class UserController {
             } else if (isActive == 2) {
                 return ResponseEntity.ok(
                         Response.builder()
+                                .data(2)
                                 .status(HttpStatus.OK)
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATION_SUCCESSFULLY))
                                 .build()
@@ -507,7 +556,8 @@ public class UserController {
             }
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .status(HttpStatus.OK)
+                            .data(0)
+                            .status(HttpStatus.BAD_REQUEST)
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATION_FAILED))
                             .build()
             );
