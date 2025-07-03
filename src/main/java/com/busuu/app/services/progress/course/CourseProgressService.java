@@ -1,5 +1,6 @@
 package com.busuu.app.services.progress.course;
 
+import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.entities.Course;
 import com.busuu.app.entities.CourseLevel;
 import com.busuu.app.entities.User;
@@ -26,13 +27,15 @@ public class CourseProgressService implements ICourseProgressService {
     @Transactional
     public CourseProgress upsertCourseProgress(Course course, User user) {
         List<CourseLevel> courseLevels = course.getCourseLevels();
-        long completedLevels = courseLevels.stream()
+        if (courseLevels.isEmpty()) return null;
+
+        List<LevelProgress> progresses = courseLevels.stream()
                 .map(clv -> levelProgressRepository.findByLevelIdAndUserId(clv.getLevel().getId(), user.getId()))
                 .filter(Objects::nonNull)
-                .filter(LevelProgress::getIsCompleted)
-                .count();
+                .toList();
 
-        double progress = (double) completedLevels / courseLevels.size() * 100;
+        double avgProgress = progresses.isEmpty() ? 0 : progresses.stream().mapToDouble(LevelProgress::getProgress).average().orElse(0);
+        boolean isCompleted = avgProgress >= Constants.PASSING_PROGRESS;
 
         CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(course.getId(), user.getId());
         if (courseProgress == null) {
@@ -40,12 +43,12 @@ public class CourseProgressService implements ICourseProgressService {
                     .id(UUID.randomUUID().toString())
                     .course(course)
                     .user(user)
-                    .progress(progress)
-                    .isCompleted(progress >= 80)
+                    .progress(avgProgress)
+                    .isCompleted(isCompleted)
                     .build();
         } else {
-            courseProgress.setProgress(progress);
-            courseProgress.setIsCompleted(progress >= 80);
+            courseProgress.setProgress(avgProgress);
+            courseProgress.setIsCompleted(isCompleted);
         }
 
         return courseProgressRepository.save(courseProgress);

@@ -1,5 +1,6 @@
 package com.busuu.app.services.progress.level;
 
+import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.entities.Chapter;
 import com.busuu.app.entities.Level;
 import com.busuu.app.entities.User;
@@ -26,13 +27,15 @@ public class LevelProgressService implements ILevelProgressService {
     @Transactional
     public LevelProgress upsertLevelProgress(Level level, User user) {
         List<Chapter> chapters = level.getChapters();
-        long completedChapters = chapters.stream()
-                .map(ch -> chapterProgressRepository.findByChapterIdAndUserId(ch.getId(), user.getId()))
-                .filter(Objects::nonNull)
-                .filter(ChapterProgress::getIsCompleted)
-                .count();
+        if (chapters.isEmpty()) return null;
 
-        double progress = (double) completedChapters / chapters.size() * 100;
+        List<ChapterProgress> progresses = chapterProgressRepository.findByUserIdAndChapterIdIn(
+                user.getId(),
+                chapters.stream().map(Chapter::getId).toList()
+        );
+
+        double avgProgress = progresses.isEmpty() ? 0 : progresses.stream().mapToDouble(ChapterProgress::getProgress).average().orElse(0);
+        boolean isCompleted = avgProgress >= Constants.PASSING_PROGRESS;
 
         LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(level.getId(), user.getId());
         if (levelProgress == null) {
@@ -40,14 +43,15 @@ public class LevelProgressService implements ILevelProgressService {
                     .id(UUID.randomUUID().toString())
                     .level(level)
                     .user(user)
-                    .progress(progress)
-                    .isCompleted(progress >= 80)
+                    .progress(avgProgress)
+                    .isCompleted(isCompleted)
                     .build();
         } else {
-            levelProgress.setProgress(progress);
-            levelProgress.setIsCompleted(progress >= 80);
+            levelProgress.setProgress(avgProgress);
+            levelProgress.setIsCompleted(isCompleted);
         }
 
         return levelProgressRepository.save(levelProgress);
     }
+
 }

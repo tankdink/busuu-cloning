@@ -43,6 +43,9 @@ public class Constants {
         public static final String INDEX = "/index";
     }
 
+    public static final Double PASSING_PROGRESS = 80.0;
+
+
     public static class ERROR_CODE {
         public static final String ERR_UNAUTHORIZED = "ERR_UNAUTHORIZED";
         public static final String ERR_CREATE_USER = "ERR_CREATE_USER";
