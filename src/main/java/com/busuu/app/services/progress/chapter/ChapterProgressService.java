@@ -28,12 +28,14 @@ public class ChapterProgressService implements IChapterProgressService{
         List<Lesson> lessons = chapter.getLessons();
         if (lessons.isEmpty()) return null;
 
-        List<LessonProgress> progresses = lessonProgressRepository.findByUserIdAndLessonIdIn(
-                user.getId(),
-                lessons.stream().map(Lesson::getId).toList()
-        );
+        double totalProgress = 0.0;
 
-        double avgProgress = progresses.isEmpty() ? 0 : progresses.stream().mapToDouble(LessonProgress::getProgress).average().orElse(0);
+        for (Lesson lesson : lessons) {
+            LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lesson.getId(), user.getId());
+            totalProgress += (lessonProgress != null) ? lessonProgress.getProgress() : 0;
+        }
+
+        double avgProgress = totalProgress / lessons.size();
         boolean isCompleted = avgProgress >= Constants.PASSING_PROGRESS;
 
         ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), user.getId());
@@ -52,4 +54,5 @@ public class ChapterProgressService implements IChapterProgressService{
 
         return chapterProgressRepository.save(chapterProgress);
     }
+
 }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -29,12 +28,14 @@ public class LevelProgressService implements ILevelProgressService {
         List<Chapter> chapters = level.getChapters();
         if (chapters.isEmpty()) return null;
 
-        List<ChapterProgress> progresses = chapterProgressRepository.findByUserIdAndChapterIdIn(
-                user.getId(),
-                chapters.stream().map(Chapter::getId).toList()
-        );
+        double totalProgress = 0.0;
 
-        double avgProgress = progresses.isEmpty() ? 0 : progresses.stream().mapToDouble(ChapterProgress::getProgress).average().orElse(0);
+        for (Chapter chapter : chapters) {
+            ChapterProgress progress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), user.getId());
+            totalProgress += (progress != null) ? progress.getProgress() : 0;
+        }
+
+        double avgProgress = totalProgress / chapters.size();
         boolean isCompleted = avgProgress >= Constants.PASSING_PROGRESS;
 
         LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(level.getId(), user.getId());
@@ -53,5 +54,6 @@ public class LevelProgressService implements ILevelProgressService {
 
         return levelProgressRepository.save(levelProgress);
     }
+
 
 }

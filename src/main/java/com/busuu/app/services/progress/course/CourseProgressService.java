@@ -3,6 +3,7 @@ package com.busuu.app.services.progress.course;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.entities.Course;
 import com.busuu.app.entities.CourseLevel;
+import com.busuu.app.entities.Level;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.progresses.CourseProgress;
 import com.busuu.app.entities.progresses.LevelProgress;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -29,12 +29,15 @@ public class CourseProgressService implements ICourseProgressService {
         List<CourseLevel> courseLevels = course.getCourseLevels();
         if (courseLevels.isEmpty()) return null;
 
-        List<LevelProgress> progresses = courseLevels.stream()
-                .map(clv -> levelProgressRepository.findByLevelIdAndUserId(clv.getLevel().getId(), user.getId()))
-                .filter(Objects::nonNull)
-                .toList();
+        double totalProgress = 0.0;
 
-        double avgProgress = progresses.isEmpty() ? 0 : progresses.stream().mapToDouble(LevelProgress::getProgress).average().orElse(0);
+        for (CourseLevel cl : courseLevels) {
+            Level level = cl.getLevel();
+            LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(level.getId(), user.getId());
+            totalProgress += levelProgress != null ? levelProgress.getProgress() : 0;
+        }
+
+        double avgProgress = totalProgress / courseLevels.size();
         boolean isCompleted = avgProgress >= Constants.PASSING_PROGRESS;
 
         CourseProgress courseProgress = courseProgressRepository.findByCourseIdAndUserId(course.getId(), user.getId());
@@ -53,4 +56,5 @@ public class CourseProgressService implements ICourseProgressService {
 
         return courseProgressRepository.save(courseProgress);
     }
+
 }
