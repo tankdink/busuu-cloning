@@ -290,9 +290,13 @@ public class QuestionController {
     }
 
     @PostMapping(value = Constants.FILE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> extractQuestionByFile(@RequestParam(value = "req-id", required = false) String requestId,
-                                                          @RequestParam("file") MultipartFile file) {
+                                                          @RequestParam("file") MultipartFile file,
+                                                          @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                          @RequestParam(value = "size", defaultValue = "10", required = false) int size)
+    {
         try {
 
             if (requestId == null || requestId.isEmpty()) {
@@ -307,7 +311,7 @@ public class QuestionController {
             switch(fileType) {
                 case "EXCEL":
                 {
-                    extractedDataCell = questionService.extractQuestionFileExcel(file);
+                    extractedDataCell = questionService.extractQuestionFileExcel(file, page, size);
                     return ResponseEntity.ok(
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
@@ -318,7 +322,7 @@ public class QuestionController {
                 }
                 case "WORD":
                 {
-                    List<QuestionResponse> extractedDataList = questionService.extractQuestionFileWord(file);
+                    List<QuestionResponse> extractedDataList = questionService.extractQuestionFileWord(file, page, size);
                     return ResponseEntity.ok(
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
@@ -329,11 +333,18 @@ public class QuestionController {
                 }
                 case "PDF":
                 {
-                    List<QuestionResponse> extractedDataList = questionService.extractQuestionFilePDF(file);
+                    Page<QuestionResponse> extractedDataList = questionService.extractQuestionFilePDF(file, page, size);
+
+                    Object responseData = PagingResponse.<QuestionResponse>builder()
+                            .totalPages(extractedDataList.getTotalPages())
+                            .objects(extractedDataList.getContent())
+                            .totalObjects(extractedDataList.getTotalElements())
+                            .build();
+
                     return ResponseEntity.ok(
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                    .data(extractedDataList)
+                                    .data(responseData)
                                     .status(HttpStatus.OK)
                                     .build()
                     );

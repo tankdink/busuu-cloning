@@ -22,10 +22,12 @@ import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.InvalidFileException;
 import com.busuu.app.repositories.questions.QuestionRepository;
+import io.jsonwebtoken.lang.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -55,6 +57,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -295,7 +298,7 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public List<QuestionResponse> extractQuestionFileWord(MultipartFile file) throws IOException
+    public List<QuestionResponse> extractQuestionFileWord(MultipartFile file, int page, int size) throws IOException
     {
         String name = file.getOriginalFilename().toLowerCase();
 
@@ -326,7 +329,7 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public List<QuestionResponse> extractQuestionFilePDF(MultipartFile file) throws IOException
+    public Page<QuestionResponse> extractQuestionFilePDF(MultipartFile file, int page, int size) throws IOException
     {
         File pdfFile = toTempFile(file);
         try (PDDocument pdf = Loader.loadPDF(pdfFile))
@@ -339,7 +342,19 @@ public class QuestionService implements IQuestionService {
             validSyntaxPdf(pdf);
 
             //Passed
-            return getQuestionFromFilePdf(pdf);
+            List<QuestionResponse> allResultList = getQuestionFromFilePdf(pdf);
+
+            //Pageable process
+            Pageable pageable = PageRequest.of(page, size);
+            int totalElement = allResultList.size();
+            int startAt = (int) pageable.getOffset();
+            int endAt = Math.min(startAt + pageable.getPageSize(), totalElement);
+
+            List<QuestionResponse> resultList = (startAt <= endAt)
+                    ? allResultList.subList(startAt, endAt)
+                    : Collections.emptyList();
+
+            return new PageImpl<>(resultList, pageable, totalElement);
 
         } finally {
             //Clean up temp file
@@ -350,7 +365,7 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public List<Map<String, Object>> extractQuestionFileExcel(MultipartFile file) throws IOException
+    public List<Map<String, Object>> extractQuestionFileExcel(MultipartFile file, int page, int size) throws IOException
     {
         try (Workbook wb = WorkbookFactory.create(file.getInputStream()))
         {
