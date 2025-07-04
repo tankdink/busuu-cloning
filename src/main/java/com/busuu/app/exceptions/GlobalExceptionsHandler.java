@@ -24,20 +24,16 @@ public class GlobalExceptionsHandler
 {
     private final LocalizationUtils localizationUtils;
 
-    // Handle DTOs jakartar exceptions
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response> handleValidationExceptions(MethodArgumentNotValidException e)
     {
-        //Create a map to store all the errors in 1 DTOs
         Map<String, String> errors = new HashMap<>();
 
-        // Collect all validation errors to the just-created object
         for (FieldError error : e.getBindingResult().getFieldErrors())
         {
             errors.put(error.getField(), error.getDefaultMessage());
         }
 
-        // Convert the map to single string
         String errorMessage = errors.entrySet().stream()
                 .map(entry -> entry.getKey() + ": " + entry.getValue())
                 .collect(Collectors.joining("; "));
@@ -49,7 +45,7 @@ public class GlobalExceptionsHandler
         return ResponseEntity.badRequest().body(
                 Response.builder()
                         .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessage))
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.BAD_REQUEST.value())
                         .build()
         );
     }
@@ -60,7 +56,7 @@ public class GlobalExceptionsHandler
         return ResponseEntity.badRequest().body(
                 Response.builder()
                         .message(exception.getMessage())
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.NOT_FOUND.value())
                         .build()
         );
 
@@ -72,7 +68,7 @@ public class GlobalExceptionsHandler
         return ResponseEntity.badRequest().body(
                 Response.builder()
                         .message(exception.getMessage())
-                        .status(exception.getStatusCode())
+                        .status(exception.getStatusCode().value())
                         .build()
         );
 
@@ -84,7 +80,7 @@ public class GlobalExceptionsHandler
         return ResponseEntity.badRequest().body(
                 Response.builder()
                         .message(exception.getMessage())
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.CONFLICT.value())
                         .build()
         );
 

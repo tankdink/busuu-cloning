@@ -56,7 +56,7 @@ public class QuestionController {
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .data(responseData)
                             .build()
             );
@@ -66,7 +66,7 @@ public class QuestionController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -100,7 +100,7 @@ public class QuestionController {
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .data(responseData)
                             .build()
             );
@@ -110,7 +110,7 @@ public class QuestionController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -143,7 +143,7 @@ public class QuestionController {
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .data(responseData)
                             .build()
             );
@@ -153,7 +153,7 @@ public class QuestionController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -176,7 +176,7 @@ public class QuestionController {
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .data(questionResponses)
                             .build()
             );
@@ -186,7 +186,7 @@ public class QuestionController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -208,7 +208,7 @@ public class QuestionController {
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
 
@@ -217,7 +217,7 @@ public class QuestionController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -239,7 +239,7 @@ public class QuestionController {
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
 
@@ -248,7 +248,7 @@ public class QuestionController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -270,7 +270,7 @@ public class QuestionController {
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
 
@@ -279,7 +279,7 @@ public class QuestionController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }

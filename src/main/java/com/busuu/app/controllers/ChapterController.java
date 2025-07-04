@@ -52,7 +52,7 @@ public class ChapterController
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.CREATED)
+                            .status(HttpStatus.CREATED.value())
                             .data(addedChapter)
                             .build()
             );
@@ -62,7 +62,7 @@ public class ChapterController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) +": "+ e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -89,7 +89,7 @@ public class ChapterController
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .data(gettedChapter)
                             .build()
             );
@@ -99,7 +99,7 @@ public class ChapterController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -141,7 +141,7 @@ public class ChapterController
                 return ResponseEntity.badRequest().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": Invalid fetching condition: courseId and levelId is BOTH required (fetch chapters by courseId and levelId), or BOTH null (fetch all chapters)!" )
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .build()
                 );
 
@@ -161,7 +161,7 @@ public class ChapterController
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .data(responseData)
                             .build()
             );
@@ -171,7 +171,7 @@ public class ChapterController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -199,7 +199,7 @@ public class ChapterController
                     Response.builder()
                             .data(chapterUpdated)
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
 
@@ -208,7 +208,7 @@ public class ChapterController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) +": "+ e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -234,7 +234,7 @@ public class ChapterController
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
 
@@ -243,7 +243,7 @@ public class ChapterController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED)+": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }

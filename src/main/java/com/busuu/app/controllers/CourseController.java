@@ -58,7 +58,7 @@ public class CourseController {
                 return ResponseEntity.badRequest().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .build()
                 );
             }
@@ -67,7 +67,7 @@ public class CourseController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
                             .data(course)
-                            .status(HttpStatus.CREATED)
+                            .status(HttpStatus.CREATED.value())
                             .build()
             );
         } catch (Exception e) {
@@ -75,7 +75,7 @@ public class CourseController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -107,7 +107,7 @@ public class CourseController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .data(responseData)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
@@ -115,7 +115,7 @@ public class CourseController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -136,7 +136,7 @@ public class CourseController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .data(course)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
@@ -144,7 +144,7 @@ public class CourseController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -173,7 +173,7 @@ public class CourseController {
                 return ResponseEntity.badRequest().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .build()
                 );
             }
@@ -183,7 +183,7 @@ public class CourseController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
                             .data(course)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
@@ -191,7 +191,7 @@ public class CourseController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -211,7 +211,7 @@ public class CourseController {
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
@@ -219,7 +219,7 @@ public class CourseController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }

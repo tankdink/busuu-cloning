@@ -68,7 +68,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .build()
                 );
             }
@@ -77,7 +77,7 @@ public class UserController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.REGISTER_SUCCESSFULLY))
                             .data(userResponse)
-                            .status(HttpStatus.CREATED)
+                            .status(HttpStatus.CREATED.value())
                             .build()
             );
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.REGISTER_FAILED))
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -112,7 +112,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .build()
                 );
             }
@@ -135,14 +135,14 @@ public class UserController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.LOGIN_SUCCESSFULLY))
                             .data(loginResponse)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.LOGIN_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -175,14 +175,14 @@ public class UserController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .data(responseData)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                             .build()
             );
         }
@@ -205,14 +205,14 @@ public class UserController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .data(modelMapper.map(user, UserResponse.class))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -239,7 +239,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .build()
                 );
             }
@@ -250,14 +250,14 @@ public class UserController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
                             .data(res)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED))
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -279,7 +279,7 @@ public class UserController {
                         .toList();
                 return ResponseEntity.badRequest().body(
                         Response.builder()
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
                                 .build()
                 );
@@ -293,12 +293,13 @@ public class UserController {
                     .username(userDetail.getUsername())
                     .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                     .id(userDetail.getId())
+                    .refreshToken(jwtToken.getRefreshToken())
                     .build();
             return ResponseEntity.ok(
                     Response.builder()
                             .message("Refresh token successfully")
                             .data(loginResponse)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
 
@@ -306,7 +307,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -329,7 +330,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR, errorMessages.toString()))
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .build()
                 );
             }
@@ -339,7 +340,7 @@ public class UserController {
                         Response.builder()
                                 .data(true)
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.CHANGE_PASSWORD_SUCCESSFULLY))
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .build()
                 );
             }
@@ -347,14 +348,14 @@ public class UserController {
                     Response.builder()
                             .data(false)
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.CHANGE_PASSWORD_FAILED))
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -374,7 +375,7 @@ public class UserController {
                 return ResponseEntity.ok(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.OTP_SUCCESSFULLY))
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .build()
                 );
             }
@@ -382,7 +383,7 @@ public class UserController {
                 return ResponseEntity.ok(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_OTP_SUCCESSFULLY))
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .build()
                 );
             }
@@ -390,7 +391,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -411,7 +412,7 @@ public class UserController {
                 return ResponseEntity.ok(
                         Response.builder()
                                 .data(true)
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.CHECK_OTP_SUCCESSFULLY))
                                 .build()
                 );
@@ -419,7 +420,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .data(false)
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.CHECK_OTP_FAILED))
                             .build()
             );
@@ -427,7 +428,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -448,14 +449,14 @@ public class UserController {
             return ResponseEntity.ok(
                     Response.builder()
                             .message(message)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -477,14 +478,14 @@ public class UserController {
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .data(userResponse)
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -503,7 +504,7 @@ public class UserController {
             if (!isUnique) {
                 return ResponseEntity.ok(
                         Response.builder()
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.EMAIL_NOT_EXIST))
                                 .data(false)
                                 .build()
@@ -512,7 +513,7 @@ public class UserController {
             return ResponseEntity.ok(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.EMAIL_EXIST))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .data(true)
                             .build()
             );
@@ -520,7 +521,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }
@@ -541,7 +542,7 @@ public class UserController {
                 return ResponseEntity.ok(
                         Response.builder()
                                 .data(1)
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATED_ACCOUNT))
                                 .build()
                 );
@@ -549,7 +550,7 @@ public class UserController {
                 return ResponseEntity.ok(
                         Response.builder()
                                 .data(2)
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATION_SUCCESSFULLY))
                                 .build()
                 );
@@ -557,7 +558,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .data(0)
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.ACTIVATION_FAILED))
                             .build()
             );
@@ -565,7 +566,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
-                            .status(HttpStatus.UNAUTHORIZED)
+                            .status(HttpStatus.UNAUTHORIZED.value())
                             .build()
             );
         }

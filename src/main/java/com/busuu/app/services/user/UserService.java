@@ -223,7 +223,7 @@ public class UserService implements IUserService {
     public User getUserDetailsFromRefreshToken(String requestId, String refreshToken) throws Exception {
         try {
             Token existingToken = tokenRepository.findByRefreshToken(refreshToken);
-            return getUserDetailsFromToken(requestId, existingToken.getToken());
+            return existingToken.getUser();
         } catch (Exception e) {
             log.error("requestId=" + requestId + ",failed to get detail user from fresh token, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
