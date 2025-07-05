@@ -70,6 +70,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of("/users/email_unique", "GET"),
                 Pair.of("/users/refresh_token", "POST"),
                 Pair.of("/users/active_account", "GET"),
+                Pair.of("/users/auth/social_login", "GET"),
+                Pair.of("/users/auth/social/callback", "GET"),
 
                 Pair.of("/languages", "GET"),
                 Pair.of("/languages/**", "GET"),

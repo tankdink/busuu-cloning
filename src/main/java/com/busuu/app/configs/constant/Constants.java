@@ -12,6 +12,11 @@ public class Constants {
     public static final String COURSE = "/courses";
     public static final String LESSON = "/lessons";
     public static final String PROGRESS = "/progresses";
+    public static final String AUTH = "/auth";
+    public static final String SOCIAL_LOGIN = "/social_login";
+    public static final String SOCIAL = "/social";
+    public static final String CALLBACK = "/callback";
+
 
     public static final String QUESTION = "/questions";
     public static final String ANSWER = "/answers";
@@ -44,6 +49,11 @@ public class Constants {
     }
 
     public static final Double PASSING_PROGRESS = 80.0;
+
+    public static class SOCIAL_TYPE {
+        public static final String FACEBOOK = "facebook";
+        public static final String GOOGLE = "google";
+    }
 
 
     public static class ERROR_CODE {

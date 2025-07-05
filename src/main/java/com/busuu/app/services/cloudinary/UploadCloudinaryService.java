@@ -31,7 +31,7 @@ public class UploadCloudinaryService implements IUploadCloudinaryService {
                     Map.of(
                             "public_id", fileName,
                             "folder", folder,
-                            "resource_type", type.equals("audio") ? "video" : type
+                            "resource_type", type.equals("audio") ? "video" : type.equals("user") ? "image" : type
                     ));
 
             String url = (String) result.get("secure_url");

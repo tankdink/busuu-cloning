@@ -14,6 +14,7 @@ import com.busuu.app.entities.Token;
 import com.busuu.app.entities.User;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
+import com.busuu.app.services.auth.IAuthService;
 import com.busuu.app.services.token.ITokenService;
 import com.busuu.app.services.user.IUserService;
 import com.busuu.app.utils.LocalizationUtils;
@@ -32,9 +33,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -46,7 +51,100 @@ public class UserController {
     private final IUserService userService;
     private final ITokenService tokenService;
     private final LocalizationUtils localizationUtils;
+    private final IAuthService authService;
     private final ModelMapper modelMapper;
+
+    @GetMapping(Constants.AUTH + Constants.SOCIAL_LOGIN)
+    public ResponseEntity<Response> socialAuth (@RequestParam(value = "req-id", required = false) String requestId,
+                                         @RequestParam("login_type") String loginType) {
+        loginType = loginType.trim().toLowerCase();
+        String url = authService.generateAuthUrl(loginType);
+        if (url == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                Response.builder()
+                        .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                        .data(null)
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .build()
+            );
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Response.builder()
+                        .status(HttpStatus.OK.value())
+                        .data(url)
+                        .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                        .build()
+        );
+    }
+
+    @GetMapping(Constants.AUTH + Constants.SOCIAL + Constants.CALLBACK)
+    public ResponseEntity<Response> callBack (@RequestParam(value = "req-id", required = false) String requestId,
+                                              @RequestParam("code") String code,
+                                              @RequestParam("login_type") String loginType,
+                                              HttpServletRequest request) throws Exception {
+        // Call the AuthService to get user info
+        Map<String, Object> userInfo = authService.authenticateAndFetchProfile(code, loginType);
+
+        if (userInfo == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    Response.builder()
+                            .message("Failed to authenticate")
+                            .build()
+            );
+        }
+
+        String accountId = "";
+        String name = "";
+        String firstName = "";
+        String lastName = "";
+        String email = "";
+        String avatar = "";
+
+        if (loginType.trim().equalsIgnoreCase(Constants.SOCIAL_TYPE.GOOGLE)) {
+            accountId = (String) Objects.requireNonNullElse(userInfo.get("sub"), "");
+            name = (String) Objects.requireNonNullElse(userInfo.get("name"), "");
+            firstName = (String) Objects.requireNonNullElse(userInfo.get("given_name"), "");
+            lastName = (String) Objects.requireNonNullElse(userInfo.get("family_name"), "");
+            email = (String) Objects.requireNonNullElse(userInfo.get("email"), "");
+            avatar = (String) Objects.requireNonNullElse(userInfo.get("picture"), "");
+        } else if (loginType.trim().equalsIgnoreCase(Constants.SOCIAL_TYPE.FACEBOOK)) {
+            accountId = (String) Objects.requireNonNullElse(userInfo.get("id"), "");
+            name = (String) Objects.requireNonNullElse(userInfo.get("name"), "");
+            email = (String) Objects.requireNonNullElse(userInfo.get("email"), "");
+            Object pictureObj = userInfo.get("picture");
+            if (pictureObj instanceof Map) {
+                Map<?, ?> pictureData = (Map<?, ?>) pictureObj;
+                Object dataObj = pictureData.get("data");
+                if (dataObj instanceof Map) {
+                    Map<?, ?> dataMap = (Map<?, ?>) dataObj;
+                    Object urlObj = dataMap.get("url");
+                    if (urlObj instanceof String) {
+                        avatar = (String) urlObj;
+                    }
+                }
+            }
+        }
+
+        // Create UserDTO
+        UserLoginDTO userLoginDTO = UserLoginDTO.builder()
+                .email(email)
+                .password("")
+                .avatar(avatar)
+                .fullName(name)
+                .firstName(firstName)
+                .lastName(lastName)
+                .build();
+
+
+        if (loginType.trim().equalsIgnoreCase(Constants.SOCIAL_TYPE.GOOGLE)) {
+            userLoginDTO.setGoogleAccountId(accountId);
+        }
+        else if (loginType.trim().equalsIgnoreCase(Constants.SOCIAL_TYPE.FACEBOOK)) {
+            userLoginDTO.setFacebookAccountId(accountId);
+        }
+
+        return loginSocial(userLoginDTO, request);
+    }
 
     @PostMapping(value = Constants.REGISTER)
     public ResponseEntity<Response> register (@RequestParam(value = "req-id", required = false) String requestId,
@@ -570,5 +668,37 @@ public class UserController {
                             .build()
             );
         }
+    }
+
+    private ResponseEntity<Response> loginSocial (@Validated @RequestBody UserLoginDTO userLoginDTO,
+                                                  HttpServletRequest request) throws Exception {
+        String requestId = UUID.randomUUID().toString();
+
+        String token = userService.loginSocial(userLoginDTO);
+
+        String userAgent = request.getHeader("User-Agent");
+        User userDetail = userService.getUserDetailsFromToken(requestId, token);
+        Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
+
+        LoginResponse loginResponse = LoginResponse.builder()
+                .token(token)
+                .tokenType(jwtToken.getTokenType())
+                .refreshToken(jwtToken.getRefreshToken())
+                .username(userDetail.getUsername())
+                .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .id(userDetail.getId())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Response.builder()
+                        .data(loginResponse)
+                        .status(HttpStatus.OK.value())
+                        .message(localizationUtils.getLocalizedMessage(MessagesKey.LOGIN_SUCCESSFULLY))
+                        .build()
+        );
+    }
+
+    private boolean isMobileDevice(String userAgent) {
+        return userAgent.toLowerCase().contains("mobile");
     }
 }

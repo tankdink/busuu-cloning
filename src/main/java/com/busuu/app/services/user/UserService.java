@@ -20,6 +20,8 @@ import com.busuu.app.repositories.TokenRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.services.email.IEmailService;
+import com.busuu.app.utils.LocalizationUtils;
+import com.busuu.app.utils.MessagesKey;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,6 +62,7 @@ public class UserService implements IUserService {
     private final ModelMapper modelMapper;
     private final IEmailService emailService;
     private final IUploadCloudinaryService uploadCloudinaryService;
+    private final LocalizationUtils localizationUtils;
 
     @Override
     @Transactional
@@ -89,7 +93,7 @@ public class UserService implements IUserService {
             String password = userDTO.getPassword();
             String encodedPassword = passwordEncoder.encode(password);
             newUser.setPassword(encodedPassword);
-
+            newUser.setFullName(newUser.getFirstName() + " " + newUser.getLastName());
             newUser.setRoles(roles);
 
             // Active code to active account
@@ -131,68 +135,6 @@ public class UserService implements IUserService {
         return jwtTokenUtil.generateToken(existingUser);
     }
 
-//    @Override
-//    public String loginSocial(UserLoginDTO userLoginDTO) throws Exception {
-//        Optional<User> optionalUser = Optional.empty();
-////        Role roleUser = roleRepository.findByName(Role.USER)
-////                .orElseThrow(() -> new DataNotFoundException(
-////                        localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
-//
-//        // Kiểm tra Google Account ID
-//        if (userLoginDTO.isGoogleAccountIdValid()) {
-//            optionalUser = userRepository.findByGoogleAccountId(userLoginDTO.getGoogleAccountId());
-//
-//            // Tạo người dùng mới nếu không tìm thấy
-//            if (optionalUser.isEmpty()) {
-//                User newUser = User.builder()
-//                        .fullName(Optional.ofNullable(userLoginDTO.getFullname()).orElse(""))
-//                        .email(Optional.ofNullable(userLoginDTO.getEmail()).orElse(""))
-//                        .avatar(Optional.ofNullable(userLoginDTO.getProfileImage()).orElse(""))
-//                        .roles(roleUser)
-//                        .googleAccountId(userLoginDTO.getGoogleAccountId())
-//                        .password("")
-//                        .active(true)
-//                        .build();
-//
-//                // Lưu người dùng mới
-//                newUser = userRepository.save(newUser);
-//                optionalUser = Optional.of(newUser);
-//            }
-//        }
-//        // Kiểm tra Facebook Account ID
-//        else if (userLoginDTO.isFacebookAccountIdValid()) {
-//            optionalUser = userRepository.findByFacebookAccountId(userLoginDTO.getFacebookAccountId());
-//
-//            // Tạo người dùng mới nếu không tìm thấy
-//            if (optionalUser.isEmpty()) {
-//                User newUser = User.builder()
-//                        .fullName(Optional.ofNullable(userLoginDTO.getFullname()).orElse(""))
-//                        .email(Optional.ofNullable(userLoginDTO.getEmail()).orElse(""))
-//                        .avatar(Optional.ofNullable(userLoginDTO.getProfileImage()).orElse(""))
-//                        .roles(roleUser)
-//                        .facebookAccountId(userLoginDTO.getFacebookAccountId())
-//                        .password("") // Mật khẩu trống cho đăng nhập mạng xã hội
-//                        .active(true)
-//                        .build();
-//
-//                // Lưu người dùng mới
-//                newUser = userRepository.save(newUser);
-//                optionalUser = Optional.of(newUser);
-//            }
-//        } else {
-//            throw new IllegalArgumentException("Invalid social account information.");
-//        }
-//
-//        User user = optionalUser.get();
-//
-//        // Kiểm tra nếu tài khoản bị khóa
-//        if (!user.isActive()) {
-//            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
-//        }
-//
-//        // Tạo JWT token cho người dùng
-//        return jwtTokenUtil.generateToken(user);
-//    }
 
     @Override
     public boolean emailUnique(String requestId, String email) {
@@ -242,6 +184,8 @@ public class UserService implements IUserService {
             User extUser = userRepository.findById(userId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
 
+            String extAvatar = extUser.getAvatar();
+
             modelMapper.map(userUpdateDTO, extUser);
 
             if (Objects.nonNull(userUpdateDTO.getAvatar())) {
@@ -256,6 +200,8 @@ public class UserService implements IUserService {
                         extUser.setAvatarName(cloudinaryResponse.getPublicId());
                     }
                 }
+            } else {
+                extUser.setAvatar(extAvatar);
             }
             extUser.setFullName(extUser.getFirstName() + " " + extUser.getLastName());
 
@@ -419,6 +365,77 @@ public class UserService implements IUserService {
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHECK_OTP, requestId);
         }
+    }
+
+    @Override
+    @Transactional
+    public String loginSocial(UserLoginDTO userLoginDTO) throws Exception {
+        Optional<User> optionalUser = Optional.empty();
+        Role roleUser = roleRepository.findById("9c6cda15-a8e9-41d1-9e2c-f7e2edda24e9")
+                .orElseThrow(() -> new DataNotFoundException(
+                        localizationUtils.getLocalizedMessage(MessagesKey.INVALID_ERROR)));
+        List<Role> roles = new ArrayList<>();
+        roles.add(roleUser);
+        if (userLoginDTO.isGoogleAccountIdValid()) {
+            optionalUser = userRepository.findByEmail(userLoginDTO.getEmail());
+
+            if (optionalUser.isEmpty()) {
+                User newUser = User.builder()
+                        .id(UUID.randomUUID().toString())
+                        .firstName(userLoginDTO.getFirstName())
+                        .email(userLoginDTO.getEmail())
+                        .lastName(userLoginDTO.getLastName())
+                        .roles(roles)
+                        .avatar(userLoginDTO.getAvatar())
+                        .googleAccountId(userLoginDTO.getGoogleAccountId())
+                        .password("")
+                        .isActive(true)
+                        .build();
+                newUser = userRepository.save(newUser);
+                optionalUser = Optional.of(newUser);
+            }
+            else {
+                if (optionalUser.get().getGoogleAccountId() == null) {
+                    optionalUser.get().setGoogleAccountId(userLoginDTO.getGoogleAccountId());
+                    optionalUser = Optional.of(userRepository.save(optionalUser.get()));
+                }
+            }
+        }
+        else if (userLoginDTO.isFacebookAccountIdValid()) {
+            optionalUser = userRepository.findByEmail(userLoginDTO.getEmail());
+            if (optionalUser.isEmpty()) {
+                User newUser = User.builder()
+                        .id(UUID.randomUUID().toString())
+                        .firstName(userLoginDTO.getFirstName())
+                        .email(userLoginDTO.getEmail())
+                        .lastName(userLoginDTO.getLastName())
+                        .roles(roles)
+                        .avatar(userLoginDTO.getAvatar())
+                        .facebookAccountId(userLoginDTO.getFacebookAccountId())
+                        .password("")
+                        .isActive(true)
+                        .build();
+
+                newUser = userRepository.save(newUser);
+                optionalUser = Optional.of(newUser);
+            }
+            else {
+                if (optionalUser.get().getFacebookAccountId() == null) {
+                    optionalUser.get().setFacebookAccountId(userLoginDTO.getFacebookAccountId());
+                    optionalUser = Optional.of(userRepository.save(optionalUser.get()));
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid social account information.");
+        }
+
+        User user = optionalUser.get();
+
+        if (!user.isActive()) {
+            throw new IllegalArgumentException(localizationUtils.getLocalizedMessage("User is locked"));
+        }
+
+        return jwtTokenUtil.generateToken(user);
     }
 
     private CloudinaryResponse uploadAvatar(MultipartFile file) throws Exception {

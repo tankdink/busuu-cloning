@@ -9,7 +9,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
@@ -35,34 +35,45 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  flyway:
-    enabled: true
-    locations: classpath:/db/migration,classpath:/dev/db/migration
-    baseline-on-migrate: true
-    baseline-version: 0
+#  flyway:
+#    enabled: true
+#    locations: classpath:/db/migration,classpath:/dev/db/migration
+#    baseline-on-migrate: true
+#    baseline-version: 0
   security:
     oauth2:
       client:
         registration:
           google:
             client-id: 395250688466-fun0nunkb1audoiv8leiiuediv3365ko.apps.googleusercontent.com
-            client-secret: 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
-            redirect-uri: "${GOOGLE_REDIRECT_URI:http://localhost:3000/auth/google/callback}"
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-            #auth-uri: "https://www.facebook.com/v3.2/dialog/oauth"
-            resource-server:
-              opaque-token:
-                introspection-uri: "https://googleapis.com"
+            client-secret: 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
+            redirect-uri: "http://localhost:3000/auth/google/callback"
+            scope:
+              - email
+              - profile
+            provider: google
+
           facebook:
-            client-id: 1007654770988152
-            client-secret: 5adb1d315754ac7e7e26b09d4c8b8b17
-            redirect-uri: "${FACEBOOK_REDIRECT_URI:http://localhost:3000/auth/facebook/callback}"
-            auth-uri: https://www.facebook.com/v21.0/dialog/oauth
-            token-uri: https://graph.facebook.com/oauth/access_token
-            user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture.type(large)
+            client-id: 1466181787896061
+            client-secret: 331779654921601ddbc793c2807a5069
+            redirect-uri: "http://localhost:3000/auth/facebook/callback"
             scope:
               - email
               - public_profile
+            provider: facebook
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+          facebook:
+            authorization-uri: https://www.facebook.com/v21.0/dialog/oauth
+            token-uri: https://graph.facebook.com/v21.0/oauth/access_token
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture
+            user-name-attribute: id
 
 server:
   servlet:

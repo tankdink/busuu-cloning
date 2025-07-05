@@ -38,5 +38,6 @@ public interface IUserService {
     boolean checkOTP (String requestId, String email, String OTP) throws DataNotFoundException;
 
     User blockOrEnable(String requestId, String userId) throws DataNotFoundException;
-//    String loginSocial(UserLoginDTO userLoginDTO) throws Exception;
+
+    String loginSocial(UserLoginDTO userLoginDTO) throws Exception;
 }

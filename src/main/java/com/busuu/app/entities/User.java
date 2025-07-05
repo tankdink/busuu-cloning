@@ -11,8 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.sql.Date;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +47,7 @@ public class User extends BaseEntity implements UserDetails {
     private String password;
 
     @Column(name = "date_of_birth")
-    private Date dateOfBirth;
+    private java.sql.Date dateOfBirth;
 
     @Column(name = "avatar")
     private String avatar;
@@ -73,8 +73,8 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "is_active")
     private boolean isActive;
 
-//    @Column(name = "country")
-//    private String country;
+    @Column(name = "country")
+    private String country;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserLanguage> userLanguages = new HashSet<>();

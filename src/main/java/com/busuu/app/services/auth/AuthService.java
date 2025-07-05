@@ -31,7 +31,7 @@ public class AuthService implements IAuthService{
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String googleRedirectUri;
 
-    @Value("${spring.security.oauth2.client.registration.google.user-info-uri}")
+    @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
     private String googleUserInfoUri;
 
     @Value("${spring.security.oauth2.client.registration.facebook.redirect-uri}")
@@ -43,18 +43,18 @@ public class AuthService implements IAuthService{
     @Value("${spring.security.oauth2.client.registration.facebook.client-secret}")
     private String facebookClientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.facebook.auth-uri}")
+    @Value("${spring.security.oauth2.client.provider.facebook.authorization-uri}")
     private String facebookAuthUri;
 
-    @Value("${spring.security.oauth2.client.registration.facebook.token-uri}")
+    @Value("${spring.security.oauth2.client.provider.facebook.token-uri}")
     private String facebookTokenUri;
 
-    @Value("${spring.security.oauth2.client.registration.facebook.user-info-uri}")
+    @Value("${spring.security.oauth2.client.provider.facebook.user-info-uri}")
     private String facebookUserInfoUri;
 
     public String generateAuthUrl(String loginType) {
         String url = "";
-        loginType = loginType.trim().toLowerCase(); // Normalize the login type
+        loginType = loginType.trim().toLowerCase();
 
         if ("google".equals(loginType)) {
             GoogleAuthorizationCodeRequestUrl urlBuilder = new GoogleAuthorizationCodeRequestUrl(
@@ -63,10 +63,6 @@ public class AuthService implements IAuthService{
                     Arrays.asList("email", "profile", "openid"));
             url = urlBuilder.build();
         } else if ("facebook".equals(loginType)) {
-            /*
-            url = String.format("https://www.facebook.com/v3.2/dialog/oauth?client_id=%s&redirect_uri=%s&scope=email,public_profile&response_type=code",
-                    facebookClientId, facebookRedirectUri);
-             */
             url = UriComponentsBuilder
                     .fromUriString(facebookAuthUri)
                     .queryParam("client_id", facebookClientId)
@@ -83,7 +79,6 @@ public class AuthService implements IAuthService{
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         String accessToken;
-        //Gson gson = new Gson();
 
         switch (loginType.toLowerCase()) {
             case "google":
@@ -105,7 +100,6 @@ public class AuthService implements IAuthService{
                 return new ObjectMapper().readValue(
                         restTemplate.getForEntity(googleUserInfoUri, String.class).getBody(),
                         new TypeReference<>() {});
-            //break;
 
             case "facebook":
                 // Facebook token request setup
@@ -128,7 +122,6 @@ public class AuthService implements IAuthService{
                 return mapper.readValue(
                         restTemplate.getForEntity(userInfoUri, String.class).getBody(),
                         new TypeReference<>() {});
-            //break;
 
             default:
                 System.out.println("Unsupported login type: " + loginType);

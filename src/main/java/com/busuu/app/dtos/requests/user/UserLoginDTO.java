@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserLoginDTO {
+public class UserLoginDTO extends SocialAccountDTO {
     @JsonProperty("phone_number")
     private String phoneNumber;
 
@@ -31,22 +31,25 @@ public class UserLoginDTO {
 
     //For Google, Facebook login
     // Full name, not mandatory, can be blank
-    @JsonProperty("fullname")
-    private String fullname;
+    @JsonProperty("full_name")
+    private String fullName;
+
+    @JsonProperty("first_name")
+    private String firstName;
+
+    @JsonProperty("last_name")
+    private String lastName;
 
     // Profile image URL, not mandatory, can be blank
-    @JsonProperty("profile_image")
-    private String profileImage;
+    @JsonProperty("avatar")
+    private String avatar;
 
     public boolean isPasswordBlank() {
         return password == null || password.trim().isEmpty();
     }
-    // Kiểm tra facebookAccountId có hợp lệ không
     public boolean isFacebookAccountIdValid() {
         return facebookAccountId != null && !facebookAccountId.isEmpty();
     }
-
-    // Kiểm tra googleAccountId có hợp lệ không
     public boolean isGoogleAccountIdValid() {
         return googleAccountId != null && !googleAccountId.isEmpty();
     }

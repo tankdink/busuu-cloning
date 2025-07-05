@@ -14,9 +14,11 @@ import java.util.List;
 public class UserDTO {
 
     @JsonProperty("first_name")
+    @NotBlank(message = "First name is required")
     private String firstName;
 
     @JsonProperty("last_name")
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
     @JsonProperty("full_name")
