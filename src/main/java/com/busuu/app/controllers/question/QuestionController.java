@@ -319,7 +319,7 @@ public class QuestionController {
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                                     .data(responseData)
-                                    .status(HttpStatus.OK)
+                                    .status(HttpStatus.OK.value())
                                     .build()
                     );
                 }
@@ -337,7 +337,7 @@ public class QuestionController {
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                                     .data(responseData)
-                                    .status(HttpStatus.OK)
+                                    .status(HttpStatus.OK.value())
                                     .build()
                     );
                 }
@@ -355,7 +355,7 @@ public class QuestionController {
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                                     .data(responseData)
-                                    .status(HttpStatus.OK)
+                                    .status(HttpStatus.OK.value())
                                     .build()
                     );
                 }
@@ -365,7 +365,7 @@ public class QuestionController {
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": File type is not supported! (Supported file types: .xlsx, .xls, .docx, .pdf (text-based pdf only)")
                                     .data(null)
-                                    .status(HttpStatus.OK)
+                                    .status(HttpStatus.OK.value())
                                     .build()
                     );
                 }
@@ -377,7 +377,7 @@ public class QuestionController {
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }

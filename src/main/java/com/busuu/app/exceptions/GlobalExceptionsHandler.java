@@ -177,7 +177,7 @@ public class GlobalExceptionsHandler
         return ResponseEntity.badRequest().body(
                 Response.builder()
                         .message(exception.getMessage())
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.BAD_REQUEST.value())
                         .build()
         );
 
