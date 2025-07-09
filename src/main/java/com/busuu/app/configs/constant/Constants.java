@@ -12,6 +12,11 @@ public class Constants {
     public static final String COURSE = "/courses";
     public static final String LESSON = "/lessons";
     public static final String PROGRESS = "/progresses";
+    public static final String AUTH = "/auth";
+    public static final String SOCIAL_LOGIN = "/social_login";
+    public static final String SOCIAL = "/social";
+    public static final String CALLBACK = "/callback";
+
 
     public static final String QUESTION = "/questions";
     public static final String FILE = "/file";
@@ -44,12 +49,21 @@ public class Constants {
         public static final String INDEX = "/index";
     }
 
+    public static final Double PASSING_PROGRESS = 80.0;
+
+    public static class SOCIAL_TYPE {
+        public static final String FACEBOOK = "facebook";
+        public static final String GOOGLE = "google";
+    }
+
+
     public static class ERROR_CODE {
         public static final String ERR_UNAUTHORIZED = "ERR_UNAUTHORIZED";
         public static final String ERR_CREATE_USER = "ERR_CREATE_USER";
         public static final String ERR_REGISTER_USER = "ERR_REGISTER_USER";
         public static final String ERR_LOGIN_USER = "ERR_LOGIN_USER";
         public static final String ERR_GET_USER = "ERR_GET_USER";
+        public static final String ERR_UPDATE_USER = "ERR_UPDATE_USER";
 
         public static final String ERR_ACTIVE_ACCOUNT = "ERR_ACTIVE_ACCOUNT";
         public static final String ERR_CHANGE_PASSWORD = "ERR_CHANGE_PASSWORD";

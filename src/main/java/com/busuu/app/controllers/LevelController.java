@@ -53,7 +53,7 @@ public class LevelController
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.CREATED)
+                            .status(HttpStatus.CREATED.value())
                             .data(addedLevel)
                             .build()
             );
@@ -63,7 +63,7 @@ public class LevelController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -91,7 +91,7 @@ public class LevelController
                 return ResponseEntity.badRequest().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": Invalid fetching condition: only courseId OR code can be pass in one time, or none of them is passed (fetch levels by courseId OR fetch level by code, fetch all levels)" )
-                                .status(HttpStatus.BAD_REQUEST)
+                                .status(HttpStatus.BAD_REQUEST.value())
                                 .build()
                 );
 
@@ -105,7 +105,7 @@ public class LevelController
                 return ResponseEntity.ok().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .data(level)
                                 .build()
                 );
@@ -120,7 +120,7 @@ public class LevelController
                 return ResponseEntity.ok().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .data(levelList)
                                 .build()
                 );
@@ -136,7 +136,7 @@ public class LevelController
                 return ResponseEntity.ok().body(
                         Response.builder()
                                 .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                .status(HttpStatus.OK)
+                                .status(HttpStatus.OK.value())
                                 .data(levelList)
                                 .build()
                 );
@@ -148,7 +148,7 @@ public class LevelController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -174,7 +174,7 @@ public class LevelController
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .data(gettedLevel)
                             .build()
             );
@@ -184,7 +184,7 @@ public class LevelController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -212,7 +212,7 @@ public class LevelController
                     Response.builder()
                             .data(levelUpdated)
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
 
@@ -221,7 +221,7 @@ public class LevelController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.UPDATE_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }
@@ -247,7 +247,7 @@ public class LevelController
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK)
+                            .status(HttpStatus.OK.value())
                             .build()
             );
 
@@ -256,7 +256,7 @@ public class LevelController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST)
+                            .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );
         }

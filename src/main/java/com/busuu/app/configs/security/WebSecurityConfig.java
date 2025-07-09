@@ -40,6 +40,8 @@ public class WebSecurityConfig {
                                     "/users/details",
                                     "/users/email_unique",
                                     "/users/active_account",
+                                    "/users/auth/social_login",
+                                    "/users/auth/social/callback",
 
                                     //swagger
                                     //"/v3/api-docs",

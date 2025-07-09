@@ -2,6 +2,7 @@ package com.busuu.app.services.user;
 
 import com.busuu.app.dtos.requests.user.UserActionPasswordDTO;
 import com.busuu.app.dtos.requests.user.UserDTO;
+import com.busuu.app.dtos.requests.user.UserLoginDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.User;
@@ -22,7 +23,7 @@ public interface IUserService {
 
     User getUserDetailsFromRefreshToken (String requestId, String refreshToken) throws Exception;
 
-    UserResponse updateUser (String requestId, String userId, UserUpdateDTO userUpdateDTO) throws Exception;
+    UserResponse updateUser (String requestId, UserUpdateDTO userUpdateDTO) throws Exception;
 
     Page<UserResponse> getUsersByRole (String requestId, String roleName, int page, int size, String sortBy, String sortDirection);
 
@@ -37,4 +38,6 @@ public interface IUserService {
     boolean checkOTP (String requestId, String email, String OTP) throws DataNotFoundException;
 
     User blockOrEnable(String requestId, String userId) throws DataNotFoundException;
+
+    String loginSocial(UserLoginDTO userLoginDTO) throws Exception;
 }

@@ -1,5 +1,6 @@
 package com.busuu.app.services.progress.grammar;
 
+import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.entities.Grammar;
 import com.busuu.app.entities.GrammarSection;
 import com.busuu.app.entities.User;
@@ -9,6 +10,7 @@ import com.busuu.app.repositories.progress.GrammarProgressRepository;
 import com.busuu.app.repositories.progress.GrammarSectionProgressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,15 +24,21 @@ public class GrammarProgressService implements IGrammarProgressService {
     private final GrammarProgressRepository grammarProgressRepository;
 
     @Override
+    @Transactional
     public GrammarProgress upsertGrammarProgress(Grammar grammar, User user) {
         List<GrammarSection> sections = grammar.getGrammarSections();
-        long completedSections = sections.stream()
-                .map(section -> grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(section.getId(), user.getId()))
-                .filter(Objects::nonNull)
-                .filter(GrammarSectionProgress::getIsCompleted)
-                .count();
+        if (sections.isEmpty()) return null;
 
-        double progress = (double) completedSections / sections.size() * 100;
+        double totalProgress = 0.0;
+
+        for (GrammarSection section : sections) {
+            GrammarSectionProgress sectionProgress = grammarSectionProgressRepository
+                    .findByGrammarSectionIdAndUserId(section.getId(), user.getId());
+            totalProgress += (sectionProgress != null) ? sectionProgress.getProgress() : 0;
+        }
+
+        double avgProgress = totalProgress / sections.size();
+        boolean isCompleted = avgProgress >= Constants.PASSING_PROGRESS;
 
         GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(grammar.getId(), user.getId());
         if (grammarProgress == null) {
@@ -38,14 +46,15 @@ public class GrammarProgressService implements IGrammarProgressService {
                     .id(UUID.randomUUID().toString())
                     .grammar(grammar)
                     .user(user)
-                    .progress(progress)
-                    .isCompleted(progress >= 80)
+                    .progress(avgProgress)
+                    .isCompleted(isCompleted)
                     .build();
         } else {
-            grammarProgress.setProgress(progress);
-            grammarProgress.setIsCompleted(progress >= 80);
+            grammarProgress.setProgress(avgProgress);
+            grammarProgress.setIsCompleted(isCompleted);
         }
 
         return grammarProgressRepository.save(grammarProgress);
     }
+
 }

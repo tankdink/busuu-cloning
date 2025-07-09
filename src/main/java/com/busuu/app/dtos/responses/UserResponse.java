@@ -26,6 +26,9 @@ public class UserResponse extends BaseResponse {
     @JsonProperty("last_name")
     private String lastName;
 
+    @JsonProperty("full_name")
+    private String fullName;
+
     @JsonProperty("phone_number")
     private String phoneNumber;
 
@@ -40,6 +43,11 @@ public class UserResponse extends BaseResponse {
 
     @JsonProperty("avatar")
     private String avatar;
+
+    @JsonProperty("avatar_name")
+    private String avatarName;
+
+    private String country;
 
     @JsonProperty("is_active")
     private boolean isActive;

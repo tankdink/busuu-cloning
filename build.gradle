@@ -97,6 +97,28 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
 	implementation("org.apache.pdfbox:pdfbox:3.0.5")
 
+
+	// Oauth2 client
+	implementation("org.springframework.security:spring-security-oauth2-client")
+
+	// Oauth2 resource server
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
+	// Oauth2 client
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+
+	// Google api client
+	implementation("com.google.api-client:google-api-client:2.6.0")
+
+	// Google oauth client jetty
+	implementation("com.google.oauth-client:google-oauth-client-jetty:1.36.0")
+
+	// Google api services people
+	implementation("com.google.apis:google-api-services-people:v1-rev537-1.25.0")
+
+	// Http Client
+	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
+
 }
 
 tasks.named('test') {

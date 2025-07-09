@@ -1,5 +1,6 @@
 package com.busuu.app.services.progress.chapter;
 
+import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.entities.Chapter;
 import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.User;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -24,15 +24,19 @@ public class ChapterProgressService implements IChapterProgressService{
 
     @Override
     @Transactional
-    public ChapterProgress upsertChapterProgress (Chapter chapter, User user) {
+    public ChapterProgress upsertChapterProgress(Chapter chapter, User user) {
         List<Lesson> lessons = chapter.getLessons();
-        long completedLessons = lessons.stream()
-                .map(lesson -> lessonProgressRepository.findByLessonIdAndUserId(lesson.getId(), user.getId()))
-                .filter(Objects::nonNull)
-                .filter(LessonProgress::getIsCompleted)
-                .count();
+        if (lessons.isEmpty()) return null;
 
-        double progress = (double) completedLessons / lessons.size() * 100;
+        double totalProgress = 0.0;
+
+        for (Lesson lesson : lessons) {
+            LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lesson.getId(), user.getId());
+            totalProgress += (lessonProgress != null) ? lessonProgress.getProgress() : 0;
+        }
+
+        double avgProgress = totalProgress / lessons.size();
+        boolean isCompleted = avgProgress >= Constants.PASSING_PROGRESS;
 
         ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), user.getId());
         if (chapterProgress == null) {
@@ -40,14 +44,15 @@ public class ChapterProgressService implements IChapterProgressService{
                     .id(UUID.randomUUID().toString())
                     .chapter(chapter)
                     .user(user)
-                    .progress(progress)
-                    .isCompleted(progress >= 80)
+                    .progress(avgProgress)
+                    .isCompleted(isCompleted)
                     .build();
         } else {
-            chapterProgress.setProgress(progress);
-            chapterProgress.setIsCompleted(progress >= 80);
+            chapterProgress.setProgress(avgProgress);
+            chapterProgress.setIsCompleted(isCompleted);
         }
 
         return chapterProgressRepository.save(chapterProgress);
     }
+
 }

@@ -18,7 +18,7 @@ public class Response {
     private String message;
 
     @JsonProperty("status")
-    private HttpStatus status;
+    private Integer status;
 
     @JsonProperty("data")
     private Object data;

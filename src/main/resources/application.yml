@@ -22,22 +22,58 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: busuu.service@gmail.com
-    password: hzbiclpfymnkjhqs
+    password: ccdpsjepfylqftts
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+          ssl:
+            trust: smtp.gmail.com
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  flyway:
-    enabled: false
-    locations: classpath:/db/migration,classpath:/dev/db/migration
-    baseline-on-migrate: true
-    baseline-version: 0
+#  flyway:
+#    enabled: true
+#    locations: classpath:/db/migration,classpath:/dev/db/migration
+#    baseline-on-migrate: true
+#    baseline-version: 0
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 395250688466-fun0nunkb1audoiv8leiiuediv3365ko.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: "http://localhost:3000/auth/google/callback"
+            scope:
+              - email
+              - profile
+            provider: google
+
+          facebook:
+            client-id: 1466181787896061
+            client-secret: 331779654921601ddbc793c2807a5069
+            redirect-uri: "http://localhost:3000/auth/facebook/callback"
+            scope:
+              - email
+              - public_profile
+            provider: facebook
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+          facebook:
+            authorization-uri: https://www.facebook.com/v21.0/dialog/oauth
+            token-uri: https://graph.facebook.com/v21.0/oauth/access_token
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture
+            user-name-attribute: id
 
 server:
   servlet:

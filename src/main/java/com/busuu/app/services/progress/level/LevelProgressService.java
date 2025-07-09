@@ -1,5 +1,6 @@
 package com.busuu.app.services.progress.level;
 
+import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.entities.Chapter;
 import com.busuu.app.entities.Level;
 import com.busuu.app.entities.User;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -26,13 +26,17 @@ public class LevelProgressService implements ILevelProgressService {
     @Transactional
     public LevelProgress upsertLevelProgress(Level level, User user) {
         List<Chapter> chapters = level.getChapters();
-        long completedChapters = chapters.stream()
-                .map(ch -> chapterProgressRepository.findByChapterIdAndUserId(ch.getId(), user.getId()))
-                .filter(Objects::nonNull)
-                .filter(ChapterProgress::getIsCompleted)
-                .count();
+        if (chapters.isEmpty()) return null;
 
-        double progress = (double) completedChapters / chapters.size() * 100;
+        double totalProgress = 0.0;
+
+        for (Chapter chapter : chapters) {
+            ChapterProgress progress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), user.getId());
+            totalProgress += (progress != null) ? progress.getProgress() : 0;
+        }
+
+        double avgProgress = totalProgress / chapters.size();
+        boolean isCompleted = avgProgress >= Constants.PASSING_PROGRESS;
 
         LevelProgress levelProgress = levelProgressRepository.findByLevelIdAndUserId(level.getId(), user.getId());
         if (levelProgress == null) {
@@ -40,14 +44,16 @@ public class LevelProgressService implements ILevelProgressService {
                     .id(UUID.randomUUID().toString())
                     .level(level)
                     .user(user)
-                    .progress(progress)
-                    .isCompleted(progress >= 80)
+                    .progress(avgProgress)
+                    .isCompleted(isCompleted)
                     .build();
         } else {
-            levelProgress.setProgress(progress);
-            levelProgress.setIsCompleted(progress >= 80);
+            levelProgress.setProgress(avgProgress);
+            levelProgress.setIsCompleted(isCompleted);
         }
 
         return levelProgressRepository.save(levelProgress);
     }
+
+
 }
