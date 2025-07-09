@@ -322,11 +322,18 @@ public class QuestionController {
                 }
                 case "WORD":
                 {
-                    List<QuestionResponse> extractedDataList = questionService.extractQuestionFileWord(file, page, size);
+                    Page<QuestionResponse> extractedDataList = questionService.extractQuestionFileWord(file, page, size);
+
+                    Object responseData = PagingResponse.<QuestionResponse>builder()
+                            .totalPages(extractedDataList.getTotalPages())
+                            .objects(extractedDataList.getContent())
+                            .totalObjects(extractedDataList.getTotalElements())
+                            .build();
+
                     return ResponseEntity.ok(
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                    .data(extractedDataList)
+                                    .data(responseData)
                                     .status(HttpStatus.OK)
                                     .build()
                     );

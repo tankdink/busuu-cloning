@@ -25,6 +25,8 @@ import com.busuu.app.repositories.questions.QuestionRepository;
 import io.jsonwebtoken.lang.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -58,9 +60,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -298,7 +302,7 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public List<QuestionResponse> extractQuestionFileWord(MultipartFile file, int page, int size) throws IOException
+    public Page<QuestionResponse> extractQuestionFileWord(MultipartFile file, int page, int size) throws IOException
     {
         String name = file.getOriginalFilename().toLowerCase();
 
@@ -319,9 +323,20 @@ public class QuestionService implements IQuestionService {
                 //Valid overall syntax
                 validSyntaxWordDocx(docx);
 
-//                Return data if passed
-//                return getQuestionFromFileDocx(docx);
-                return null;
+                //Return data if passed
+                List<QuestionResponse> allResultList = getQuestionFromFileDocx(docx);
+
+                //Pageable process
+                Pageable pageable = PageRequest.of(page, size);
+                int totalElement = allResultList.size();
+                int startAt = (int) pageable.getOffset();
+                int endAt = Math.min(startAt + pageable.getPageSize(), totalElement);
+
+                List<QuestionResponse> resultList = (startAt <= endAt)
+                        ? allResultList.subList(startAt, endAt)
+                        : Collections.emptyList();
+
+                return new PageImpl<>(resultList, pageable, totalElement);
 
             }
         }
@@ -598,6 +613,7 @@ public class QuestionService implements IQuestionService {
 
         //Ignore language field
         List<String> questionLines = lines.subList(1, lines.size());
+
         List<QuestionResponse> result = new ArrayList<>();
 
         //Dummy data
@@ -675,6 +691,7 @@ public class QuestionService implements IQuestionService {
                         Set<String> answer = Arrays.stream(dummyAnswer.split(","))
                                         .map(String::trim)
                                         .collect(Collectors.toSet());
+                        if (answer.isEmpty()) throw new InvalidFileException("Invalid answer in question " + (i+1) +": Must have at least 1 answer, please check your content and your syntax");
                         response.setCorrectAnswer(answer);
                         result.add(response);
                         break;
@@ -695,6 +712,9 @@ public class QuestionService implements IQuestionService {
 
                         //Split the answer
                         String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        if (answerSplit.length != 2) throw new InvalidFileException("Invalid answer in question " + (i+1) +": Must have at least 1 option, and correct answer, please check your content and syntax");
+                        if (answerSplit[0].isEmpty() || answerSplit[1].isEmpty()) throw new InvalidFileException("Invalid answer in question " + (i+1) +": Must have at least 1 option, and correct answer, please check your content and syntax");
 
                         //Remove [ and ]
                         String listPart = answerSplit[0].trim();
@@ -734,6 +754,9 @@ public class QuestionService implements IQuestionService {
                         //Split the answer
                         String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
 
+                        if (answerSplit.length != 2) throw new InvalidFileException("Invalid answer in question " + (i+1) +": Must have at least 1 answer, and correct answer, please check your content and syntax");
+                        if (answerSplit[0].isEmpty() || answerSplit[1].isEmpty()) throw new InvalidFileException("Invalid answer in question " + (i+1) +": Must have at least 1 answer, and correct answer, please check your content and syntax");
+
                         //Remove [ and ]
                         String option = answerSplit[0].trim();
                         if (option.startsWith("[")) {
@@ -756,8 +779,7 @@ public class QuestionService implements IQuestionService {
                                 .filter(s -> !s.isEmpty())
                                 .collect(Collectors.toList());
 
-                        if (optionList.size() != answerList.size()) throw new InvalidFileException(" Invalid number of pair in question " + (i+1) +": Both side must be equal!");
-
+                        if (optionList.size() != answerList.size()) throw new InvalidFileException(" Invalid number of pair in question " + (i+1) +": Both side must be equal, please check your content and syntax");
 
 
                         for (int j = 0; j < optionList.size(); j++)
@@ -781,6 +803,9 @@ public class QuestionService implements IQuestionService {
                         //Split the answer
                         String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
 
+                        if (answerSplit.length != 2 ) throw new InvalidFileException("Invalid answer in question " + (i+1) +": Must have at least 1 pair of answer, please check your content and syntax");
+                        if (answerSplit[0].isEmpty() || answerSplit[1].isEmpty() ) throw new InvalidFileException("Invalid answer in question " + (i+1) +": Must have at least 1 pair of answer, please check your content and syntax");
+
                         //Remove [ and ]
                         String option = answerSplit[0].trim();
                         if (option.startsWith("[")) {
@@ -803,7 +828,7 @@ public class QuestionService implements IQuestionService {
                                 .filter(s -> !s.isEmpty())
                                 .collect(Collectors.toList());
 
-                        if (optionListLeft.size() != optionListRight.size()) throw new InvalidFileException(" Invalid number of pair in question " + (i+1) +": Both side must be equal!");
+                        if (optionListLeft.size() != optionListRight.size()) throw new InvalidFileException(" Invalid number of pair in question " + (i+1) +": Both side must be equal!, please check your content and syntax");
 
                         for (int j = 0; j < optionListLeft.size(); j++)
                         {
@@ -834,7 +859,7 @@ public class QuestionService implements IQuestionService {
                     }
                     default:
                     {
-                        throw new InvalidFileException("There are errors in getting question type");
+                        throw new InvalidFileException("Unknow question type");
                     }
 
                 }
@@ -920,37 +945,92 @@ public class QuestionService implements IQuestionService {
         //Result list
         List<QuestionResponse> result = new ArrayList<>();
 
-        Pattern headerPat = Pattern.compile(
-                "^Question\\s+\\d+:\\s*\\[(.+?)],\\s*\\[(.+?)]\\s*(.*)$"
-        );
+        List<String> showType = Arrays.asList("TIP","VOCAB","NORMAL");
 
         //Dummy data
         Question dummyQuestion = new Question();
         String dummyAnswer = null;
 
-        for (String block : questions)
+        //Process for answer of multiple choice question
+        List<List<XWPFParagraph>> paras = groupContentFormat(docx);
+
+
+        for (int questionNo = 0; questionNo < questions.size(); questionNo++)
         {
-            String[] lines = block.split("\\r?\\n");
+            List<String> labels = Arrays.stream(questions.get(questionNo).split("\\r?\\n"))
+                                    .map(String::trim)
+                                    .filter(b -> !b.isEmpty())
+                                    .collect(Collectors.toList());
 
-            try {
+            try
+            {
+                //Common question attribute process
+                for (int i = 0; i < labels.size(); i++)
+                {
+                    if (labels.get(i).trim().startsWith("Hint: ")) dummyQuestion.setHint(labels.get(i).substring(5).trim());
+                    else if (labels.get(i).trim().startsWith("Explanation: ")) dummyQuestion.setExplanation(labels.get(i).substring(12).trim());
+                    else if (i == 0)
+                    {
+                        //Get the header of question
+                        Pattern hdr = Pattern.compile("^Question\\s+(\\d+):\\s*\\[(.+?)],\\s*\\[(.+?)]\\s*(.+?)$");
 
-            // .. common data ...
+                        //Find the header, except the question request
+                        Matcher mh = hdr.matcher(labels.get(i).trim());
+
+                        if (!mh.find()) {
+                            throw new InvalidFileException("Malformed header; expected “Question x: [TYPE], [SHOW] …” but found: " + labels.get(0));
+                        }
+
+                        //Get the question type, which is the capture group 2 in regex
+                        dummyQuestion.setQuestionType(QuestionType.valueOf(mh.group(2)));
+
+                        //Get the show type, which is the capture group 3 in regex
+                        String dummyShowType = mh.group(3);
+                        if (!showType.contains(dummyShowType)) throw new InvalidFileException("Show type must be TIP, VOCAB or NORMAL in question " + mh.group(1) + " in your file");
+                        dummyQuestion.setShowType(ShowType.valueOf(dummyShowType));
+
+                        //Get the question request, which is the capture group 4 in regex
+                        dummyQuestion.setRequest(mh.group(4));
+
+                    }
+                    else if (i == 1)
+                    {
+                        dummyQuestion.setQuestionText(labels.get(i));
+                    }
+                }
 
 
-            // ... answer process down here ...
-                switch (dummyQuestion.getQuestionType()) {
+                //Creating and returning
+                switch (dummyQuestion.getQuestionType())
+                {
                     case FILL_BLANK:
                     {
+                        //Change dummyAnswer format to be the same with other file process
+                        for (String label: labels)
+                        {
+                            if (label.startsWith("Answer: ")) dummyAnswer = label.substring(7).trim();
+                        }
+
+                        //Answer process
                         QuestionFillBlankResponse response = modelMapper.map(dummyQuestion, QuestionFillBlankResponse.class);
                         Set<String> answer = Arrays.stream(dummyAnswer.split(","))
                                 .map(String::trim)
                                 .collect(Collectors.toSet());
+                        if (answer.isEmpty()) throw new InvalidFileException("Invalid answer in question " + (questionNo + 1) +": Must have at least 1 answer, please check your content and syntax");
+
                         response.setCorrectAnswer(answer);
                         result.add(response);
                         break;
                     }
                     case TRUE_FALSE:
                     {
+                        //Change dummyAnswer format to be the same with other file process
+                        for (String label: labels)
+                        {
+                            if (label.startsWith("Answer: ")) dummyAnswer = label.substring(7).trim();
+                        }
+
+                        //Answer process
                         QuestionTrueFalseResponse response = modelMapper.map(dummyQuestion, QuestionTrueFalseResponse.class);
                         response.setCorrectAnswer(Boolean.parseBoolean(dummyAnswer));
                         result.add(response);
@@ -958,13 +1038,26 @@ public class QuestionService implements IQuestionService {
                     }
                     case ORDERING:
                     {
+                        //Change dummyAnswer format to be the same with other file process
+                        String answer = "", correctAnswer = "";
+                        for (String label: labels)
+                        {
+                            if (label.startsWith("Answer: ")) answer = label.substring(7).trim();
+                            else if (label.startsWith("Correct answer: ")) correctAnswer = label.substring(15).trim();
+                        }
+                        dummyAnswer = String.format("[ " + answer + " ] , [ " + correctAnswer + " ] ");
+
+
+                        //Answer process
                         QuestionOrderingResponse response = modelMapper.map(dummyQuestion, QuestionOrderingResponse.class);
 
                         List<OrderingPartResponse> part = new ArrayList<>();
 
-
                         //Split the answer
                         String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        if (answerSplit.length != 2 ) throw new InvalidFileException("Invalid answer in question " + (questionNo +1) +": Must have at least 1 option, and correct answer, please check your content and syntax");
+                        if (answerSplit[0].isEmpty() || answerSplit[1].isEmpty()) throw new InvalidFileException("Invalid answer in question " + (questionNo +1) +": Must have at least 1 option, and correct answer, please check your content and syntax");
 
                         //Remove [ and ]
                         String listPart = answerSplit[0].trim();
@@ -997,12 +1090,61 @@ public class QuestionService implements IQuestionService {
                     }
                     case MULTIPLE_CHOICE:
                     {
+                        //Change dummyAnswer format to be the same with other file process
+                        //Multiple choice format process
+
+                        XWPFParagraph para = paras.get(questionNo+1).get(2);
+
+                        //Split spaces to isolate each “X. Text” chunk of answer to chunk
+                        String[] chunks = para.getText()
+                                .trim()
+                                .split("\\s{2,}");
+
+                        List<String> optionListTemp  = new ArrayList<>();
+                        List<String> answerListTemp = new ArrayList<>();
+
+                        //Pass runs to collect which letter‐dots are underlined
+                        Set<String> correctLetters = new HashSet<>();
+                        for (XWPFRun run : para.getRuns())
+                        {
+                            String runText = run.getText(0);
+                            if (runText != null && runText.matches("[A-Z]\\.?"))
+                            {
+                                if (run.getUnderline() != UnderlinePatterns.NONE)
+                                {
+                                    //Only get a letter
+                                    correctLetters.add(runText.substring(0, 1));
+                                }
+                            }
+                        }
+
+                        //Lists of answer texts and true/false flags
+                        for (String chunk : chunks)
+                        {
+                            String letter = chunk.substring(0,1);
+                            String text   = chunk.substring(2).trim();
+                            optionListTemp.add(text);
+                            //True if that letter was underlined, else “false”
+                            answerListTemp.add(correctLetters.contains(letter) ? "true" : "false");
+                        }
+
+                        //Join
+                        String optionTemp       = String.join(", ", optionListTemp);
+                        String answerTemp = String.join(", ", answerListTemp);
+
+                        dummyAnswer = String.format("[ " + optionTemp + " ] , [ " + answerTemp + " ] ");
+
+
+                        //Answer process
                         QuestionMultipleChoiceResponse response = modelMapper.map(dummyQuestion, QuestionMultipleChoiceResponse.class);
 
                         List<MultipleChoiceOptionResponse> optionResponseList = new ArrayList<>();
 
                         //Split the answer
                         String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        if (answerSplit.length != 2 ) throw new InvalidFileException("Invalid answer in question " + (questionNo +1) +": Must have at least 1 option, and correct answer, please check your content and syntax");
+                        if (answerSplit[0].isEmpty() || answerSplit[1].isEmpty() ) throw new InvalidFileException("Invalid answer in question " + (questionNo +1) +": Must have at least 1 option, and correct answer, please check your content and syntax");
 
                         //Remove [ and ]
                         String option = answerSplit[0].trim();
@@ -1026,9 +1168,7 @@ public class QuestionService implements IQuestionService {
                                 .filter(s -> !s.isEmpty())
                                 .collect(Collectors.toList());
 
-                        if (optionList.size() != answerList.size()) throw new InvalidFileException(" Invalid number of pair in question: Both side must be equal!");
-
-
+                        if (optionList.size() != answerList.size()) throw new InvalidFileException(" Invalid number of pair in question: Both side must be equal, please check your content and syntax");
 
                         for (int j = 0; j < optionList.size(); j++)
                         {
@@ -1044,12 +1184,26 @@ public class QuestionService implements IQuestionService {
                     }
                     case MATCHING:
                     {
+                        //Change dummyAnswer format to be the same with other file process
+                        String answerA = "", answerB = "";
+                        for (String label: labels)
+                        {
+                            if (label.startsWith("Answer A: ")) answerA = label.substring(9).trim();
+                            else if (label.startsWith("Answer B: ")) answerB = label.substring(9).trim();
+                        }
+                        dummyAnswer = String.format("[ " + answerA + " ] , [ " + answerB + " ] ");
+
+
+                        //Answer process
                         QuestionMatchingResponse response = modelMapper.map(dummyQuestion, QuestionMatchingResponse.class);
 
                         List<MatchingPairResponse> pairsList = new ArrayList<>();
 
                         //Split the answer
                         String[] answerSplit = dummyAnswer.split("\\]\\s*,\\s*\\[", 2);
+
+                        if (answerSplit.length != 2 ) throw new InvalidFileException("Invalid answer in question " + (questionNo +1) +": Must have at least 1 pair of answer, please check your content and syntax");
+                        if (answerSplit[0].isEmpty() || answerSplit[1].isEmpty()) throw new InvalidFileException("Invalid answer in question " + (questionNo +1) +": Must have at least 1 pair of answer, please check your content and syntax");
 
                         //Remove [ and ]
                         String option = answerSplit[0].trim();
@@ -1073,7 +1227,8 @@ public class QuestionService implements IQuestionService {
                                 .filter(s -> !s.isEmpty())
                                 .collect(Collectors.toList());
 
-                        if (optionListLeft.size() != optionListRight.size()) throw new InvalidFileException(" Invalid number of pair in question Both side must be equal!");
+                        if (optionListLeft.size() != optionListRight.size()) throw new InvalidFileException(" Invalid number of pair in question Both side must be equal, please check your content and syntax");
+
 
                         for (int j = 0; j < optionListLeft.size(); j++)
                         {
@@ -1112,6 +1267,7 @@ public class QuestionService implements IQuestionService {
             } catch (Exception ex) {
                 throw new InvalidFileException("There are errors in reading file process: " + ex.getMessage());
             }
+
         }
 
 
@@ -1230,4 +1386,50 @@ public class QuestionService implements IQuestionService {
     {
         return Arrays.stream(lines).anyMatch(l -> l.trim().startsWith(label));
     }
+
+    private List<List<XWPFParagraph>> groupContentFormat(XWPFDocument docx)
+    {
+
+        //The idea is checking for each paragraph line, then put all line belong to 1
+        //question in 1 index of a final list
+
+        //Initial paragraph
+        List<XWPFParagraph> paras = docx.getParagraphs();
+        //Final list
+        List<List<XWPFParagraph>> blocks = new ArrayList<>();
+        //Work like a dummy index for final list
+        List<XWPFParagraph> curr = new ArrayList<>();
+
+        for (XWPFParagraph p : paras)
+        {
+            //Get text in each line, if text exist, use it, if not, use ""
+            String txt = Optional.ofNullable(p.getText())
+                    .orElse("")
+                    .trim();
+
+            //Blank paragraph, end dummy block
+            if (txt.isEmpty())
+            {
+                //If the dummy is not empty, add this dummy to final list
+                if (!curr.isEmpty())
+                {
+                    blocks.add(curr);
+                    curr = new ArrayList<>();
+                }
+            }
+            //Non-blank, add to dummy block
+            else {
+                curr.add(p);
+            }
+        }
+
+        //Last block
+        if (!curr.isEmpty())
+        {
+            blocks.add(curr);
+        }
+
+        return blocks;
+    }
+
 }
