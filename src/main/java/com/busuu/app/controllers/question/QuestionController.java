@@ -360,7 +360,7 @@ public class QuestionController {
                 {
                     return ResponseEntity.ok(
                             Response.builder()
-                                    .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": File type is not supported! (Supported file types: .xlsx, .xls, .doc, .docx, .pdf (text-based pdf only)")
+                                    .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": File type is not supported! (Supported file types: .xlsx, .xls, .docx, .pdf (text-based pdf only)")
                                     .data(null)
                                     .status(HttpStatus.OK)
                                     .build()

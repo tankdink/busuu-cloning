@@ -309,11 +309,12 @@ public class QuestionService implements IQuestionService {
         //.doc file
         if (name.endsWith(".doc"))
         {
-            try (HWPFDocument doc = new HWPFDocument(file.getInputStream()))
-            {
-                return null;
-                //return doc.getDocumentText();
-            }
+            throw new InvalidFileException("Please upgrade your word file to be supported (doc -> docx)");
+//            try (HWPFDocument doc = new HWPFDocument(file.getInputStream()))
+//            {
+//                //Forbidden function =)))
+//                //return doc.getDocumentText();
+//            }
         }
         else //.docx file
         {
