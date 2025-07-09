@@ -303,19 +303,22 @@ public class QuestionController {
                 requestId = UUID.randomUUID().toString();
             }
 
-
-            String extractedDataString;
-            List<Map<String, Object>> extractedDataCell;
-
             String fileType = detectFileType(file);
             switch(fileType) {
                 case "EXCEL":
                 {
-                    extractedDataCell = questionService.extractQuestionFileExcel(file, page, size);
+                    Page<QuestionResponse> extractedDataList = questionService.extractQuestionFileExcel(file, page, size);
+
+                    Object responseData = PagingResponse.<QuestionResponse>builder()
+                            .totalPages(extractedDataList.getTotalPages())
+                            .objects(extractedDataList.getContent())
+                            .totalObjects(extractedDataList.getTotalElements())
+                            .build();
+
                     return ResponseEntity.ok(
                             Response.builder()
                                     .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                                    .data(extractedDataCell)
+                                    .data(responseData)
                                     .status(HttpStatus.OK)
                                     .build()
                     );

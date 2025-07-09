@@ -29,5 +29,5 @@ public interface IQuestionService {
 
     Page<QuestionResponse> extractQuestionFilePDF(MultipartFile file, int page, int size) throws IOException;
 
-    List<Map<String, Object>> extractQuestionFileExcel(MultipartFile file, int page, int size) throws IOException;
+    Page<QuestionResponse> extractQuestionFileExcel(MultipartFile file, int page, int size) throws IOException;
 }
