@@ -248,4 +248,53 @@ public class ChapterController
             );
         }
     }
+
+    @GetMapping(Constants.FILTER)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> filter(@RequestParam(value = "req-id", required = false) String requestId,
+                                           @RequestParam(value = "search_value",required = false) String searchValue,
+                                           @RequestParam(value = "filter_by",required = false) List<String> filterBy,
+                                           @RequestParam(value = "filter_value",required = false) List<String> filterValue,
+                                           @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                           @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                           @RequestParam(value = "sort_by", defaultValue = "id", required = false) String sortBy,
+                                           @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
+    {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call filter chapter service
+            Page<ChapterResponse> filterResult = chapterService.filterChapter(requestId, searchValue, filterBy, filterValue, page, size, sortBy, sortDirection);
+
+            Object responseData = PagingResponse.<ChapterResponse>builder()
+                    .totalPages(filterResult.getTotalPages())
+                    .objects(filterResult.getContent())
+                    .totalObjects(filterResult.getTotalElements())
+                    .build();
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK.value())
+                            .data(responseData)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when get chapter list: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": "+ e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+
+    }
 }

@@ -45,6 +45,8 @@ public class Constants {
 
     public static final String PATH_PARAM_ID = "/{id}";
 
+    public static final String FILTER = "/filter";
+
     public static class URI {
         public static final String INDEX = "/index";
     }

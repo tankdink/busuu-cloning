@@ -16,6 +16,7 @@ import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
 import com.busuu.app.repositories.progress.ChapterProgressRepository;
 import com.busuu.app.repositories.progress.CourseProgressRepository;
+import com.busuu.app.specification.ChapterSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -276,5 +277,47 @@ public class ChapterService implements IChapterService
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_DELETE_CHAPTER_BY_ID, requestId);
         }
+    }
+
+    @Override
+    public Page<ChapterResponse> filterChapter(String requestId, String searchValue, List<String> filterBy, List<String> filterValue, int page, int size, String sortBy, String sortDirection)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
+            //Pageable - Non-native
+            Sort sort = Sort.by(
+                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                    Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+            );
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            //Get all, mapping and return
+            return (chapterRepository.findAll(ChapterSpecification.getSpecification(searchValue, filterBy, filterValue), pageable))
+                    .map(chapter ->
+                    {
+                        ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), userId);
+                        ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
+
+                        response.setCourseId(chapter.getCourse().getId());
+                        response.setLevelId(chapter.getLevel().getId());
+                        if (chapterProgress != null) {
+                            response.setProgress(chapterProgress.getProgress());
+                            response.setIsCompleted(chapterProgress.getIsCompleted());
+                        }
+                        return response;
+
+                    });
+
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get chapter list, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_ALL_CHAPTER, requestId);
+        }
+
     }
 }

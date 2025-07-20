@@ -16,4 +16,6 @@ public interface IChapterService
     ChapterResponse updateChapter(String requestId, String chapterID, ChapterDTO infoUpdateChapter);
     void deleteChapter(String requestId, String chapterID);
 
+    Page<ChapterResponse> filterChapter(String requestId, String searchValue, List<String> filterBy, List<String> filterValue, int page, int size, String sortBy, String sortDirection);
+
 }
