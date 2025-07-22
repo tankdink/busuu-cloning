@@ -78,7 +78,6 @@ public class ChapterSpecification
                 //For search exact (cb.equal)
                 //String val = searchValue.toLowerCase();
 
-                Predicate idPredicate = cb.like(cb.lower(root.get("id")), val);
                 Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
                 Predicate chapterOrderPredicate = cb.like(cb.toString(root.get("chapterOrder")), val);
                 Predicate courseIdPredicate = cb.like(cb.lower(courseJoin.get("title")), val);
@@ -86,7 +85,6 @@ public class ChapterSpecification
 
 
                 predicates.add(cb.or(
-                        idPredicate,
                         titlePredicate,
                         chapterOrderPredicate,
                         courseIdPredicate,
