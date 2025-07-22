@@ -12,9 +12,14 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChapterSpecification
 {
@@ -72,12 +77,32 @@ public class ChapterSpecification
             //Global search (LIKE SEARCH)
             if (searchValue != null && !searchValue.isEmpty())
             {
-                //For search not exact (cb.like)
-                String val = "%" + searchValue.toLowerCase() + "%";
+
+                String val = null;
+
+                //Process for date time input
+
+                String regex = "^([01]?[0-9]|2[0-3]):([0-5]?[0-9])\\s([0-2]?[0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$";
+
+                // Create a pattern and matcher
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(searchValue);
+
+                // Return true if the input matches the regex pattern, false otherwise
+                if (matcher.matches()) val = formatDateTime(searchValue);
+                else val = "%" + searchValue.toLowerCase() + "%"; //For search not exact (cb.like)
 
                 //For search exact (cb.equal)
                 //String val = searchValue.toLowerCase();
 
+                Predicate createdAtPredicate = cb.like(
+                        cb.lower(cb.function("DATE_FORMAT", String.class, root.get("createdAt"), cb.literal("%H:%i %d/%m/%Y"))),
+                        val
+                );
+                Predicate updatedAtPredicate = cb.like(
+                        cb.lower(cb.function("DATE_FORMAT", String.class, root.get("updatedAt"), cb.literal("%H:%i %d/%m/%Y"))),
+                        val
+                );
                 Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
                 Predicate chapterOrderPredicate = cb.like(cb.toString(root.get("chapterOrder")), val);
                 Predicate courseIdPredicate = cb.like(cb.lower(courseJoin.get("title")), val);
@@ -85,6 +110,8 @@ public class ChapterSpecification
 
 
                 predicates.add(cb.or(
+                        createdAtPredicate,
+                        updatedAtPredicate,
                         titlePredicate,
                         chapterOrderPredicate,
                         courseIdPredicate,
@@ -164,5 +191,23 @@ public class ChapterSpecification
             //Criteria Builder (cb here) acting like a WHERE clause, which require predicate parameter is an Array of Predicate
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    public static String formatDateTime(String userInput)
+    {
+        //The input format the user gives
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
+
+        //Parse the user input
+        LocalDateTime dateTime = LocalDateTime.parse(userInput, inputFormatter);
+
+        //UTC +7
+        dateTime = dateTime.minusHours(7);
+
+        //Format the adjusted date/time back to string
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
+
+        // Return the formatted adjusted string
+        return dateTime.format(outputFormatter);
     }
 }
