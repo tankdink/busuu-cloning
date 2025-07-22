@@ -27,6 +27,8 @@ public interface ChapterRepository extends JpaRepository<Chapter, String>, JpaSp
     @Query(value = "SELECT MAX(chapter_order) FROM chapter WHERE level_id = :levelId AND course_id = :courseId", nativeQuery = true)
     Integer findMaxChapterOrderByLevelIdAndCourseId(@Param("levelId") String levelId, @Param("courseId") String courseId);
 
+
+    //Temporary custom query repository, delete later
     @Query(value = "SELECT c.* " +
                     "FROM chapter c " +
                     "JOIN level lv ON c.level_id = lv.level_id " +

@@ -108,22 +108,24 @@ public class ChapterService implements IChapterService
     }
 
     @Override
-    public Page<ChapterResponse> getChapters(String requestId, int page, int size, String sortBy, String sortDirection)
+    public Page<ChapterResponse> getChapters(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
     {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            //Pageable - NativeQuery
-            Sort sort = Sort.by(
-                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
-                    Sort.Order.by("chapter_id").with(Sort.Direction.fromString(sortDirection))
-            );
-            Pageable pageable = PageRequest.of(page, size, sort);
+            //Temp comment, uncomment if use custom repository query, delete later if not use
+//            //Pageable - NativeQuery
+//            Sort sort = Sort.by(
+//                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+//                    Sort.Order.by("chapter_id").with(Sort.Direction.fromString(sortDirection))
+//            );
+
+            Pageable pageable = PageRequest.of(page, size);
 
             //Get all, mapping and return
-            return (chapterRepository.findAll(pageable))
+            return (chapterRepository.findAll(ChapterSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection), pageable))
                     .map(chapter ->
                     {
                         ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), userId);
@@ -279,45 +281,5 @@ public class ChapterService implements IChapterService
         }
     }
 
-    @Override
-    public Page<ChapterResponse> filterChapter(String requestId, String searchValue, List<String> filterBy, List<String> filterValue, int page, int size, String sortBy, String sortDirection)
-    {
-        try {
 
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            String userId = user.getId();
-
-            //Pageable - Non-native
-            Sort sort = Sort.by(
-                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
-                    Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
-            );
-            Pageable pageable = PageRequest.of(page, size, sort);
-
-            //Get all, mapping and return
-            return (chapterRepository.findAll(ChapterSpecification.getSpecification(searchValue, filterBy, filterValue), pageable))
-                    .map(chapter ->
-                    {
-                        ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), userId);
-                        ChapterResponse response = modelMapper.map(chapter, ChapterResponse.class);
-
-                        response.setCourseId(chapter.getCourse().getId());
-                        response.setLevelId(chapter.getLevel().getId());
-                        if (chapterProgress != null) {
-                            response.setProgress(chapterProgress.getProgress());
-                            response.setIsCompleted(chapterProgress.getIsCompleted());
-                        }
-                        return response;
-
-                    });
-
-
-        } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get chapter list, err="+e.getMessage());
-            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_GET_ALL_CHAPTER, requestId);
-        }
-
-    }
 }
