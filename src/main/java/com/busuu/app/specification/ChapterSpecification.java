@@ -12,6 +12,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -79,30 +80,51 @@ public class ChapterSpecification
             {
 
                 String val = null;
+                String[] range = null;
+                Boolean isDateInput = false;
 
-                //Process for date time input
+                //Process for date-time and date input
 
-                String regex = "^([01]?[0-9]|2[0-3]):([0-5]?[0-9])\\s([0-2]?[0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$";
+                String dateTimeRegex = "^([01]?[0-9]|2[0-3]):([0-5]?[0-9])\\s([0-2]?[0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$";
+                String dateRegex = "^([0-2]?[0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$";
+
 
                 // Create a pattern and matcher
-                Pattern pattern = Pattern.compile(regex);
-                Matcher matcher = pattern.matcher(searchValue);
+                Pattern dateTimePattern = Pattern.compile(dateTimeRegex);
+                Matcher dateTimeMatcher = dateTimePattern.matcher(searchValue);
 
-                // Return true if the input matches the regex pattern, false otherwise
-                if (matcher.matches()) val = formatDateTime(searchValue);
+                Pattern datePattern = Pattern.compile(dateRegex);
+                Matcher dateMatcher = datePattern.matcher(searchValue);
+
+                if (dateTimeMatcher.matches()) val = formatDateTime(searchValue);
+                else if (dateMatcher.matches()) isDateInput = true;
                 else val = "%" + searchValue.toLowerCase() + "%"; //For search not exact (cb.like)
 
                 //For search exact (cb.equal)
                 //String val = searchValue.toLowerCase();
 
-                Predicate createdAtPredicate = cb.like(
-                        cb.lower(cb.function("DATE_FORMAT", String.class, root.get("createdAt"), cb.literal("%H:%i %d/%m/%Y"))),
-                        val
-                );
-                Predicate updatedAtPredicate = cb.like(
-                        cb.lower(cb.function("DATE_FORMAT", String.class, root.get("updatedAt"), cb.literal("%H:%i %d/%m/%Y"))),
-                        val
-                );
+                Predicate createdAtPredicate = null;
+                Predicate updatedAtPredicate = null;
+
+                if (isDateInput)
+                {
+                    LocalDateTime[] dateRange = formatDateToRange(searchValue);
+                    createdAtPredicate = cb.between(root.get("createdAt"), dateRange[0], dateRange[1]);
+                    updatedAtPredicate = cb.between(root.get("updatedAt"), dateRange[0], dateRange[1]);
+
+                }
+                else
+                {
+                    createdAtPredicate = cb.like(
+                            cb.lower(cb.function("DATE_FORMAT", String.class, root.get("createdAt"), cb.literal("%H:%i %d/%m/%Y"))),
+                            val
+                    );
+                    updatedAtPredicate = cb.like(
+                            cb.lower(cb.function("DATE_FORMAT", String.class, root.get("updatedAt"), cb.literal("%H:%i %d/%m/%Y"))),
+                            val
+                    );
+                }
+
                 Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
                 Predicate chapterOrderPredicate = cb.like(cb.toString(root.get("chapterOrder")), val);
                 Predicate courseIdPredicate = cb.like(cb.lower(courseJoin.get("title")), val);
@@ -209,5 +231,17 @@ public class ChapterSpecification
 
         // Return the formatted adjusted string
         return dateTime.format(outputFormatter);
+    }
+
+    public static LocalDateTime[] formatDateToRange(String userInput)
+    {
+        //Will get chapter which between 17h the previous day of input to 17h of the day of input
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate date = LocalDate.parse(userInput, inputFormatter);
+
+        LocalDateTime start = date.minusDays(1).atTime(17, 0);
+        LocalDateTime end = date.atTime(17, 0);
+
+        return new LocalDateTime[]{start, end};
     }
 }
