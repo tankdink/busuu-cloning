@@ -3,6 +3,8 @@ package com.busuu.app.specification;
 import com.busuu.app.entities.Chapter;
 import com.busuu.app.entities.Course;
 import com.busuu.app.entities.Level;
+import com.busuu.app.entities.Role;
+import com.busuu.app.entities.User;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -22,12 +24,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ChapterSpecification
+public class UserSpecification
 {
-    private static final Set<String> FILTER_FIELDS = Set.of("courseId", "levelId");
-    private static final Set<String> SORT_FIELDS = Set.of("title", "chapterOrder" , "courseTitle" , "levelCode", "createdAt", "updatedAt");
+    private static final Set<String> FILTER_FIELDS = Set.of("isEnabled");
+    private static final Set<String> SORT_FIELDS = Set.of("firstName", "lastName", "fullName", "email", "phoneNumber", "createdAt", "updatedAt", "lastLogin", "isEnabled");
 
-    public static Specification<Chapter> getSpecification(
+    public static Specification<User> getSpecification(
+            String roleName,
             String searchValue,
             List<String> filterBy,
             List<String> filterValue,
@@ -35,14 +38,16 @@ public class ChapterSpecification
             List<String> sortDirection
     )
     {
-        return (Root<Chapter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+        return (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
 
             //Predicate act like a single condition
             List<Predicate> predicates = new ArrayList<>();
 
             //Joining
-            Join<Chapter, Course> courseJoin = root.join("course", JoinType.LEFT);
-            Join<Chapter, Level> levelJoin = root.join("level", JoinType.LEFT);
+            Join<User, Role> roleJoin = root.join("roles", JoinType.LEFT);
+
+            //Get by role name
+            predicates.add(cb.equal(cb.lower(roleJoin.get("name")), roleName.toLowerCase()));
 
 
             //Filter then search then sort
@@ -63,12 +68,11 @@ public class ChapterSpecification
 
                     switch (column)
                     {
-                        case "courseId":
-                            predicates.add(cb.equal(cb.lower(courseJoin.get("id")), value.toLowerCase()));
+                        case "isEnabled":
+                            boolean boolValue = Boolean.parseBoolean(value);
+                            predicates.add(cb.equal(root.get("isActive"), boolValue));
                             break;
-                        case "levelId":
-                            predicates.add(cb.equal(levelJoin.get("id"), value.toLowerCase()));
-                            break;
+
                     }
                 }
             }
@@ -105,12 +109,14 @@ public class ChapterSpecification
 
                 Predicate createdAtPredicate = null;
                 Predicate updatedAtPredicate = null;
+                Predicate lastLoginPredicate = null;
 
                 if (isDateInput)
                 {
                     LocalDateTime[] dateRange = formatDateToRange(searchValue);
                     createdAtPredicate = cb.between(root.get("createdAt"), dateRange[0], dateRange[1]);
                     updatedAtPredicate = cb.between(root.get("updatedAt"), dateRange[0], dateRange[1]);
+                    lastLoginPredicate = cb.between(root.get("lastLogin"), dateRange[0], dateRange[1]);
 
                 }
                 else
@@ -123,21 +129,29 @@ public class ChapterSpecification
                             cb.lower(cb.function("DATE_FORMAT", String.class, root.get("updatedAt"), cb.literal("%H:%i %d/%m/%Y"))),
                             val
                     );
+                    lastLoginPredicate = cb.like(
+                            cb.lower(cb.function("DATE_FORMAT", String.class, root.get("lastLogin"), cb.literal("%H:%i %d/%m/%Y"))),
+                            val
+                    );
                 }
 
-                Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
-                Predicate chapterOrderPredicate = cb.like(cb.toString(root.get("chapterOrder")), val);
-                Predicate courseTitlePredicate = cb.like(cb.lower(courseJoin.get("title")), val);
-                Predicate levelCodePredicate = cb.like(cb.lower(levelJoin.get("code")), val);
+                Predicate firstNamePredicate = cb.like(cb.lower(root.get("firstName")), val);
+                Predicate lastNamePredicate = cb.like(cb.toString(root.get("lastName")), val);
+                Predicate fullNamePredicate = cb.like(cb.lower(root.get("fullName")), val);
+                Predicate emailPredicate = cb.like(cb.lower(root.get("email")), val);
+                Predicate phoneNumberPredicate = cb.like(cb.lower(root.get("phoneNumber")), val);
+
 
 
                 predicates.add(cb.or(
                         createdAtPredicate,
                         updatedAtPredicate,
-                        titlePredicate,
-                        chapterOrderPredicate,
-                        courseTitlePredicate,
-                        levelCodePredicate));
+                        lastLoginPredicate,
+                        firstNamePredicate,
+                        lastNamePredicate,
+                        fullNamePredicate,
+                        emailPredicate,
+                        phoneNumberPredicate));
             }
 
 
@@ -166,25 +180,30 @@ public class ChapterSpecification
                     switch (sortColumn)
                     {
 
-                        case "title":
+                        case "firstName":
                             orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(root.get("title"))
-                                    : cb.desc(root.get("title")));
+                                    ? cb.asc(root.get("firstName"))
+                                    : cb.desc(root.get("firstName")));
                             break;
-                        case "chapterOrder":
+                        case "lastName":
                             orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(cb.toString(root.get("chapterOrder")))
-                                    : cb.desc(cb.toString(root.get("chapterOrder"))));
+                                    ? cb.asc(cb.toString(root.get("lastName")))
+                                    : cb.desc(cb.toString(root.get("lastName"))));
                             break;
-                        case "courseTitle":
+                        case "fullName":
                             orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(courseJoin.get("title"))
-                                    : cb.desc(courseJoin.get("title")));
+                                    ? cb.asc(root.get("fullName"))
+                                    : cb.desc(root.get("fullName")));
                             break;
-                        case "levelCode":
+                        case "email":
                             orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(levelJoin.get("code"))
-                                    : cb.desc(levelJoin.get("code")));
+                                    ? cb.asc(root.get("email"))
+                                    : cb.desc(root.get("email")));
+                            break;
+                        case "phoneNumber":
+                            orders.add(direction.equalsIgnoreCase("asc")
+                                    ? cb.asc(root.get("phoneNumber"))
+                                    : cb.desc(root.get("phoneNumber")));
                             break;
                         case "createdAt":
                             orders.add(direction.equalsIgnoreCase("asc")
@@ -196,16 +215,25 @@ public class ChapterSpecification
                                     ? cb.asc(root.get("updatedAt"))
                                     : cb.desc(root.get("updatedAt")));
                             break;
+                        case "lastLogin":
+                            orders.add(direction.equalsIgnoreCase("asc")
+                                    ? cb.asc(root.get("lastLogin"))
+                                    : cb.desc(root.get("lastLogin")));
+                            break;
+                        case "isEnabled":
+                            orders.add(direction.equalsIgnoreCase("asc")
+                                    ? cb.asc(root.get("isActive"))
+                                    : cb.desc(root.get("isActive")));
+                            break;
 
                     }
                 }
             }
             else //Default sort
             {
-
-                orders.add(cb.asc(courseJoin.get("title")));
-                orders.add(cb.asc(levelJoin.get("code")));
-                orders.add(cb.asc(root.get("chapterOrder")));
+                orders.add(cb.desc(root.get("isActive")));
+                orders.add(cb.asc(root.get("firstName")));
+                orders.add(cb.asc(root.get("lastName")));
 
             }
 

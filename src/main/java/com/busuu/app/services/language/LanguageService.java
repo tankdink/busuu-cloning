@@ -12,7 +12,7 @@ import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

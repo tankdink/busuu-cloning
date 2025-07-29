@@ -23,7 +23,7 @@ import com.busuu.app.services.progress.grammar.IGrammarProgressService;
 import com.busuu.app.services.progress.grammar_section.IGrammarSectionProgressService;
 import com.busuu.app.services.progress.lesson.ILessonProgressService;
 import com.busuu.app.services.progress.level.ILevelProgressService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

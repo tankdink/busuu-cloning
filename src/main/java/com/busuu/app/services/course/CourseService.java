@@ -17,6 +17,7 @@ import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
 import com.busuu.app.repositories.progress.CourseProgressRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
+import com.busuu.app.specification.CourseSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -145,20 +146,22 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public Page<CourseResponse> getCourses(String requestId, int page, int size, String sortBy, String sortDirection) {
+    public Page<CourseResponse> getCourses(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
+            //Temp comment, uncomment if use custom repository query, delete later if not use
             //Pageable - Non-native
-            Sort sort = Sort.by(
-                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
-                    Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
-            );
-            Pageable pageable = PageRequest.of(page, size, sort);
+//            Sort sort = Sort.by(
+//                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+//                    Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+//            );
 
-            Page<Course> courses = courseRepository.findAll(pageable);
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<Course> courses = courseRepository.findAll(CourseSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection),pageable);
 
             return courses.map(
                     course -> {

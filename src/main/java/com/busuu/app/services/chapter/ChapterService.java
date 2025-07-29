@@ -17,7 +17,7 @@ import com.busuu.app.repositories.LevelRepository;
 import com.busuu.app.repositories.progress.ChapterProgressRepository;
 import com.busuu.app.repositories.progress.CourseProgressRepository;
 import com.busuu.app.specification.ChapterSpecification;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

@@ -2,6 +2,8 @@ package com.busuu.app.specification;
 
 import com.busuu.app.entities.Chapter;
 import com.busuu.app.entities.Course;
+import com.busuu.app.entities.Grammar;
+import com.busuu.app.entities.Language;
 import com.busuu.app.entities.Level;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -22,12 +24,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ChapterSpecification
+public class GrammarSpecification
 {
-    private static final Set<String> FILTER_FIELDS = Set.of("courseId", "levelId");
-    private static final Set<String> SORT_FIELDS = Set.of("title", "chapterOrder" , "courseTitle" , "levelCode", "createdAt", "updatedAt");
+    private static final Set<String> FILTER_FIELDS = Set.of("languageId");
+    private static final Set<String> SORT_FIELDS = Set.of("title", "description" , "grammarOrder" , "languageName", "createdAt", "updatedAt");
 
-    public static Specification<Chapter> getSpecification(
+    public static Specification<Grammar> getSpecification(
             String searchValue,
             List<String> filterBy,
             List<String> filterValue,
@@ -35,15 +37,13 @@ public class ChapterSpecification
             List<String> sortDirection
     )
     {
-        return (Root<Chapter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+        return (Root<Grammar> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
 
             //Predicate act like a single condition
             List<Predicate> predicates = new ArrayList<>();
 
             //Joining
-            Join<Chapter, Course> courseJoin = root.join("course", JoinType.LEFT);
-            Join<Chapter, Level> levelJoin = root.join("level", JoinType.LEFT);
-
+            Join<Grammar, Language> languageJoin = root.join("language", JoinType.LEFT);
 
             //Filter then search then sort
 
@@ -63,12 +63,10 @@ public class ChapterSpecification
 
                     switch (column)
                     {
-                        case "courseId":
-                            predicates.add(cb.equal(cb.lower(courseJoin.get("id")), value.toLowerCase()));
+                        case "languageId":
+                            predicates.add(cb.equal(cb.lower(languageJoin.get("id")), value.toLowerCase()));
                             break;
-                        case "levelId":
-                            predicates.add(cb.equal(levelJoin.get("id"), value.toLowerCase()));
-                            break;
+
                     }
                 }
             }
@@ -126,18 +124,18 @@ public class ChapterSpecification
                 }
 
                 Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
-                Predicate chapterOrderPredicate = cb.like(cb.toString(root.get("chapterOrder")), val);
-                Predicate courseTitlePredicate = cb.like(cb.lower(courseJoin.get("title")), val);
-                Predicate levelCodePredicate = cb.like(cb.lower(levelJoin.get("code")), val);
+                Predicate descriptionPredicate = cb.like(cb.toString(root.get("description")), val);
+                Predicate grammarOrderPredicate = cb.like(cb.toString(root.get("grammarOrder")), val);
+                Predicate languageNamePredicate = cb.like(cb.lower(languageJoin.get("name")), val);
 
 
                 predicates.add(cb.or(
                         createdAtPredicate,
                         updatedAtPredicate,
                         titlePredicate,
-                        chapterOrderPredicate,
-                        courseTitlePredicate,
-                        levelCodePredicate));
+                        descriptionPredicate,
+                        grammarOrderPredicate,
+                        languageNamePredicate));
             }
 
 
@@ -171,20 +169,20 @@ public class ChapterSpecification
                                     ? cb.asc(root.get("title"))
                                     : cb.desc(root.get("title")));
                             break;
-                        case "chapterOrder":
+                        case "description":
                             orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(cb.toString(root.get("chapterOrder")))
-                                    : cb.desc(cb.toString(root.get("chapterOrder"))));
+                                    ? cb.asc(root.get("description"))
+                                    : cb.desc(root.get("description")));
                             break;
-                        case "courseTitle":
+                        case "grammarOrder":
                             orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(courseJoin.get("title"))
-                                    : cb.desc(courseJoin.get("title")));
+                                    ? cb.asc(cb.toString(root.get("grammarOrder")))
+                                    : cb.desc(cb.toString(root.get("grammarOrder"))));
                             break;
-                        case "levelCode":
+                        case "languageName":
                             orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(levelJoin.get("code"))
-                                    : cb.desc(levelJoin.get("code")));
+                                    ? cb.asc(languageJoin.get("name"))
+                                    : cb.desc(languageJoin.get("name")));
                             break;
                         case "createdAt":
                             orders.add(direction.equalsIgnoreCase("asc")
@@ -197,15 +195,15 @@ public class ChapterSpecification
                                     : cb.desc(root.get("updatedAt")));
                             break;
 
+
                     }
                 }
             }
             else //Default sort
             {
 
-                orders.add(cb.asc(courseJoin.get("title")));
-                orders.add(cb.asc(levelJoin.get("code")));
-                orders.add(cb.asc(root.get("chapterOrder")));
+                orders.add(cb.asc(languageJoin.get("name")));
+                orders.add(cb.asc(root.get("grammarOrder")));
 
             }
 

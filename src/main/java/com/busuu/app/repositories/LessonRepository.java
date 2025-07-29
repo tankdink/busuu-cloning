@@ -1,10 +1,12 @@
 package com.busuu.app.repositories;
 
 import com.busuu.app.entities.Lesson;
+import org.apache.el.parser.JJTELParserState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LessonRepository extends JpaRepository<Lesson, String> {
+public interface LessonRepository extends JpaRepository<Lesson, String>, JpaSpecificationExecutor<Lesson> {
 
     boolean existsByTitleAndChapterId (String title, String chapterId);
 
@@ -25,6 +27,7 @@ public interface LessonRepository extends JpaRepository<Lesson, String> {
 
     List<Lesson> findByChapterId(String chapterId, Sort sort);
 
+    //Temporary custom query repository, delete later
     @Query(value = """
             SELECT l.* 
             FROM lesson l 

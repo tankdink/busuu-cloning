@@ -88,15 +88,19 @@ public class LessonController {
 
                                                @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                               @RequestParam(value = "sort_by", defaultValue = "lesson_order", required = false) String sortBy,
-                                               @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
+
+                                               @RequestParam(value = "sort_by", required = false) List<String> sortBy,
+                                               @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
+                                               @RequestParam(value = "search_value",required = false) String searchValue,
+                                               @RequestParam(value = "filter_by",required = false) List<String> filterBy,
+                                               @RequestParam(value = "filter_value",required = false) List<String> filterValue)
     {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            Page<LessonResponse> lessonResponses = lessonService.getLessons(requestId, page, size, sortBy, sortDirection);
+            Page<LessonResponse> lessonResponses = lessonService.getLessons(requestId, page, size, sortBy, sortDirection, searchValue, filterBy, filterValue);
             Object responseData = PagingResponse.<LessonResponse>builder()
                     .totalPages(lessonResponses.getTotalPages())
                     .objects(lessonResponses.getContent())

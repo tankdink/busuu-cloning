@@ -4,15 +4,17 @@ import com.busuu.app.entities.GrammarSection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface GrammarSectionRepository extends JpaRepository<GrammarSection, String>
+public interface GrammarSectionRepository extends JpaRepository<GrammarSection, String>, JpaSpecificationExecutor<GrammarSection>
 {
     boolean existsByGrammarSectionOrderAndGrammarId(Integer grammarSectionOrder, String grammarId);
 
+    //Temporary custom query repository, delete later
     @Query(value = "SELECT gs.* " +
             "FROM grammar_section gs " +
             "JOIN level lv ON gs.level_id = lv.level_id " +

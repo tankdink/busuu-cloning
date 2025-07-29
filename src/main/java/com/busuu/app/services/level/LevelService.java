@@ -14,7 +14,7 @@ import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.course.CourseLevelRepository;
 import com.busuu.app.repositories.LevelRepository;
 import com.busuu.app.repositories.progress.LevelProgressRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

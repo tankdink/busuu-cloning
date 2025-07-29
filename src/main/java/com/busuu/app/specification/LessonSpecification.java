@@ -2,6 +2,7 @@ package com.busuu.app.specification;
 
 import com.busuu.app.entities.Chapter;
 import com.busuu.app.entities.Course;
+import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.Level;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -22,12 +23,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ChapterSpecification
+public class LessonSpecification
 {
-    private static final Set<String> FILTER_FIELDS = Set.of("courseId", "levelId");
-    private static final Set<String> SORT_FIELDS = Set.of("title", "chapterOrder" , "courseTitle" , "levelCode", "createdAt", "updatedAt");
+    private static final Set<String> FILTER_FIELDS = Set.of("chapterId");
+    private static final Set<String> SORT_FIELDS = Set.of("title", "description", "lessonOrder" , "chapterTitle", "courseTitle", "createdAt", "updatedAt");
 
-    public static Specification<Chapter> getSpecification(
+    public static Specification<Lesson> getSpecification(
             String searchValue,
             List<String> filterBy,
             List<String> filterValue,
@@ -35,14 +36,15 @@ public class ChapterSpecification
             List<String> sortDirection
     )
     {
-        return (Root<Chapter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+        return (Root<Lesson> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
 
             //Predicate act like a single condition
             List<Predicate> predicates = new ArrayList<>();
 
             //Joining
-            Join<Chapter, Course> courseJoin = root.join("course", JoinType.LEFT);
-            Join<Chapter, Level> levelJoin = root.join("level", JoinType.LEFT);
+            Join<Lesson, Chapter> chapterJoin = root.join("chapter", JoinType.LEFT);
+            Join<Chapter, Course> courseJoin = chapterJoin.join("course", JoinType.LEFT);
+            Join<Course, Level> levelJoin = chapterJoin.join("level", JoinType.LEFT);
 
 
             //Filter then search then sort
@@ -63,12 +65,10 @@ public class ChapterSpecification
 
                     switch (column)
                     {
-                        case "courseId":
-                            predicates.add(cb.equal(cb.lower(courseJoin.get("id")), value.toLowerCase()));
+                        case "chapterId":
+                            predicates.add(cb.equal(cb.lower(chapterJoin.get("id")), value.toLowerCase()));
                             break;
-                        case "levelId":
-                            predicates.add(cb.equal(levelJoin.get("id"), value.toLowerCase()));
-                            break;
+
                     }
                 }
             }
@@ -126,18 +126,18 @@ public class ChapterSpecification
                 }
 
                 Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
-                Predicate chapterOrderPredicate = cb.like(cb.toString(root.get("chapterOrder")), val);
-                Predicate courseTitlePredicate = cb.like(cb.lower(courseJoin.get("title")), val);
-                Predicate levelCodePredicate = cb.like(cb.lower(levelJoin.get("code")), val);
+                Predicate descriptionPredicate = cb.like(cb.lower(root.get("description")), val);
+                Predicate lessonOrderPredicate = cb.like(cb.toString(root.get("lessonOrder")), val);
+                Predicate chapterTitlePredicate = cb.like(cb.lower(chapterJoin.get("title")), val);
 
 
                 predicates.add(cb.or(
                         createdAtPredicate,
                         updatedAtPredicate,
                         titlePredicate,
-                        chapterOrderPredicate,
-                        courseTitlePredicate,
-                        levelCodePredicate));
+                        descriptionPredicate,
+                        lessonOrderPredicate,
+                        chapterTitlePredicate));
             }
 
 
@@ -171,20 +171,25 @@ public class ChapterSpecification
                                     ? cb.asc(root.get("title"))
                                     : cb.desc(root.get("title")));
                             break;
-                        case "chapterOrder":
+                        case "description":
                             orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(cb.toString(root.get("chapterOrder")))
-                                    : cb.desc(cb.toString(root.get("chapterOrder"))));
+                                    ? cb.asc(cb.toString(root.get("description")))
+                                    : cb.desc(cb.toString(root.get("description"))));
+                            break;
+                        case "lessonOrder":
+                            orders.add(direction.equalsIgnoreCase("asc")
+                                    ? cb.asc(cb.toString(root.get("lessonOrder")))
+                                    : cb.desc(cb.toString(root.get("lessonOrder"))));
+                            break;
+                        case "chapterTitle":
+                            orders.add(direction.equalsIgnoreCase("asc")
+                                    ? cb.asc(chapterJoin.get("title"))
+                                    : cb.desc(chapterJoin.get("title")));
                             break;
                         case "courseTitle":
                             orders.add(direction.equalsIgnoreCase("asc")
                                     ? cb.asc(courseJoin.get("title"))
                                     : cb.desc(courseJoin.get("title")));
-                            break;
-                        case "levelCode":
-                            orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(levelJoin.get("code"))
-                                    : cb.desc(levelJoin.get("code")));
                             break;
                         case "createdAt":
                             orders.add(direction.equalsIgnoreCase("asc")
@@ -205,7 +210,8 @@ public class ChapterSpecification
 
                 orders.add(cb.asc(courseJoin.get("title")));
                 orders.add(cb.asc(levelJoin.get("code")));
-                orders.add(cb.asc(root.get("chapterOrder")));
+                orders.add(cb.asc(chapterJoin.get("chapterOrder")));
+                orders.add(cb.asc(root.get("lessonOrder")));
 
             }
 
