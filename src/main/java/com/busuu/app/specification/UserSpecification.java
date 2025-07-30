@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
 
 public class UserSpecification
 {
-    private static final Set<String> FILTER_FIELDS = Set.of("isEnabled");
-    private static final Set<String> SORT_FIELDS = Set.of("firstName", "lastName", "fullName", "email", "phoneNumber", "createdAt", "updatedAt", "lastLogin", "isEnabled");
+    private static final Set<String> FILTER_FIELDS = Set.of("isActive");
+    private static final Set<String> SORT_FIELDS = Set.of("firstName", "lastName", "fullName", "email", "phoneNumber", "createdAt", "updatedAt", "lastLogin", "isActive");
 
     public static Specification<User> getSpecification(
             String roleName,
@@ -68,7 +68,7 @@ public class UserSpecification
 
                     switch (column)
                     {
-                        case "isEnabled":
+                        case "isActive":
                             boolean boolValue = Boolean.parseBoolean(value);
                             predicates.add(cb.equal(root.get("isActive"), boolValue));
                             break;
@@ -140,6 +140,7 @@ public class UserSpecification
                 Predicate fullNamePredicate = cb.like(cb.lower(root.get("fullName")), val);
                 Predicate emailPredicate = cb.like(cb.lower(root.get("email")), val);
                 Predicate phoneNumberPredicate = cb.like(cb.lower(root.get("phoneNumber")), val);
+                Predicate isActivePredicate = cb.like(cb.lower(root.get("isActive")), val);
 
 
 
@@ -151,7 +152,8 @@ public class UserSpecification
                         lastNamePredicate,
                         fullNamePredicate,
                         emailPredicate,
-                        phoneNumberPredicate));
+                        phoneNumberPredicate,
+                        isActivePredicate));
             }
 
 

@@ -80,18 +80,22 @@ public class CourseSpecification
             if (searchValue != null && !searchValue.isEmpty())
             {
 
-                String val = null;
+                String val = "%" + searchValue.toLowerCase() + "%"; //For search not exact (cb.like)
+
+                //For search exact (cb.equal)
+                //String val = searchValue.toLowerCase();
+
                 String[] range = null;
 
                 Boolean isDateInput = false;
+                Boolean isDateTimeInput = false;
                 Boolean isLevelCodeInput = false;
 
                 //Process for date-time and date input
 
                 String dateTimeRegex = "^([01]?[0-9]|2[0-3]):([0-5]?[0-9])\\s([0-2]?[0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$";
                 String dateRegex = "^([0-2]?[0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$";
-                String levelCodeRegex = ("^([A-Za-z0-9]+\\s*,\\s*)*[A-Za-z0-9]+$");
-
+                String levelCodeRegex = "^(A1|A2|B1|B2|C1)(\\s*,\\s*(A1|A2|B1|B2|C1))*$";
 
 
                 // Create a pattern and matcher
@@ -104,13 +108,9 @@ public class CourseSpecification
                 Pattern levelCodePattern = Pattern.compile(levelCodeRegex);
                 Matcher levelCodeMatcher = levelCodePattern.matcher(searchValue);
 
-                if (dateTimeMatcher.matches()) val = formatDateTime(searchValue);
+                if (dateTimeMatcher.matches()) isDateTimeInput = true;
                 else if (dateMatcher.matches()) isDateInput = true;
                 else if (levelCodeMatcher.matches()) isLevelCodeInput = true;
-                else val = "%" + searchValue.toLowerCase() + "%"; //For search not exact (cb.like)
-
-                //For search exact (cb.equal)
-                //String val = searchValue.toLowerCase();
 
                 Predicate createdAtPredicate = null;
                 Predicate updatedAtPredicate = null;
@@ -120,6 +120,58 @@ public class CourseSpecification
                     LocalDateTime[] dateRange = formatDateToRange(searchValue);
                     createdAtPredicate = cb.between(root.get("createdAt"), dateRange[0], dateRange[1]);
                     updatedAtPredicate = cb.between(root.get("updatedAt"), dateRange[0], dateRange[1]);
+
+                    Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
+                    Predicate descriptionPredicate = cb.like(cb.lower(root.get("description")), val);
+                    Predicate courseOrderPredicate = cb.like(cb.toString(root.get("courseOrder")), val);
+
+                    predicates.add(cb.or(
+                            createdAtPredicate,
+                            updatedAtPredicate,
+                            titlePredicate,
+                            descriptionPredicate,
+                            courseOrderPredicate));
+
+                }
+                else if (isDateTimeInput)
+                {
+                    val = formatDateTime(searchValue);
+
+                    createdAtPredicate = cb.like(
+                            cb.lower(cb.function("DATE_FORMAT", String.class, root.get("createdAt"), cb.literal("%H:%i %d/%m/%Y"))),
+                            val
+                    );
+                    updatedAtPredicate = cb.like(
+                            cb.lower(cb.function("DATE_FORMAT", String.class, root.get("updatedAt"), cb.literal("%H:%i %d/%m/%Y"))),
+                            val
+                    );
+                    Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
+                    Predicate descriptionPredicate = cb.like(cb.lower(root.get("description")), val);
+                    Predicate courseOrderPredicate = cb.like(cb.toString(root.get("courseOrder")), val);
+
+                    predicates.add(cb.or(
+                            createdAtPredicate,
+                            updatedAtPredicate,
+                            titlePredicate,
+                            descriptionPredicate,
+                            courseOrderPredicate));
+                }
+                else if (isLevelCodeInput)
+                {
+
+                    String[] levelCodes = searchValue.split("\\s*,\\s*");
+
+                    //Add IN predicate: WHERE code IN ( '...' , '...' ,... )
+                    //No use "=" combine with AND because it cannot be like WHERE code = "A1" AND code = "A2"
+                    //Cannot equal to 2 value at the same time in course_level table
+                    predicates.add(levelJoin.get("code").in((Object[]) levelCodes));
+
+                    //Group by course ID: GROUP BY id
+                    query.groupBy(root.get("id"));
+
+                    //Only include courses that match ALL level codes: HAVING COUNT (DISTINCT code) = ... ;
+                    query.having(cb.equal(cb.countDistinct(levelJoin.get("code")), levelCodes.length));
+
 
                 }
                 else
@@ -132,47 +184,19 @@ public class CourseSpecification
                             cb.lower(cb.function("DATE_FORMAT", String.class, root.get("updatedAt"), cb.literal("%H:%i %d/%m/%Y"))),
                             val
                     );
-                }
-
-                if (isLevelCodeInput)
-                {
-                    String[] levelCodes = searchValue.split(",\\s*");
-
-                    //Add IN predicate: WHERE code IN ( '...' , '...' ,... )
-                    //No use "=" combine with AND because it cannot be like WHERE code = "A1" AND code = "A2"
-                    //Cannot equal to 2 value at the same time in course_level table
-                    predicates.add(levelJoin.get("code").in((Object[]) levelCodes));
-
-                    //Group by course ID: GROUP BY id
-                    query.groupBy(root.get("id"));
-
-                    //Only include courses that match ALL level codes: HAVING COUNT (DISTINCT code) = 2;
-                    query.having(cb.equal(cb.countDistinct(levelJoin.get("code")), levelCodes.length));
-
-
-                } else
-                {
                     Predicate titlePredicate = cb.like(cb.lower(root.get("title")), val);
                     Predicate descriptionPredicate = cb.like(cb.lower(root.get("description")), val);
                     Predicate courseOrderPredicate = cb.like(cb.toString(root.get("courseOrder")), val);
-                    Predicate levelCodePredicate = cb.like(cb.toString(levelJoin.get("code")), val);
 
                     predicates.add(cb.or(
                             createdAtPredicate,
                             updatedAtPredicate,
                             titlePredicate,
                             descriptionPredicate,
-                            courseOrderPredicate,
-                            levelCodePredicate));
-
-
+                            courseOrderPredicate));
                 }
 
-
-
             }
-
-
 
             //Sorting
             List<Order> orders = new ArrayList<>();
@@ -229,9 +253,7 @@ public class CourseSpecification
             }
             else //Default sort
             {
-
                 orders.add(cb.asc(root.get("courseOrder")));
-
             }
 
             orders.add(cb.asc(root.get("id")));
