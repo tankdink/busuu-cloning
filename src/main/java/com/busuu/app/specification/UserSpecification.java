@@ -140,9 +140,10 @@ public class UserSpecification
                 Predicate fullNamePredicate = cb.like(cb.lower(root.get("fullName")), val);
                 Predicate emailPredicate = cb.like(cb.lower(root.get("email")), val);
                 Predicate phoneNumberPredicate = cb.like(cb.lower(root.get("phoneNumber")), val);
-                Predicate isActivePredicate = cb.like(cb.lower(root.get("isActive")), val);
 
-
+                String active = val.replaceAll("^%|%$","");
+                boolean boolValue = Boolean.parseBoolean(active);
+                Predicate isActivePredicate = cb.equal(root.get("isActive"), boolValue);
 
                 predicates.add(cb.or(
                         createdAtPredicate,
