@@ -25,8 +25,8 @@ public class OrderingPartDTO {
     private Integer correctOrder;
 
     @JsonProperty("part_order")
-    @NotNull(message = "Part order is required")
-    @Min(value = 1, message = "Part order must be at least 1")
+//    @NotNull(message = "Part order is required")
+//    @Min(value = 1, message = "Part order must be at least 1")
     private Integer partOrder;
 
     @JsonProperty("question_ordering_id")

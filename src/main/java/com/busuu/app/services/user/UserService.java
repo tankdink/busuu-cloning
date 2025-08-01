@@ -255,8 +255,11 @@ public class UserService implements IUserService {
     public Page<UserResponse> getUsersByRole(String requestId, String roleName, int page, int size, String sortBy, String sortDirection) {
         try {
 
-            //Pageable
-            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            //Pageable - NativeQuery
+            Sort sort = Sort.by(
+                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                    Sort.Order.by("user_id").with(Sort.Direction.fromString(sortDirection))
+            );
             Pageable pageable = PageRequest.of(page, size, sort);
 
             return userRepository.findUsersByRoleName(roleName, pageable).map(

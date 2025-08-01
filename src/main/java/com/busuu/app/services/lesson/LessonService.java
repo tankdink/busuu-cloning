@@ -125,8 +125,11 @@ public class LessonService implements ILessonService {
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            //Pageable
-            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            //Pageable - NativeQuery
+            Sort sort = Sort.by(
+                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                    Sort.Order.by("lesson_id").with(Sort.Direction.fromString(sortDirection))
+            );
             Pageable pageable = PageRequest.of(page, size, sort);
 
             Page<Lesson> lessons = lessonRepository.findAll(pageable);

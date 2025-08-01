@@ -151,8 +151,11 @@ public class CourseService implements ICourseService {
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            //Pageable
-            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            //Pageable - Non-native
+            Sort sort = Sort.by(
+                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                    Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+            );
             Pageable pageable = PageRequest.of(page, size, sort);
 
             Page<Course> courses = courseRepository.findAll(pageable);

@@ -78,8 +78,11 @@ public class LanguageService implements ILanguageService
     {
         try {
 
-            //Pageable
-            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            //Pageable - Non-native
+            Sort sort = Sort.by(
+                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                    Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+            );
             Pageable pageable = PageRequest.of(page, size, sort);
 
             //Get all and return

@@ -119,16 +119,23 @@ public class GrammarService implements IGrammarService
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            //Paging
+            //Paging - Non-native
             Sort sort;
             if (sortBy.equals("default"))
             {
                 sort = Sort.by(
                         Sort.Order.by("languageId").with(Sort.Direction.fromString(sortDirection)),
-                        Sort.Order.by("grammarOrder").with(Sort.Direction.fromString(sortDirection))
+                        Sort.Order.by("grammarOrder").with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
                 );
             }
-            else { sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection))); }
+            else {
+
+                sort = Sort.by(
+                        Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+                );
+            }
             Pageable pageable = PageRequest.of(page, size, sort);
 
             //Get all, mapping and return
@@ -192,8 +199,11 @@ public class GrammarService implements IGrammarService
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            //Paging
-            Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+            //Paging - Non-native
+            Sort sort = Sort.by(
+                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                    Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+            );
             Pageable pageable = PageRequest.of(page, size, sort);
 
             Page<Grammar> gettedGrammarList = grammarRepository.findByLanguageId(languageID, pageable);

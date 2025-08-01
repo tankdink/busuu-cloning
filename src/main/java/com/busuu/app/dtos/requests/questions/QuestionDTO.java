@@ -35,7 +35,7 @@ public class QuestionDTO {
     private String request;
 
     @JsonProperty("question_text")
-    @NotBlank(message = "Question text cannot be empty")
+    //@NotBlank(message = "Question text cannot be empty")
     private String questionText;
 
     @JsonProperty("mark")

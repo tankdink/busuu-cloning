@@ -88,15 +88,19 @@ public class QuestionService implements IQuestionService {
     public Page<QuestionResponse> getByLessonId(String requestId, String lessonId, int page, int size, String sortBy, String sortDirection) {
         try {
 
-            //Pageable
+            //Pageable - Non-native
             Sort sort;
             if (sortBy.equals("default")) {
                 sort = Sort.by(
                         Sort.Order.by("grammarSectionId").with(Sort.Direction.fromString(sortDirection)),
-                        Sort.Order.by("lessonId").with(Sort.Direction.fromString(sortDirection))
+                        Sort.Order.by("lessonId").with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
                 );
             } else {
-                sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+                sort = Sort.by(
+                        Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+                );
             }
             Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -113,15 +117,19 @@ public class QuestionService implements IQuestionService {
     public Page<QuestionResponse> getByGrammarSectionId(String requestId, String grammarSectionId, int page, int size, String sortBy, String sortDirection) {
         try {
 
-            //Pageable
+            //Pageable - Non-native
             Sort sort;
             if (sortBy.equals("default")) {
                 sort = Sort.by(
                         Sort.Order.by("grammarSectionId").with(Sort.Direction.fromString(sortDirection)),
-                        Sort.Order.by("lessonId").with(Sort.Direction.fromString(sortDirection))
+                        Sort.Order.by("lessonId").with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
                 );
             } else {
-                sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+                sort = Sort.by(
+                        Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+                );
             }
             Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -153,15 +161,18 @@ public class QuestionService implements IQuestionService {
             //Convert String to enum before passing to repository
             QuestionType type = QuestionType.valueOf(questionType.toUpperCase());
 
-            //Pageable
+            //Pageable - Non-native
             Sort sort;
             if (sortBy.equals("default")) {
                 sort = Sort.by(
                         Sort.Order.by("grammarSectionId").with(Sort.Direction.fromString(sortDirection)),
-                        Sort.Order.by("lessonId").with(Sort.Direction.fromString(sortDirection))
+                        Sort.Order.by("lessonId").with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
                 );
             } else {
-                sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)));
+                sort = Sort.by(
+                        Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection)));
             }
             Pageable pageable = PageRequest.of(page, size, sort);
 

@@ -30,7 +30,7 @@ public interface LessonRepository extends JpaRepository<Lesson, String> {
             FROM lesson l 
             JOIN chapter c ON l.chapter_id = c.chapter_id 
             JOIN level lv ON c.level_id = lv.level_id 
-            ORDER BY c.course_id, lv.code, c.chapter_order, lesson_order
+            ORDER BY c.course_id, lv.code, c.chapter_order, lesson_order, lesson_id
             """,
             countQuery = """
             SELECT count(l.lesson_id) 
