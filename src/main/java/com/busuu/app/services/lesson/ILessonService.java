@@ -12,7 +12,7 @@ public interface ILessonService {
 
     LessonResponse getLesson (String requestId, String lessonId);
 
-    Page<LessonResponse> getLessons (String requestId, int page, int size, String sortBy, String sortDirection);
+    Page<LessonResponse> getLessons (String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue);
 
     LessonResponse updateLesson (String requestId, String lessonId, LessonDTO lessonDTO);
 

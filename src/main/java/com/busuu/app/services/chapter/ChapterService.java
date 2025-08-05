@@ -16,7 +16,8 @@ import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
 import com.busuu.app.repositories.progress.ChapterProgressRepository;
 import com.busuu.app.repositories.progress.CourseProgressRepository;
-import jakarta.transaction.Transactional;
+import com.busuu.app.specification.ChapterSpecification;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -107,22 +108,24 @@ public class ChapterService implements IChapterService
     }
 
     @Override
-    public Page<ChapterResponse> getChapters(String requestId, int page, int size, String sortBy, String sortDirection)
+    public Page<ChapterResponse> getChapters(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
     {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            //Pageable - NativeQuery
-            Sort sort = Sort.by(
-                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
-                    Sort.Order.by("chapter_id").with(Sort.Direction.fromString(sortDirection))
-            );
-            Pageable pageable = PageRequest.of(page, size, sort);
+            //Temp comment, uncomment if use custom repository query, delete later if not use
+//            //Pageable - NativeQuery
+//            Sort sort = Sort.by(
+//                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+//                    Sort.Order.by("chapter_id").with(Sort.Direction.fromString(sortDirection))
+//            );
+
+            Pageable pageable = PageRequest.of(page, size);
 
             //Get all, mapping and return
-            return (chapterRepository.findAll(pageable))
+            return (chapterRepository.findAll(ChapterSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection), pageable))
                     .map(chapter ->
                     {
                         ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), userId);
@@ -277,4 +280,6 @@ public class ChapterService implements IChapterService
                     Constants.ERROR_CODE.ERR_DELETE_CHAPTER_BY_ID, requestId);
         }
     }
+
+
 }

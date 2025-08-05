@@ -14,6 +14,7 @@ import com.busuu.app.repositories.ChapterRepository;
 import com.busuu.app.repositories.LessonRepository;
 import com.busuu.app.repositories.progress.LessonProgressRepository;
 import com.busuu.app.services.cloudinary.UploadCloudinaryService;
+import com.busuu.app.specification.LessonSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -119,20 +120,22 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public Page<LessonResponse> getLessons(String requestId, int page, int size, String sortBy, String sortDirection) {
+    public Page<LessonResponse> getLessons(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
+    {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
+            //Temp comment, uncomment if use custom repository query, delete later if not use
             //Pageable - NativeQuery
-            Sort sort = Sort.by(
-                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
-                    Sort.Order.by("lesson_id").with(Sort.Direction.fromString(sortDirection))
-            );
-            Pageable pageable = PageRequest.of(page, size, sort);
+//            Sort sort = Sort.by(
+//                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+//                    Sort.Order.by("lesson_id").with(Sort.Direction.fromString(sortDirection))
+//            );
+            Pageable pageable = PageRequest.of(page, size);
 
-            Page<Lesson> lessons = lessonRepository.findAll(pageable);
+            Page<Lesson> lessons = lessonRepository.findAll(LessonSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection),pageable);
 
             return lessons.map(lesson -> {
                 LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lesson.getId(), userId);

@@ -10,7 +10,7 @@ import java.util.List;
 public interface IChapterService
 {
     ChapterResponse insertChapter(String requestId, ChapterDTO chapterDTO);
-    Page<ChapterResponse> getChapters(String requestId, int page, int size, String sortBy, String sortDirection);
+    Page<ChapterResponse> getChapters(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue);
     ChapterResponse getChapter(String requestId, String chapterID);
     List<ChapterResponse> getByCourseIdAndLevelId(String requestId, String courseID, String levelId);
     ChapterResponse updateChapter(String requestId, String chapterID, ChapterDTO infoUpdateChapter);

@@ -15,8 +15,9 @@ import com.busuu.app.repositories.grammar.GrammarRepository;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.progress.GrammarProgressRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
+import com.busuu.app.specification.GrammarSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -112,34 +113,35 @@ public class GrammarService implements IGrammarService
     }
 
     @Override
-    public Page<GrammarResponse> getGrammars(String requestId, int page, int size, String sortBy, String sortDirection)
+    public Page<GrammarResponse> getGrammars(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
     {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
+            //Temp comment, uncomment if use custom repository query, delete later if not use
             //Paging - Non-native
-            Sort sort;
-            if (sortBy.equals("default"))
-            {
-                sort = Sort.by(
-                        Sort.Order.by("languageId").with(Sort.Direction.fromString(sortDirection)),
-                        Sort.Order.by("grammarOrder").with(Sort.Direction.fromString(sortDirection)),
-                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
-                );
-            }
-            else {
-
-                sort = Sort.by(
-                        Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
-                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
-                );
-            }
-            Pageable pageable = PageRequest.of(page, size, sort);
+//            Sort sort;
+//            if (sortBy.equals("default"))
+//            {
+//                sort = Sort.by(
+//                        Sort.Order.by("languageId").with(Sort.Direction.fromString(sortDirection)),
+//                        Sort.Order.by("grammarOrder").with(Sort.Direction.fromString(sortDirection)),
+//                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+//                );
+//            }
+//            else {
+//
+//                sort = Sort.by(
+//                        Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+//                        Sort.Order.by("id").with(Sort.Direction.fromString(sortDirection))
+//                );
+//            }
+            Pageable pageable = PageRequest.of(page, size);
 
             //Get all, mapping and return
-            return (grammarRepository.findAll(pageable))
+            return (grammarRepository.findAll(GrammarSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection),pageable))
                     .map(grammar ->
                     {
                         GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(grammar.getId(), userId);

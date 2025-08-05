@@ -17,7 +17,8 @@ import com.busuu.app.repositories.grammar.GrammarSectionRepository;
 import com.busuu.app.repositories.LessonRepository;
 import com.busuu.app.repositories.LevelRepository;
 import com.busuu.app.repositories.progress.GrammarSectionProgressRepository;
-import jakarta.transaction.Transactional;
+import com.busuu.app.specification.GrammarSectionSpecification;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -122,22 +123,25 @@ public class GrammarSectionService implements IGrammarSectionService
     }
 
     @Override
-    public Page<GrammarSectionResponse>getGrammarSections(String requestId, int page, int size, String sortBy, String sortDirection) {
+    public Page<GrammarSectionResponse>getGrammarSections(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
+    {
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
+            //Temp comment, uncomment if use custom repository query, delete later if not use
             //Pageable - NativeQuery
-            Sort sort = Sort.by(
-                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
-                    Sort.Order.by("grammar_section_id").with(Sort.Direction.fromString(sortDirection))
-            );
-            Pageable pageable = PageRequest.of(page, size, sort);
+//            Sort sort = Sort.by(
+//                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+//                    Sort.Order.by("grammar_section_id").with(Sort.Direction.fromString(sortDirection))
+//            );
+
+            Pageable pageable = PageRequest.of(page, size);
 
             //Get all, mapping and return
-            return (grammarSectionRepository.findAll(pageable))
+            return (grammarSectionRepository.findAll(GrammarSectionSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection),pageable))
                     .map(grammarSection ->
                     {
                         GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(grammarSection.getId(), userId);

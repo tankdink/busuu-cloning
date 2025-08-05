@@ -20,6 +20,7 @@ import com.busuu.app.repositories.TokenRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.services.email.IEmailService;
+import com.busuu.app.specification.UserSpecification;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import com.busuu.app.utils.UploadCloudinaryUtil;
@@ -31,6 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -252,19 +254,29 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Page<UserResponse> getUsersByRole(String requestId, String roleName, int page, int size, String sortBy, String sortDirection) {
+    public Page<UserResponse> getUsersByRole(String requestId, String roleName, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue) {
         try {
 
+            ///Temp comment, uncomment if use custom repository query, delete later if not use
             //Pageable - NativeQuery
-            Sort sort = Sort.by(
-                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
-                    Sort.Order.by("user_id").with(Sort.Direction.fromString(sortDirection))
-            );
-            Pageable pageable = PageRequest.of(page, size, sort);
+//            Sort sort = Sort.by(
+//                    Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDirection)),
+//                    Sort.Order.by("user_id").with(Sort.Direction.fromString(sortDirection))
+//            );
 
-            return userRepository.findUsersByRoleName(roleName, pageable).map(
-                    user -> modelMapper.map(user, UserResponse.class)
+//            Pageable pageable = PageRequest.of(page, size);
+
+//            return userRepository.findUsersByRoleName(roleName, pageable).map(
+//                    user -> modelMapper.map(user, UserResponse.class)
+//            );
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            Specification<User> spec = UserSpecification.getSpecification(roleName, searchValue, filterBy, filterValue, sortBy, sortDirection);
+            return userRepository.findAll(spec, pageable).map(
+                      user -> modelMapper.map(user, UserResponse.class)
             );
+
 
         } catch (Exception e) {
             log.error("requestId=" + requestId + ",failed to get users by role, err=" + e.getMessage());
