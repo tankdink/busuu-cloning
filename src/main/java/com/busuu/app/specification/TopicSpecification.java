@@ -1,14 +1,9 @@
 package com.busuu.app.specification;
 
-import com.busuu.app.entities.Chapter;
-import com.busuu.app.entities.Course;
-import com.busuu.app.entities.Level;
-import com.busuu.app.entities.Role;
-import com.busuu.app.entities.User;
+import com.busuu.app.entities.Topic;
+import com.busuu.app.entities.topic.TopicType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -16,7 +11,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +18,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class UserSpecification
+public class TopicSpecification
 {
-    private static final Set<String> FILTER_FIELDS = Set.of("isActive");
-    private static final Set<String> SORT_FIELDS = Set.of("firstName", "lastName", "fullName", "email", "phoneNumber", "createdAt", "updatedAt", "lastLogin", "isActive");
+    private static final Set<String> FILTER_FIELDS = Set.of("videoCategory");
+    private static final Set<String> SORT_FIELDS = Set.of("createdAt", "updatedAt");
 
-    public static Specification<User> getSpecification(
-            String roleName,
+    public static Specification<Topic> getSpecification(
+            String topicType,
             String searchValue,
             List<String> filterBy,
             List<String> filterValue,
@@ -38,17 +32,14 @@ public class UserSpecification
             List<String> sortDirection
     )
     {
-        return (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+        return (Root<Topic> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
 
             //Predicate act like a single condition
             List<Predicate> predicates = new ArrayList<>();
 
-            //Joining
-            Join<User, Role> roleJoin = root.join("roles", JoinType.LEFT);
-
-            //Get by role name
-            if (roleName != null && !roleName.isEmpty()) {
-                predicates.add(cb.equal(cb.lower(roleJoin.get("name")), roleName.toLowerCase()));
+            //Get by topic type
+            if (topicType != null && !topicType.isEmpty()) {
+                predicates.add(cb.equal(root.get("topicType"), TopicType.valueOf(topicType.toUpperCase())));
             }
 
 
@@ -70,9 +61,8 @@ public class UserSpecification
 
                     switch (column)
                     {
-                        case "isActive":
-                            boolean boolValue = Boolean.parseBoolean(value);
-                            predicates.add(cb.equal(root.get("isActive"), boolValue));
+                        case "videoCategory":
+                            predicates.add(cb.equal(cb.lower(root.get("videoCategory")), value.toLowerCase()));
                             break;
 
                     }
@@ -111,14 +101,13 @@ public class UserSpecification
 
                 Predicate createdAtPredicate = null;
                 Predicate updatedAtPredicate = null;
-                Predicate lastLoginPredicate = null;
+
 
                 if (isDateInput)
                 {
                     LocalDateTime[] dateRange = formatDateToRange(searchValue);
                     createdAtPredicate = cb.between(root.get("createdAt"), dateRange[0], dateRange[1]);
                     updatedAtPredicate = cb.between(root.get("updatedAt"), dateRange[0], dateRange[1]);
-                    lastLoginPredicate = cb.between(root.get("lastLogin"), dateRange[0], dateRange[1]);
 
                 }
                 else
@@ -131,32 +120,13 @@ public class UserSpecification
                             cb.lower(cb.function("DATE_FORMAT", String.class, root.get("updatedAt"), cb.literal("%H:%i %d/%m/%Y"))),
                             val
                     );
-                    lastLoginPredicate = cb.like(
-                            cb.lower(cb.function("DATE_FORMAT", String.class, root.get("lastLogin"), cb.literal("%H:%i %d/%m/%Y"))),
-                            val
-                    );
+
                 }
 
-                Predicate firstNamePredicate = cb.like(cb.lower(root.get("firstName")), val);
-                Predicate lastNamePredicate = cb.like(cb.toString(root.get("lastName")), val);
-                Predicate fullNamePredicate = cb.like(cb.lower(root.get("fullName")), val);
-                Predicate emailPredicate = cb.like(cb.lower(root.get("email")), val);
-                Predicate phoneNumberPredicate = cb.like(cb.lower(root.get("phoneNumber")), val);
-
-                String active = val.replaceAll("^%|%$","");
-                boolean boolValue = Boolean.parseBoolean(active);
-                Predicate isActivePredicate = cb.equal(root.get("isActive"), boolValue);
 
                 predicates.add(cb.or(
                         createdAtPredicate,
-                        updatedAtPredicate,
-                        lastLoginPredicate,
-                        firstNamePredicate,
-                        lastNamePredicate,
-                        fullNamePredicate,
-                        emailPredicate,
-                        phoneNumberPredicate,
-                        isActivePredicate));
+                        updatedAtPredicate));
             }
 
 
@@ -185,31 +155,6 @@ public class UserSpecification
                     switch (sortColumn)
                     {
 
-                        case "firstName":
-                            orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(root.get("firstName"))
-                                    : cb.desc(root.get("firstName")));
-                            break;
-                        case "lastName":
-                            orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(cb.toString(root.get("lastName")))
-                                    : cb.desc(cb.toString(root.get("lastName"))));
-                            break;
-                        case "fullName":
-                            orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(root.get("fullName"))
-                                    : cb.desc(root.get("fullName")));
-                            break;
-                        case "email":
-                            orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(root.get("email"))
-                                    : cb.desc(root.get("email")));
-                            break;
-                        case "phoneNumber":
-                            orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(root.get("phoneNumber"))
-                                    : cb.desc(root.get("phoneNumber")));
-                            break;
                         case "createdAt":
                             orders.add(direction.equalsIgnoreCase("asc")
                                     ? cb.asc(root.get("createdAt"))
@@ -220,25 +165,14 @@ public class UserSpecification
                                     ? cb.asc(root.get("updatedAt"))
                                     : cb.desc(root.get("updatedAt")));
                             break;
-                        case "lastLogin":
-                            orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(root.get("lastLogin"))
-                                    : cb.desc(root.get("lastLogin")));
-                            break;
-                        case "isEnabled":
-                            orders.add(direction.equalsIgnoreCase("asc")
-                                    ? cb.asc(root.get("isActive"))
-                                    : cb.desc(root.get("isActive")));
-                            break;
 
                     }
                 }
             }
             else //Default sort
             {
-                orders.add(cb.desc(root.get("isActive")));
-                orders.add(cb.asc(root.get("firstName")));
-                orders.add(cb.asc(root.get("lastName")));
+                orders.add(cb.desc(root.get("createdAt")));
+                orders.add(cb.desc(root.get("updatedAt")));
 
             }
 

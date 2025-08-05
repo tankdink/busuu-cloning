@@ -16,6 +16,7 @@ public class Constants {
     public static final String SOCIAL_LOGIN = "/social_login";
     public static final String SOCIAL = "/social";
     public static final String CALLBACK = "/callback";
+    public static final String TOPIC = "/topics";
 
 
     public static final String QUESTION = "/questions";
@@ -157,6 +158,9 @@ public class Constants {
         public static final String ERR_GET_PROGRESS = "ERR_GET_PROGRESS";
         public static final String ERR_UPSERT_PROGRESS = "ERR_UPSERT_PROGRESS";
         public static final String ERR_DELETE_PROGRESS = "ERR_DELETE_PROGRESS";
+
+        // Topic
+        public static final String ERR_GET_TOPIC = "ERR_GET_TOPIC";
     }
 
 
