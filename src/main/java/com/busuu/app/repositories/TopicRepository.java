@@ -1,6 +1,6 @@
 package com.busuu.app.repositories;
 
-import com.busuu.app.entities.Topic;
+import com.busuu.app.entities.topic.Topic;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.topic.TopicType;
 import org.springframework.data.domain.Page;

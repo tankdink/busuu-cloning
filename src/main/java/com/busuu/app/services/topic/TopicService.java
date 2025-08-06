@@ -2,7 +2,7 @@ package com.busuu.app.services.topic;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.TopicResponse;
-import com.busuu.app.entities.Topic;
+import com.busuu.app.entities.topic.Topic;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.TopicRepository;
@@ -38,7 +38,17 @@ public class TopicService implements ITopicService
 
             Specification<Topic> spec = TopicSpecification.getSpecification(topicType, searchValue, filterBy, filterValue, sortBy, sortDirection);
             return topicRepository.findAll(spec, pageable).map(
-                    topic -> modelMapper.map(topic, TopicResponse.class)
+                    topic ->
+                    {
+                        TopicResponse response = modelMapper.map(topic, TopicResponse.class);
+
+                        if (topic.getVideoCategory() != null) {
+                            response.setCategory(topic.getVideoCategory().getCategoryName());
+                        }
+                        else response.setCategory(null);
+
+                        return response;
+                    }
             );
 
 

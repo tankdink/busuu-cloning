@@ -1,5 +1,6 @@
-package com.busuu.app.entities;
+package com.busuu.app.entities.topic;
 
+import com.busuu.app.entities.BaseEntity;
 import com.busuu.app.entities.progresses.ChapterProgress;
 import com.busuu.app.entities.topic.TopicType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,11 +38,12 @@ public class Topic extends BaseEntity
     @Column(name = "video_description")
     private String videoDescription;
 
-    @Column(name = "video_category")
-    private String videoCategory;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "topic_type")
     private TopicType topicType;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private TopicCategory videoCategory;
 
 }

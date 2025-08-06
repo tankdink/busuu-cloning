@@ -1,9 +1,12 @@
 package com.busuu.app.specification;
 
-import com.busuu.app.entities.Topic;
+import com.busuu.app.entities.topic.Topic;
+import com.busuu.app.entities.topic.TopicCategory;
 import com.busuu.app.entities.topic.TopicType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -37,6 +40,9 @@ public class TopicSpecification
             //Predicate act like a single condition
             List<Predicate> predicates = new ArrayList<>();
 
+            //Join
+            Join<Topic, TopicCategory> categoryJoin = root.join("videoCategory", JoinType.LEFT);
+
             //Get by topic type
             if (topicType != null && !topicType.isEmpty()) {
                 predicates.add(cb.equal(root.get("topicType"), TopicType.valueOf(topicType.toUpperCase())));
@@ -62,7 +68,7 @@ public class TopicSpecification
                     switch (column)
                     {
                         case "videoCategory":
-                            predicates.add(cb.equal(cb.lower(root.get("videoCategory")), value.toLowerCase()));
+                            predicates.add(cb.equal(cb.lower(categoryJoin.get("categoryName")), value.toLowerCase()));
                             break;
 
                     }
