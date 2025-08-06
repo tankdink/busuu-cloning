@@ -37,6 +37,9 @@ public class Topic extends BaseEntity
     @Column(name = "video_description")
     private String videoDescription;
 
+    @Column(name = "video_category")
+    private String videoCategory;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "topic_type")
     private TopicType topicType;
