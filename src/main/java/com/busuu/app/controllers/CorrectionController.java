@@ -1,10 +1,13 @@
 package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
+import com.busuu.app.dtos.requests.correction.CorrectionDTO;
 import com.busuu.app.dtos.requests.post.PostDTO;
+import com.busuu.app.dtos.responses.CorrectionResponse;
 import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.PostResponse;
 import com.busuu.app.dtos.responses.Response;
+import com.busuu.app.services.correction.ICorrectionService;
 import com.busuu.app.services.post.IPostService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
@@ -22,7 +25,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,20 +33,20 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(Constants.POST)
+@RequestMapping(Constants.CORRECTION)
 @RequiredArgsConstructor
 @Slf4j
-public class PostController
+public class CorrectionController
 {
-    private final IPostService postService;
+    private final ICorrectionService correctionService;
 
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<Response> postPost(@RequestParam(value = "req-id", required = false) String requestId,
-                                                  @Valid @ModelAttribute PostDTO newPostDTO)
+    public ResponseEntity<Response> postCorrection(@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @Valid @ModelAttribute CorrectionDTO newCorrectionDTO)
     {
         try {
 
@@ -52,20 +54,20 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call add post service
-            PostResponse addedPost = postService.insertPost(requestId, newPostDTO);
+            //Call add correction service
+            CorrectionResponse addedCorrection = correctionService.insertCorrection(requestId, newCorrectionDTO);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
                             .status(HttpStatus.CREATED.value())
-                            .data(addedPost)
+                            .data(addedCorrection)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when adding new post: " + e.getMessage());
+            log.error("Error when adding new Correction: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) +": "+ e.getMessage())
@@ -75,59 +77,12 @@ public class PostController
         }
     }
 
-    @GetMapping()
-    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<Response> getPosts(@RequestParam(value = "req-id", required = false) String requestId,
-
-                                              @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                              @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-
-                                              @RequestParam(value = "sort_by", required = false) List<String> sortBy,
-                                              @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
-                                              @RequestParam(value = "search_value", required = false) String searchValue,
-                                              @RequestParam(value = "filter_by", required = false) List<String> filterBy,
-                                              @RequestParam(value = "filter_value", required = false) List<String> filterValue) {
-
-        try {
-
-            if (requestId == null || requestId.isEmpty()) {
-                requestId = UUID.randomUUID().toString();
-            }
-
-            //Call update chapter by ID service
-            Page<PostResponse> postsList = postService.getPosts(requestId, page, size, sortBy, sortDirection, searchValue, filterBy, filterValue);
-            Object responseData = PagingResponse.<PostResponse>builder()
-                    .totalPages(postsList.getTotalPages())
-                    .objects(postsList.getContent())
-                    .totalObjects(postsList.getTotalElements())
-                    .build();
-
-            //Return response
-            return ResponseEntity.ok().body(
-                    Response.builder()
-                            .data(responseData)
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
-                            .status(HttpStatus.OK.value())
-                            .build()
-            );
-
-        } catch (Exception e) {
-            log.error("Error when getting posts list: " + e.getMessage());
-            return ResponseEntity.badRequest().body(
-                    Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .build()
-            );
-        }
-    }
 
     @GetMapping(Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<Response> getPost(@RequestParam(value = "req-id", required = false) String requestId,
-                                               @PathVariable("id") String postId)
+    public ResponseEntity<Response> getCorrection(@RequestParam(value = "req-id", required = false) String requestId,
+                                               @PathVariable("id") String correctionId)
     {
 
         try {
@@ -137,19 +92,19 @@ public class PostController
             }
 
             //Call get chapter by ID service
-            PostResponse post = postService.getPost(requestId, postId);
+            CorrectionResponse correctionResponse = correctionService.getCorrection(requestId, correctionId);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK.value())
-                            .data(post)
+                            .data(correctionResponse)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when getting post with ID: " + e.getMessage());
+            log.error("Error when getting Correction with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
@@ -162,7 +117,7 @@ public class PostController
     @GetMapping(Constants.PATH_PARAM_USER + Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<Response> getPostByUserId(@RequestParam(value = "req-id", required = false) String requestId,
+    public ResponseEntity<Response> getCorrectionByUserId(@RequestParam(value = "req-id", required = false) String requestId,
                                             @PathVariable("id") String userId)
     {
 
@@ -173,19 +128,55 @@ public class PostController
             }
 
             //Call get chapter by ID service
-            List<PostResponse> postList = postService.getByUserId(requestId, userId);
+            List<CorrectionResponse> correctionList = correctionService.getByUserId(requestId, userId);
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK.value())
-                            .data(postList)
+                            .data(correctionList)
                             .build()
             );
 
         } catch (Exception e) {
-            log.error("Error when getting post with userID: " + e.getMessage());
+            log.error("Error when getting Correction with userID: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.PATH_PARAM_POST + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getCorrectionByPostId(@RequestParam(value = "req-id", required = false) String requestId,
+                                                          @PathVariable("id") String postId)
+    {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call get chapter by ID service
+            List<CorrectionResponse> correctionList = correctionService.getByPostId(requestId, postId);
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK.value())
+                            .data(correctionList)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting Correction with postID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())

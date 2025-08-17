@@ -18,6 +18,7 @@ public class Constants {
     public static final String CALLBACK = "/callback";
     public static final String TOPIC = "/topics";
     public static final String POST = "/posts";
+    public static final String CORRECTION = "/corrections";
     public static final String QUESTION = "/questions";
     public static final String FILE = "/file";
     public static final String ANSWER = "/answers";
@@ -44,7 +45,8 @@ public class Constants {
     public static final String BLOCK = "/block";
 
     public static final String PATH_PARAM_ID = "/{id}";
-    public static final String PATH_PARAM_USER_POST = "/user";
+    public static final String PATH_PARAM_USER = "/user";
+    public static final String PATH_PARAM_POST = "/post";
 
     public static class URI {
         public static final String INDEX = "/index";
@@ -164,8 +166,11 @@ public class Constants {
 
         // Post
         public static final String ERR_CREATE_NEW_POST = "ERR_CREATE_NEW_POST";
-
         public static final String ERR_GET_POST = "ERR_GET_POST";
+
+        // Correction
+        public static final String ERR_CREATE_NEW_CORRECTION = "ERR_CREATE_NEW_CORRECTION";
+        public static final String ERR_GET_CORRECTION = "ERR_GET_CORRECTION";
 
 
     }

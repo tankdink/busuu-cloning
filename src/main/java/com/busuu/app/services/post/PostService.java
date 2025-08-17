@@ -54,7 +54,7 @@ public class PostService implements IPostService
             newPost.setPostType(PostType.valueOf(postDTO.getPostTypes().toUpperCase()));
 
             //Exception
-            if (newPost.getPostType() == PostType.TEXT && postDTO.getPostText() == null)
+            if (newPost.getPostType() == PostType.TEXT && ( postDTO.getPostText() == null || postDTO.getPostText().isEmpty()) )
                 throw new IllegalArgumentException("Post with TEXT type cannot have null post text");
             if (newPost.getPostType() == PostType.AUDIO && postDTO.getPostAudio() == null)
                 throw new IllegalArgumentException("Post with AUDIO type cannot have null post audio");
