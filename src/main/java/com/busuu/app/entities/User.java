@@ -1,5 +1,6 @@
 package com.busuu.app.entities;
 
+import com.busuu.app.entities.post.Post;
 import com.busuu.app.entities.progresses.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -124,6 +125,11 @@ public class User extends BaseEntity implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<GrammarSectionProgress> grammarSectionProgresses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Post> posts;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
