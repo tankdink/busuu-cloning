@@ -16,6 +16,8 @@ public class Constants {
     public static final String SOCIAL_LOGIN = "/social_login";
     public static final String SOCIAL = "/social";
     public static final String CALLBACK = "/callback";
+    public static final String WORD = "/words";
+    public static final String USER_WORD = "/user_words";
 
 
     public static final String QUESTION = "/questions";
@@ -41,6 +43,9 @@ public class Constants {
     public static final String GENERATE_OTP = "/generate_otp";
     public static final String CHECK_OTP = "/check_otp";
     public static final String BLOCK = "/block";
+    public static final String FAVORITE = "/favorite";
+    public static final String FILTER = "/filter";
+    public static final String REVIEW = "/review";
 
     public static final String PATH_PARAM_ID = "/{id}";
 
@@ -96,6 +101,11 @@ public class Constants {
         public static final String ERR_GET_LEVEL_BY_CODE = "ERR_GET_LEVEL_BY_CODE";
         public static final String ERR_UPDATE_LEVEL_BY_ID = "ERR_UPDATE_LEVEL_BY_ID";
         public static final String ERR_DELETE_LEVEL_BY_ID = "ERR_DELETE_LEVEL_BY_ID";
+
+        public static final String ERR_CREATE_WORD = "ERR_CREATE_WORD";
+        public static final String ERR_GET_WORD = "ERR_GET_WORD";
+        public static final String ERR_UPDATE_WORD = "ERR_UPDATE_WORD";
+        public static final String ERR_DELETE_WORD = "ERR_DELETE_WORD";
 
         //Chapter
         public static final String ERR_CREATE_NEW_CHAPTER = "ERR_CREATE_NEW_CHAPTER";

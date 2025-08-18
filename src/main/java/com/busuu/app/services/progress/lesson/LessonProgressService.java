@@ -3,12 +3,18 @@ package com.busuu.app.services.progress.lesson;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.User;
+import com.busuu.app.entities.UserWord;
+import com.busuu.app.entities.Word;
 import com.busuu.app.entities.progresses.LessonProgress;
+import com.busuu.app.repositories.UserWordRepository;
 import com.busuu.app.repositories.progress.LessonProgressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -16,6 +22,7 @@ import java.util.UUID;
 public class LessonProgressService implements ILessonProgressService {
 
     private final LessonProgressRepository lessonProgressRepository;
+    private final UserWordRepository userWordRepository;
 
     @Override
     @Transactional
@@ -38,6 +45,31 @@ public class LessonProgressService implements ILessonProgressService {
             lessonProgress.setIsCompleted(maxProgress >= Constants.PASSING_PROGRESS);
         }
 
-        return lessonProgressRepository.save(lessonProgress);
+        lessonProgress = lessonProgressRepository.save(lessonProgress);
+
+        if (lessonProgress.getIsCompleted()) {
+            lesson.getWords().forEach(word -> {
+                Optional<UserWord> optionalUserWord = userWordRepository.findByUserIdAndWordId(user.getId(), word.getId());
+
+                if (optionalUserWord.isPresent()) {
+                    UserWord userWord = optionalUserWord.get();
+                    if (Boolean.FALSE.equals(userWord.getIsActive())) {
+                        userWord.setIsActive(true);
+                        userWordRepository.save(userWord);
+                    }
+                } else {
+                    UserWord userWord = UserWord.builder()
+                            .id(UUID.randomUUID().toString())
+                            .isActive(true)
+                            .word(word)
+                            .user(user)
+//                            .nextReviewDate(LocalDateTime.now().plusHours(12))
+                            .nextReviewDate(LocalDateTime.now())
+                            .build();
+                    userWordRepository.save(userWord);
+                }
+            });
+        }
+        return lessonProgress;
     }
 }
