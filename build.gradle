@@ -81,6 +81,23 @@ dependencies {
 	// Mail
 	implementation("org.springframework.boot:spring-boot-starter-mail:3.5.0")
 
+
+	//Apache POI for file processing (excel, word)
+
+	// https://mvnrepository.com/artifact/org.apache.poi/poi
+	implementation("org.apache.poi:poi:5.4.1")
+	// https://mvnrepository.com/artifact/org.apache.poi/poi-scratchpad
+	implementation("org.apache.poi:poi-scratchpad:5.4.1")
+	// https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+	implementation("org.apache.poi:poi-ooxml:5.4.1")
+
+
+	//Apache PDFBox for file processing (pdf)
+
+	// https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
+	implementation("org.apache.pdfbox:pdfbox:3.0.5")
+
+
 	// Oauth2 client
 	implementation("org.springframework.security:spring-security-oauth2-client")
 
@@ -101,6 +118,7 @@ dependencies {
 
 	// Http Client
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
+
 }
 
 tasks.named('test') {

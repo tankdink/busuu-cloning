@@ -29,7 +29,7 @@ public interface ChapterRepository extends JpaRepository<Chapter, String> {
     @Query(value = "SELECT c.* " +
                     "FROM chapter c " +
                     "JOIN level lv ON c.level_id = lv.level_id " +
-                    "ORDER BY course_id, CODE, chapter_order",
+                    "ORDER BY course_id, CODE, chapter_order, chapter_id",
             countQuery = """
                     SELECT count(c.chapter_id) 
                     FROM chapter c 

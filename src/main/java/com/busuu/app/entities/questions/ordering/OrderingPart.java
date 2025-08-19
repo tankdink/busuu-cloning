@@ -24,7 +24,7 @@ public class OrderingPart {
 //    @Column(name = "correct_order", nullable = false)
 //    private Integer correctOrder;
 
-    @Column(name = "part_order", nullable = false)
+    @Column(name = "part_order")
     private Integer partOrder;
 
     @ManyToOne
