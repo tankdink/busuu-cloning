@@ -3,8 +3,11 @@ package com.busuu.app.entities;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -12,6 +15,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class UserWord extends BaseEntity {
 
     @Id
@@ -28,16 +33,30 @@ public class UserWord extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "strength_level")
+    @Builder.Default
     private StrengthLevel strengthLevel = StrengthLevel.WEAK;
 
     @Column(name = "next_review_date")
-    private Date nextReviewDate;
+    private LocalDateTime nextReviewDate;
 
-    @Column(name = "interval")
-    private Integer interval = 1;
+    @Column(name = "last_reviewed_date")
+    private LocalDateTime lastReviewedDate;
+
+    @Column(name = "review_interval")
+    @Builder.Default
+    private Integer reviewInterval = 1;
 
     @Column(name = "review_count")
+    @Builder.Default
     private Integer reviewCount = 0;
+
+    @Column(name = "correct_count")
+    @Builder.Default
+    private Integer correctCount = 0;
+
+    @Column(name = "incorrect_count")
+    @Builder.Default
+    private Integer incorrectCount = 0;
 
     @Column(name = "is_active")
     private Boolean isActive;

@@ -3,7 +3,6 @@ package com.busuu.app.services.lesson;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.lesson.LessonDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
-import com.busuu.app.dtos.responses.CourseResponse;
 import com.busuu.app.dtos.responses.LessonResponse;
 import com.busuu.app.entities.*;
 import com.busuu.app.entities.progresses.LessonProgress;
@@ -14,6 +13,7 @@ import com.busuu.app.repositories.ChapterRepository;
 import com.busuu.app.repositories.LessonRepository;
 import com.busuu.app.repositories.progress.LessonProgressRepository;
 import com.busuu.app.services.cloudinary.UploadCloudinaryService;
+import com.busuu.app.services.word.WordService;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +38,7 @@ public class LessonService implements ILessonService {
 
     private final LessonRepository lessonRepository;
     private final ChapterRepository chapterRepository;
+    private final WordService wordService;
     private final UploadCloudinaryService uploadCloudinaryService;
     private final LessonProgressRepository lessonProgressRepository;
     private final ModelMapper modelMapper;
@@ -80,6 +81,16 @@ public class LessonService implements ILessonService {
             }
 
             lesson = lessonRepository.save(lesson);
+
+            // Save word
+            Lesson finalLesson = lesson;
+
+            lessonDTO.getWords().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(wordDTO -> {
+                        wordDTO.setLessonId(finalLesson.getId());
+                        wordService.createWord(requestId, wordDTO);
+                    });
 
             LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);
             lessonResponse.setChapterId(lesson.getChapter().getId());

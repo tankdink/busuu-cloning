@@ -40,15 +40,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class ProgressService implements IProgressService {
-
-    // Repository Progress
-//    private final CourseProgressRepository courseProgressRepository;
-//    private final LevelProgressRepository levelProgressRepository;
-//    private final ChapterProgressRepository chapterProgressRepository;
-//    private final LessonProgressRepository lessonProgressRepository;
-//    private final GrammarProgressRepository grammarProgressRepository;
-//    private final GrammarSectionProgressRepository grammarSectionProgressRepository;
-
     private final ICourseProgressService courseProgressService;
     private final ILevelProgressService levelProgressService;
     private final IChapterProgressService chapterProgressService;

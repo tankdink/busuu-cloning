@@ -3,10 +3,14 @@ package com.busuu.app.entities;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "word_example")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

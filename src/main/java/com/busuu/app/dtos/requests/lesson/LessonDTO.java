@@ -1,5 +1,6 @@
 package com.busuu.app.dtos.requests.lesson;
 
+import com.busuu.app.dtos.requests.word.WordDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -38,4 +41,7 @@ public class LessonDTO {
     @JsonProperty("chapter_id")
     @NotBlank(message = "Chapter ID is required")
     private String chapterId;
+
+    @JsonProperty("words")
+    private List<WordDTO> words;
 }

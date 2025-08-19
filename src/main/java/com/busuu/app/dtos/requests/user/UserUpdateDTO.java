@@ -41,5 +41,9 @@ public class UserUpdateDTO {
 
     private String country;
 
+    @JsonProperty("language_code")
+    @NotBlank(message = "Language Code cannot be null or empty")
+    private String languageCode;
+
     private MultipartFile avatar;
 }

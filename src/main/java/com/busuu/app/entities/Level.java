@@ -1,23 +1,32 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.progresses.LessonProgress;
 import com.busuu.app.entities.progresses.LevelProgress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "level")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Level extends BaseEntity {
 
     @Id
@@ -34,18 +43,22 @@ public class Level extends BaseEntity {
     private String description;
 
     @JsonIgnore
+    @Builder.Default
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chapter> chapters = new ArrayList<>();
 
     @JsonIgnore
+    @Builder.Default
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseLevel> courseLevels = new ArrayList<>();
 
     @JsonIgnore
+    @Builder.Default
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrammarSection> grammarSections = new ArrayList<>();
 
     @JsonIgnore
+    @Builder.Default
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LevelProgress> levelProgresses;
+    private List<LevelProgress> levelProgresses = new ArrayList<>();
 }
