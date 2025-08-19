@@ -94,6 +94,7 @@ public class UserService implements IUserService {
             String encodedPassword = passwordEncoder.encode(password);
             newUser.setPassword(encodedPassword);
             newUser.setFullName(newUser.getFirstName() + " " + newUser.getLastName());
+            newUser.setLanguageCode("en");
             newUser.setRoles(roles);
 
             // Active code to active account

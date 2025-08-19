@@ -9,6 +9,8 @@ import com.busuu.app.entities.User;
 import com.busuu.app.services.word.IWordService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -149,6 +151,8 @@ public class WordController {
     }
 
     @GetMapping(Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> getWord (@RequestParam(value = "req-id", required = false) String requestId,
                                              @PathVariable("id") String wordId) {
         if (requestId == null || requestId.isEmpty()) {

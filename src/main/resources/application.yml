@@ -135,5 +135,5 @@ services:
   openai:
     endpoint: ${ENDPOINT:https://api.openai.com/v1}
     model: ${MODEL:gpt-4.1-nano}
-    api-key: ${API-KEY}
+    api-key: ${API-KEY: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}
 

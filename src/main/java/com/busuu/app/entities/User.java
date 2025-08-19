@@ -75,7 +75,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "country")
     private String country;
 
-    @Column(name = "langauge_code")
+    @Column(name = "langauge_code", nullable = false)
     private String languageCode;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

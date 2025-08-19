@@ -8,10 +8,11 @@ import com.busuu.app.dtos.responses.UserWordResponse;
 import com.busuu.app.dtos.responses.WordFilterResponse;
 import com.busuu.app.dtos.responses.WordResponse;
 import com.busuu.app.entities.StrengthLevel;
-import com.busuu.app.entities.UserWord;
 import com.busuu.app.services.userWord.UserWordService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,6 +45,7 @@ public class UserWordController {
     private final UserWordService userWordService;
 
     @GetMapping()
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getWords (@RequestParam(value = "req-id", required = false) String requestId,
                                               @RequestParam(value = "strength-level", required = false, defaultValue = "") StrengthLevel strengthLevel,
@@ -76,6 +78,7 @@ public class UserWordController {
     }
 
     @PutMapping(Constants.FAVORITE + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> favoriteWord (@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String userWordId) {
@@ -96,6 +99,7 @@ public class UserWordController {
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> deleteWord (@RequestParam(value = "req-id", required = false) String requestId,
                                                 @PathVariable("id") String wordId) {
@@ -116,6 +120,7 @@ public class UserWordController {
 
 
     @GetMapping(Constants.FILTER)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getListFilter (@RequestParam(value = "req-id", required = false) String requestId) {
         if (requestId == null || requestId.isEmpty()) {
@@ -134,6 +139,7 @@ public class UserWordController {
     }
 
     @GetMapping(Constants.REVIEW)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getReviewWords (@RequestParam(value = "req-id", required = false) String requestId,
                                                     @RequestParam("type") String type,
@@ -154,6 +160,7 @@ public class UserWordController {
     }
 
     @PutMapping(Constants.REVIEW)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> processReviewResult(@RequestParam(value = "req-id", required = false) String requestId,
                                                          @Validated @RequestBody List<ReviewResultRequest> requests) {
