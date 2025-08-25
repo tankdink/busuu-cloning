@@ -21,5 +21,7 @@ public class UserWordResponse extends BaseResponse {
     @JsonProperty("is_favorite")
     private Boolean isFavorite;
 
+    private String id;
+
     private WordResponse word;
 }
