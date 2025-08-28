@@ -26,13 +26,14 @@ import java.util.regex.Pattern;
 
 public class GrammarSpecification
 {
+
+    //For filter with List<String>
     private static final Set<String> FILTER_FIELDS = Set.of("languageId");
     private static final Set<String> SORT_FIELDS = Set.of("title", "description" , "grammarOrder" , "languageName", "createdAt", "updatedAt");
 
     public static Specification<Grammar> getSpecification(
             String searchValue,
-            List<String> filterBy,
-            List<String> filterValue,
+            String language,
             List<String> sortBy,
             List<String> sortDirection
     )
@@ -48,29 +49,33 @@ public class GrammarSpecification
             //Filter then search then sort
 
             //Filter
-            if (filterBy != null && filterValue != null)
-            {
-                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
 
-                for (int i = 0; i < filterBy.size(); i++)
-                {
-                    String column = filterBy.get(i);
-                    String value = filterValue.get(i);
+            //Filter with List<String>
+//            if (filterBy != null && filterValue != null)
+//            {
+//                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
+//
+//                for (int i = 0; i < filterBy.size(); i++)
+//                {
+//                    String column = filterBy.get(i);
+//                    String value = filterValue.get(i);
+//
+//                    if (!FILTER_FIELDS.contains(column)) {
+//                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
+//                    }
+//
+//                    switch (column)
+//                    {
+//                        case "languageId":
+//                            predicates.add(cb.equal(cb.lower(languageJoin.get("id")), value.toLowerCase()));
+//                            break;
+//
+//                    }
+//                }
+//            }
 
-                    if (!FILTER_FIELDS.contains(column)) {
-                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
-                    }
-
-                    switch (column)
-                    {
-                        case "languageId":
-                            predicates.add(cb.equal(cb.lower(languageJoin.get("id")), value.toLowerCase()));
-                            break;
-
-                    }
-                }
-            }
-
+            //Manual filter
+            if (language != null && !language.isEmpty() ) predicates.add(cb.equal(cb.lower(languageJoin.get("id")), language));
 
 
             //Global search (LIKE SEARCH)

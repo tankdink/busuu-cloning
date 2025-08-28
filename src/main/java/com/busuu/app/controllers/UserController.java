@@ -257,15 +257,15 @@ public class UserController {
                                               @RequestParam(value = "sort_by", required = false) List<String> sortBy,
                                               @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
                                               @RequestParam(value = "search_value",required = false) String searchValue,
-                                              @RequestParam(value = "filter_by",required = false) List<String> filterBy,
-                                              @RequestParam(value = "filter_value",required = false) List<String> filterValue)
+
+                                              @RequestParam(value = "isActive",required = false) String isActive)
     {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            Page<UserResponse> users = userService.getUsersByRole(requestId, roleName, page, size, sortBy, sortDirection, searchValue, filterBy, filterValue);
+            Page<UserResponse> users = userService.getUsersByRole(requestId, roleName, page, size, sortBy, sortDirection, searchValue, isActive);
 
             Object responseData = PagingResponse.<UserResponse>builder()
                     .totalPages(users.getTotalPages())

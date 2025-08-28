@@ -32,8 +32,7 @@ public class UserSpecification
     public static Specification<User> getSpecification(
             String roleName,
             String searchValue,
-            List<String> filterBy,
-            List<String> filterValue,
+            String isActive,
             List<String> sortBy,
             List<String> sortDirection
     )
@@ -53,29 +52,40 @@ public class UserSpecification
             //Filter then search then sort
 
             //Filter
-            if (filterBy != null && filterValue != null)
+
+            //Filter with List<String>
+//            if (filterBy != null && filterValue != null)
+//            {
+//                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
+//
+//                for (int i = 0; i < filterBy.size(); i++)
+//                {
+//                    String column = filterBy.get(i);
+//                    String value = filterValue.get(i);
+//
+//                    if (!FILTER_FIELDS.contains(column)) {
+//                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
+//                    }
+//
+//                    switch (column)
+//                    {
+//                        case "isActive":
+//                            boolean boolValue = Boolean.parseBoolean(value);
+//                            predicates.add(cb.equal(root.get("isActive"), boolValue));
+//                            break;
+//
+//                    }
+//                }
+//            }
+
+            //Manual filter
+//
+            if (isActive != null && !isActive.isEmpty())
             {
-                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
-
-                for (int i = 0; i < filterBy.size(); i++)
-                {
-                    String column = filterBy.get(i);
-                    String value = filterValue.get(i);
-
-                    if (!FILTER_FIELDS.contains(column)) {
-                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
-                    }
-
-                    switch (column)
-                    {
-                        case "isActive":
-                            boolean boolValue = Boolean.parseBoolean(value);
-                            predicates.add(cb.equal(root.get("isActive"), boolValue));
-                            break;
-
-                    }
-                }
+                boolean boolValue = Boolean.parseBoolean(isActive);
+                predicates.add(cb.equal(root.get("isActive"), boolValue));
             }
+
 
 
 

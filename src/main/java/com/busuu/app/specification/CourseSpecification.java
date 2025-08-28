@@ -26,13 +26,14 @@ import java.util.regex.Pattern;
 
 public class CourseSpecification
 {
+
+    //For List<String> filter only
     private static final Set<String> FILTER_FIELDS = Set.of("levelId");
     private static final Set<String> SORT_FIELDS = Set.of("title", "description", "courseOrder", "createdAt", "updatedAt");
 
     public static Specification<Course> getSpecification(
             String searchValue,
-            List<String> filterBy,
-            List<String> filterValue,
+            String level,
             List<String> sortBy,
             List<String> sortDirection
     )
@@ -51,29 +52,32 @@ public class CourseSpecification
             //Filter then search then sort
 
             //Filter
-            if (filterBy != null && filterValue != null)
-            {
-                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
+            //Filter with List<String>
+//            if (filterBy != null && filterValue != null)
+//            {
+//                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
+//
+//                for (int i = 0; i < filterBy.size(); i++)
+//                {
+//                    String column = filterBy.get(i);
+//                    String value = filterValue.get(i);
+//
+//                    if (!FILTER_FIELDS.contains(column)) {
+//                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
+//                    }
+//
+//                    switch (column)
+//                    {
+//                        case "levelId":
+//                            predicates.add(cb.equal(levelJoin.get("id"), value.toLowerCase()));
+//                            break;
+//
+//                    }
+//                }
+//            }
 
-                for (int i = 0; i < filterBy.size(); i++)
-                {
-                    String column = filterBy.get(i);
-                    String value = filterValue.get(i);
-
-                    if (!FILTER_FIELDS.contains(column)) {
-                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
-                    }
-
-                    switch (column)
-                    {
-                        case "levelId":
-                            predicates.add(cb.equal(levelJoin.get("id"), value.toLowerCase()));
-                            break;
-
-                    }
-                }
-            }
-
+            //Manual filter
+            if (level != null && !level.isEmpty() ) predicates.add(cb.equal(levelJoin.get("id"), level));
 
 
             //Global search (LIKE SEARCH)

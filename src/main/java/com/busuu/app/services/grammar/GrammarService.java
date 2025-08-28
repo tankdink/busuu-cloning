@@ -113,7 +113,7 @@ public class GrammarService implements IGrammarService
     }
 
     @Override
-    public Page<GrammarResponse> getGrammars(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
+    public Page<GrammarResponse> getGrammars(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String language)
     {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -141,7 +141,7 @@ public class GrammarService implements IGrammarService
             Pageable pageable = PageRequest.of(page, size);
 
             //Get all, mapping and return
-            return (grammarRepository.findAll(GrammarSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection),pageable))
+            return (grammarRepository.findAll(GrammarSpecification.getSpecification(searchValue, language, sortBy, sortDirection),pageable))
                     .map(grammar ->
                     {
                         GrammarProgress grammarProgress = grammarProgressRepository.findByGrammarIdAndUserId(grammar.getId(), userId);

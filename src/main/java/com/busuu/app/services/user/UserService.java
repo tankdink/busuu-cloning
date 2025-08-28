@@ -254,7 +254,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Page<UserResponse> getUsersByRole(String requestId, String roleName, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue) {
+    public Page<UserResponse> getUsersByRole(String requestId, String roleName, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String isActive) {
         try {
 
             ///Temp comment, uncomment if use custom repository query, delete later if not use
@@ -272,7 +272,7 @@ public class UserService implements IUserService {
 
             Pageable pageable = PageRequest.of(page, size);
 
-            Specification<User> spec = UserSpecification.getSpecification(roleName, searchValue, filterBy, filterValue, sortBy, sortDirection);
+            Specification<User> spec = UserSpecification.getSpecification(roleName, searchValue, isActive, sortBy, sortDirection);
             return userRepository.findAll(spec, pageable).map(
                       user -> modelMapper.map(user, UserResponse.class)
             );

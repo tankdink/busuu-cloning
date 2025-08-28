@@ -119,8 +119,9 @@ public class ChapterController
                                                    @RequestParam(value = "sort_by", required = false) List<String> sortBy,
                                                    @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
                                                    @RequestParam(value = "search_value",required = false) String searchValue,
-                                                   @RequestParam(value = "filter_by",required = false) List<String> filterBy,
-                                                   @RequestParam(value = "filter_value",required = false) List<String> filterValue)
+
+                                                   @RequestParam(value = "course",required = false) String course,
+                                                   @RequestParam(value = "level",required = false) String level)
     {
 
         //Including get chapters by courseId and levelId; get all chapters
@@ -155,7 +156,7 @@ public class ChapterController
             else
             {
                 //Call get all chapters service
-                Page<ChapterResponse> gettedChapterPage = chapterService.getChapters(requestId, page, size, sortBy, sortDirection, searchValue, filterBy, filterValue);
+                Page<ChapterResponse> gettedChapterPage = chapterService.getChapters(requestId, page, size, sortBy, sortDirection, searchValue, course, level);
                 responseData = PagingResponse.<ChapterResponse>builder()
                                 .totalPages(gettedChapterPage.getTotalPages())
                                 .objects(gettedChapterPage.getContent())

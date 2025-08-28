@@ -120,7 +120,7 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public Page<LessonResponse> getLessons(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
+    public Page<LessonResponse> getLessons(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String chapter)
     {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -135,7 +135,7 @@ public class LessonService implements ILessonService {
 //            );
             Pageable pageable = PageRequest.of(page, size);
 
-            Page<Lesson> lessons = lessonRepository.findAll(LessonSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection),pageable);
+            Page<Lesson> lessons = lessonRepository.findAll(LessonSpecification.getSpecification(searchValue, chapter, sortBy, sortDirection),pageable);
 
             return lessons.map(lesson -> {
                 LessonProgress lessonProgress = lessonProgressRepository.findByLessonIdAndUserId(lesson.getId(), userId);

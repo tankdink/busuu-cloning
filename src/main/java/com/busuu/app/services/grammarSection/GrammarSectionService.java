@@ -123,7 +123,7 @@ public class GrammarSectionService implements IGrammarSectionService
     }
 
     @Override
-    public Page<GrammarSectionResponse>getGrammarSections(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
+    public Page<GrammarSectionResponse>getGrammarSections(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String grammar, String lesson, String level)
     {
         try {
 
@@ -141,7 +141,7 @@ public class GrammarSectionService implements IGrammarSectionService
             Pageable pageable = PageRequest.of(page, size);
 
             //Get all, mapping and return
-            return (grammarSectionRepository.findAll(GrammarSectionSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection),pageable))
+            return (grammarSectionRepository.findAll(GrammarSectionSpecification.getSpecification(searchValue, grammar, lesson, level, sortBy, sortDirection),pageable))
                     .map(grammarSection ->
                     {
                         GrammarSectionProgress grammarSectionProgress = grammarSectionProgressRepository.findByGrammarSectionIdAndUserId(grammarSection.getId(), userId);
