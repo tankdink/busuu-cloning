@@ -28,13 +28,16 @@ import java.util.regex.Pattern;
 
 public class GrammarSectionSpecification
 {
+
+    //For List<String> filter only
     private static final Set<String> FILTER_FIELDS = Set.of("grammarId", "lessonId", "levelId");
     private static final Set<String> SORT_FIELDS = Set.of("title", "description" , "content", "grammarSectionOrder", "grammarTitle", "lessonTitle", "levelCode" , "createdAt", "updatedAt");
 
     public static Specification<GrammarSection> getSpecification(
             String searchValue,
-            List<String> filterBy,
-            List<String> filterValue,
+            String grammar,
+            String lesson,
+            String level,
             List<String> sortBy,
             List<String> sortDirection
     )
@@ -52,35 +55,41 @@ public class GrammarSectionSpecification
             //Filter then search then sort
 
             //Filter
-            if (filterBy != null && filterValue != null)
-            {
-                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
 
-                for (int i = 0; i < filterBy.size(); i++)
-                {
-                    String column = filterBy.get(i);
-                    String value = filterValue.get(i);
+            //Filter for List<String>
+//            if (filterBy != null && filterValue != null)
+//            {
+//                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
+//
+//                for (int i = 0; i < filterBy.size(); i++)
+//                {
+//                    String column = filterBy.get(i);
+//                    String value = filterValue.get(i);
+//
+//                    if (!FILTER_FIELDS.contains(column)) {
+//                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
+//                    }
+//
+//                    switch (column)
+//                    {
+//                        case "grammarId":
+//                            predicates.add(cb.equal(cb.lower(grammarJoin.get("id")), value.toLowerCase()));
+//                            break;
+//                        case "lessonId":
+//                            predicates.add(cb.equal(cb.lower(lessonJoin.get("id")), value.toLowerCase()));
+//                            break;
+//                        case "levelId":
+//                            predicates.add(cb.equal(cb.lower(levelJoin.get("id")), value.toLowerCase()));
+//                            break;
+//
+//                    }
+//                }
+//            }
 
-                    if (!FILTER_FIELDS.contains(column)) {
-                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
-                    }
-
-                    switch (column)
-                    {
-                        case "grammarId":
-                            predicates.add(cb.equal(cb.lower(grammarJoin.get("id")), value.toLowerCase()));
-                            break;
-                        case "lessonId":
-                            predicates.add(cb.equal(cb.lower(lessonJoin.get("id")), value.toLowerCase()));
-                            break;
-                        case "levelId":
-                            predicates.add(cb.equal(cb.lower(levelJoin.get("id")), value.toLowerCase()));
-                            break;
-
-                    }
-                }
-            }
-
+            //Manual filter
+            if ( grammar != null && !grammar.isEmpty() ) predicates.add(cb.equal(cb.lower(grammarJoin.get("id")), grammar));
+            if ( lesson != null && !lesson.isEmpty() ) predicates.add(cb.equal(cb.lower(lessonJoin.get("id")), lesson));
+            if ( level != null && !level.isEmpty() ) predicates.add(cb.equal(cb.lower(levelJoin.get("id")), level));
 
 
             //Global search (LIKE SEARCH)

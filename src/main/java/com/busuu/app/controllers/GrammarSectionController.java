@@ -81,8 +81,10 @@ public class GrammarSectionController
                                                        @RequestParam(value = "sort_by", required = false) List<String> sortBy,
                                                        @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
                                                        @RequestParam(value = "search_value",required = false) String searchValue,
-                                                       @RequestParam(value = "filter_by",required = false) List<String> filterBy,
-                                                       @RequestParam(value = "filter_value",required = false) List<String> filterValue)
+
+                                                       @RequestParam(value = "grammar",required = false) String grammar,
+                                                       @RequestParam(value = "lesson",required = false) String lesson,
+                                                       @RequestParam(value = "level",required = false) String level)
     {
 
         try {
@@ -92,7 +94,7 @@ public class GrammarSectionController
             }
 
             //Call get all grammarSection service
-            Page<GrammarSectionResponse> grammarSectionList = grammarSectionService.getGrammarSections(requestId, page, size, sortBy, sortDirection, searchValue, filterBy, filterValue);
+            Page<GrammarSectionResponse> grammarSectionList = grammarSectionService.getGrammarSections(requestId, page, size, sortBy, sortDirection, searchValue, grammar, lesson, level);
             Object responseData = PagingResponse.<GrammarSectionResponse>builder()
                     .totalPages(grammarSectionList.getTotalPages())
                     .objects(grammarSectionList.getContent())

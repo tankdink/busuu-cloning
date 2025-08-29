@@ -101,8 +101,8 @@ public class GrammarController
                                                 @RequestParam(value = "sort_by", required = false) List<String> sortBy,
                                                 @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
                                                 @RequestParam(value = "search_value",required = false) String searchValue,
-                                                @RequestParam(value = "filter_by",required = false) List<String> filterBy,
-                                                @RequestParam(value = "filter_value",required = false) List<String> filterValue)
+
+                                                @RequestParam(value = "language",required = false) String language)
     {
 
         try {
@@ -112,7 +112,7 @@ public class GrammarController
             }
 
             //Call get all grammar service
-            Page<GrammarResponse> grammarList = grammarService.getGrammars(requestId, page, size, sortBy, sortDirection, searchValue, filterBy, filterValue);
+            Page<GrammarResponse> grammarList = grammarService.getGrammars(requestId, page, size, sortBy, sortDirection, searchValue, language);
             Object responseData = PagingResponse.<GrammarResponse>builder()
                     .totalPages(grammarList.getTotalPages())
                     .objects(grammarList.getContent())

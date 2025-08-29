@@ -9,7 +9,7 @@ import java.util.List;
 public interface IGrammarSectionService
 {
     GrammarSectionResponse insertGrammarSection(String requestId, GrammarSectionDTO grammarSectionDTO);
-    Page<GrammarSectionResponse> getGrammarSections(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue);
+    Page<GrammarSectionResponse> getGrammarSections(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String grammar, String lesson, String level);
     GrammarSectionResponse getGrammarSection(String requestId, String grammarSectionID);
     List<GrammarSectionResponse> getByGrammarId(String requestId, String grammarId);
     GrammarSectionResponse updateGrammarSection(String requestId, String grammarSectionID, GrammarSectionDTO infoUpdateGrammarSection);

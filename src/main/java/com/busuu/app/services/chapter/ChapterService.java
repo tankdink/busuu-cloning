@@ -108,7 +108,7 @@ public class ChapterService implements IChapterService
     }
 
     @Override
-    public Page<ChapterResponse> getChapters(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
+    public Page<ChapterResponse> getChapters(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String course, String level)
     {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -125,7 +125,7 @@ public class ChapterService implements IChapterService
             Pageable pageable = PageRequest.of(page, size);
 
             //Get all, mapping and return
-            return (chapterRepository.findAll(ChapterSpecification.getSpecification(searchValue, filterBy, filterValue, sortBy, sortDirection), pageable))
+            return (chapterRepository.findAll(ChapterSpecification.getSpecification(searchValue, course, level, sortBy, sortDirection), pageable))
                     .map(chapter ->
                     {
                         ChapterProgress chapterProgress = chapterProgressRepository.findByChapterIdAndUserId(chapter.getId(), userId);
