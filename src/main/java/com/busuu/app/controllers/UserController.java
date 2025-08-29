@@ -258,7 +258,7 @@ public class UserController {
                                               @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
                                               @RequestParam(value = "search_value",required = false) String searchValue,
 
-                                              @RequestParam(value = "isActive",required = false) String isActive)
+                                              @RequestParam(value = "is_active",required = false) String isActive)
     {
         try {
             if (requestId == null || requestId.isEmpty()) {

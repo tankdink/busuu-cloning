@@ -102,7 +102,7 @@ public class GrammarController
                                                 @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
                                                 @RequestParam(value = "search_value",required = false) String searchValue,
 
-                                                @RequestParam(value = "filter_by",required = false) String language)
+                                                @RequestParam(value = "language",required = false) String language)
     {
 
         try {
