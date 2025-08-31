@@ -42,4 +42,7 @@ public class CourseResponse extends BaseResponse {
 
     @JsonProperty("is_completed")
     private Boolean isCompleted;
+
+    @JsonProperty("language_id")
+    private String languageId;
 }

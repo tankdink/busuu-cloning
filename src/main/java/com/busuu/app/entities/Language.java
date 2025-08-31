@@ -1,5 +1,6 @@
 package com.busuu.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,6 +37,9 @@ public class Language extends BaseEntity
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Column(name = "code", nullable = false, unique = true)
+    private String code;
+
     @Column(name = "flag_icon_url")
     private String flagIconUrl;
 
@@ -49,4 +53,9 @@ public class Language extends BaseEntity
     @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Grammar> grammars = new ArrayList<>();
+
+    @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @Builder.Default
+    private List<Course> courses = new ArrayList<>();
 }

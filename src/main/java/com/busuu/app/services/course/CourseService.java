@@ -6,12 +6,14 @@ import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.CourseResponse;
 import com.busuu.app.entities.Course;
 import com.busuu.app.entities.CourseLevel;
+import com.busuu.app.entities.Language;
 import com.busuu.app.entities.Level;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.progresses.CourseProgress;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
+import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.course.CourseLevelRepository;
 import com.busuu.app.repositories.course.CourseRepository;
 import com.busuu.app.repositories.LevelRepository;
@@ -45,6 +47,7 @@ public class CourseService implements ICourseService {
     private final ModelMapper modelMapper;
     private final IUploadCloudinaryService uploadCloudinaryService;
     private final CourseProgressRepository courseProgressRepository;
+    private final LanguageRepository languageRepository;
 
     @Override
     @Transactional
@@ -58,6 +61,9 @@ public class CourseService implements ICourseService {
 //                throw new ExistDataException("Course's order is duplicated");
 //            }
 
+            Language existingLanguage = languageRepository.findById(courseDTO.getLanguageId())
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find Language with ID = " + courseDTO.getLanguageId()));
+
             CloudinaryResponse cloudinaryResponse = null;
             if (courseDTO.getFlagIcon() != null) {
                 cloudinaryResponse = uploadFlagIcon(courseDTO.getFlagIcon());
@@ -65,6 +71,7 @@ public class CourseService implements ICourseService {
 
             Course course = modelMapper.map(courseDTO, Course.class);
             course.setId(UUID.randomUUID().toString());
+            course.setLanguage(existingLanguage);
 
             // Set course order max + 1
             course.setCourseOrder(courseRepository.findMaxCourseOrder() + 1);
@@ -103,6 +110,7 @@ public class CourseService implements ICourseService {
 
             CourseResponse courseResponse = modelMapper.map(course, CourseResponse.class);
             courseResponse.setLevelIds(level);
+            courseResponse.setLanguageId(existingLanguage.getId());
             return courseResponse;
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to create course, err="+e.getMessage());
@@ -131,6 +139,7 @@ public class CourseService implements ICourseService {
 
             CourseResponse courseResponse = modelMapper.map(course, CourseResponse.class);
             courseResponse.setLevelIds(levels);
+            courseResponse.setLanguageId(course.getLanguage().getId());
 
             if (courseProgress != null) {
                 courseResponse.setIsCompleted(courseProgress.getIsCompleted());
@@ -172,6 +181,7 @@ public class CourseService implements ICourseService {
 
                         CourseResponse courseResponse = modelMapper.map(course, CourseResponse.class);
                         courseResponse.setLevelIds(levels);
+                        courseResponse.setLanguageId(course.getLanguage().getId());
                         if (courseProgress != null) {
                             courseResponse.setIsCompleted(courseProgress.getIsCompleted());
                             courseResponse.setProgress(courseProgress.getProgress());
@@ -205,6 +215,12 @@ public class CourseService implements ICourseService {
                 }
             }
 
+            if (!existingCourse.getLanguage().getId().equals(courseDTO.getLanguageId())) {
+                Language existingLanguage = languageRepository.findById(courseDTO.getLanguageId())
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find Language with ID = " + courseDTO.getLanguageId()));
+                existingCourse.setLanguage(existingLanguage);
+            }
+
             if (courseDTO.getFlagIcon() != null) {
                 boolean isRemove = true;
                 if (existingCourse.getFlagIconName() != null) {
@@ -217,6 +233,12 @@ public class CourseService implements ICourseService {
                         existingCourse.setFlagIconName(cloudinaryResponse.getPublicId());
                     }
                 }
+            }
+
+            if (!courseDTO.getLanguageId().equals(existingCourse.getLanguage().getId())) {
+                Language existingLanguage = languageRepository.findById(courseDTO.getLanguageId())
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find Language with ID = " + courseDTO.getLanguageId()));
+                existingCourse.setLanguage(existingLanguage);
             }
 
             modelMapper.map(courseDTO, existingCourse);
@@ -252,6 +274,7 @@ public class CourseService implements ICourseService {
 
             CourseResponse courseResponse = modelMapper.map(existingCourse, CourseResponse.class);
             courseResponse.setLevelIds(level);
+            courseResponse.setLanguageId(existingCourse.getLanguage().getId());
             return courseResponse;
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to update course, err="+e.getMessage());

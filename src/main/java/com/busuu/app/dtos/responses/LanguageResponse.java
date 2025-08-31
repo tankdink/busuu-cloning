@@ -20,6 +20,9 @@ public class LanguageResponse extends BaseResponse
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("code")
+    private String code;
+
     @JsonProperty("flag_icon_url")
     private String flagIconUrl;
 

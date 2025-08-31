@@ -236,12 +236,11 @@ public class UserWordService implements IUserWordService{
         }
 
         long daysSinceLastReview = Duration.between(lastReviewed, LocalDateTime.now()).toDays();
-        int reviewCount = userWord.getReviewCount();
         int correctCount = userWord.getCorrectCount();
         int incorrectCount = userWord.getIncorrectCount();
 
         // Strength factor: correct +1, incorrect -1 (min = 1)
-        double s = Math.max(1, reviewCount + correctCount - incorrectCount);
+        double s = Math.max(1, correctCount * 2 - incorrectCount);
 
         // Retention theo Ebbinghaus: e^(-t/s)
         double retention = Math.exp(-1.0 * daysSinceLastReview / s);

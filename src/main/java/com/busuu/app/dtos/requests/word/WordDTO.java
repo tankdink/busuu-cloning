@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class WordDTO {
 
     @JsonProperty("language_code")
-    @NotBlank(message = "Language code cannot be null or empty.")
     private String languageCode;
 
     @NotBlank(message = "Text cannot be null or empty.")

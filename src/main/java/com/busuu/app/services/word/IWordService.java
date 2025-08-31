@@ -14,7 +14,7 @@ public interface IWordService {
 
     WordResponse getWord (String requestId, String wordId, String languageCodeDes);
 
-    Page<WordResponse> getWords (String requestId, Pageable pageable);
+    Page<WordResponse> getWords (String requestId, Pageable pageable, String lessonId, String keyword);
 
     WordResponse updateWord (String requestId, String wordId, WordDTO wordDTO);
 

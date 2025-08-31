@@ -4,12 +4,37 @@ import com.busuu.app.entities.Word;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WordRepository extends JpaRepository<Word, String> {
 
-    Page<Word> findAll(Pageable pageable);
+    @Query(
+            value = """
+            SELECT * 
+            FROM word w
+            WHERE (:lessonId IS NULL OR w.lesson_id = :lessonId)
+              AND (:keyword IS NULL 
+                   OR LOWER(w.text) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(w.translation) LIKE LOWER(CONCAT('%', :keyword, '%')))
+            """,
+            countQuery = """
+            SELECT COUNT(*) 
+            FROM word w
+            WHERE (:lessonId IS NULL OR w.lesson_id = :lessonId)
+              AND (:keyword IS NULL 
+                   OR LOWER(w.text) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(w.translation) LIKE LOWER(CONCAT('%', :keyword, '%')))
+            """,
+            nativeQuery = true
+    )
+    Page<Word> findAllWithFilter(
+            @Param("lessonId") String lessonId,
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
 
     Page<Word> findByLessonId(String lessonId, Pageable pageable);
 }

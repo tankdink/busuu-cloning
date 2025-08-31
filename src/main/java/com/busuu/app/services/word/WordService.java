@@ -58,9 +58,13 @@ public class WordService implements IWordService {
             Lesson extLesson = lessonRepository.findById(wordDTO.getLessonId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID " + wordDTO.getLessonId()));
 
+            // Get code from Lesson
+            String code = extLesson.getChapter().getCourse().getLanguage().getCode();
+
             Word word = modelMapper.map(wordDTO, Word.class);
             word.setId(UUID.randomUUID().toString());
             word.setLesson(extLesson);
+            word.setLanguageCode(code);
 
             // Image
             CloudinaryResponse imageRes = uploadMedia(wordDTO.getImage(), "image");
@@ -135,7 +139,7 @@ public class WordService implements IWordService {
                     }).toList();
 
             WordResponse wordResponse = modelMapper.map(extWord, WordResponse.class);
-            wordResponse.setLessonId(null);
+            wordResponse.setLessonId(extWord.getLesson().getId());
 //            wordResponse.setTranslation(translateText);
             wordResponse.setExamples(examples);
 
@@ -148,9 +152,9 @@ public class WordService implements IWordService {
     }
 
     @Override
-    public Page<WordResponse> getWords(String requestId, Pageable pageable) {
+    public Page<WordResponse> getWords(String requestId, Pageable pageable, String lessonId, String keyword) {
         try {
-            Page<Word> words = wordRepository.findAll(pageable);
+            Page<Word> words = wordRepository.findAllWithFilter(lessonId, keyword, pageable);
 
             return words.map(word -> {
                 List<WordExampleResponse> examples = word.getExamples().stream()
@@ -160,7 +164,7 @@ public class WordService implements IWordService {
                             return res;
                         }).toList();
                 WordResponse res = modelMapper.map(word, WordResponse.class);
-                res.setLessonId("");
+                res.setLessonId(word.getLesson().getId());
                 res.setExamples(examples);
                 return res;
             });
@@ -182,6 +186,7 @@ public class WordService implements IWordService {
                 Lesson extLesson = lessonRepository.findById(wordDTO.getLessonId())
                         .orElseThrow(() -> new DataNotFoundException("Cannot find Lesson with ID " + wordDTO.getLessonId()));
                 extWord.setLesson(extLesson);
+                extWord.setLanguageCode(extLesson.getChapter().getCourse().getLanguage().getCode());
             }
 
             if (wordDTO.getImage() != null) {
@@ -278,7 +283,6 @@ public class WordService implements IWordService {
             return res;
         });
     }
-
 
     private CloudinaryResponse uploadMedia(MultipartFile file, String type) throws Exception {
         UploadCloudinaryUtil.assertAllowed(file, type);

@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -59,18 +60,27 @@ public class WordController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getWords (@RequestParam(value = "req-id", required = false) String requestId,
                                               @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                              @RequestParam(value = "limit", defaultValue = "10", required = false) int limit) {
-
+                                              @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                              @RequestParam(value = "lesson-id", defaultValue = "null", required = false) String lessonId,
+                                              @RequestParam(value = "keyword", defaultValue = "null", required = false) String keyword,
+                                              @RequestParam(value = "sort-by", defaultValue = "id", required = false) String sortBy,
+                                              @RequestParam(value = "sort-dir", defaultValue = "asc", required = false) String sortDir) {
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
 
-        PageRequest pageRequest = PageRequest.of(
-                page, limit,
-                Sort.by("id").ascending()
-        );
+        List<String> allowedSortFields = List.of("id", "text", "created-at");
+        if (!allowedSortFields.contains(sortBy)) {
+            sortBy = "id"; // Default
+        }
 
-        Page<WordResponse> res = wordService.getWords(requestId, pageRequest);
+        Sort sort = sortDir.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() :
+                Sort.by(sortBy).ascending();
+
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        Page<WordResponse> res = wordService.getWords(requestId, pageRequest, lessonId, keyword);
 
         return ResponseEntity.ok(
                 Response.builder()
@@ -127,14 +137,14 @@ public class WordController {
     public ResponseEntity<Response> getByLesson (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String lessonId,
                                                  @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                                 @RequestParam(value = "limit", defaultValue = "10", required = false) int limit) {
+                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
 
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
 
         PageRequest pageRequest = PageRequest.of(
-                page, limit,
+                page, size,
                 Sort.by("id").ascending()
         );
 
