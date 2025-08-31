@@ -65,7 +65,7 @@ public class WordService implements IWordService {
             word.setId(UUID.randomUUID().toString());
             word.setLesson(extLesson);
             word.setLanguageCode(code);
-
+            word.setText(word.getText().trim());
             // Image
             CloudinaryResponse imageRes = uploadMedia(wordDTO.getImage(), "image");
             word.setImageUrl(imageRes.getUrl());
@@ -81,8 +81,8 @@ public class WordService implements IWordService {
             WordExample wordExample = WordExample.builder()
                     .id(UUID.randomUUID().toString())
                     .word(word)
-                    .originalText(wordDTO.getOriginalText())
-                    .translateText(wordDTO.getTranslateText())
+                    .originalText(wordDTO.getOriginalText().trim())
+                    .translateText(wordDTO.getTranslateText().trim())
                     .build();
 
             // Audio
