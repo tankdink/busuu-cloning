@@ -154,6 +154,13 @@ public class WordService implements IWordService {
     @Override
     public Page<WordResponse> getWords(String requestId, Pageable pageable, String lessonId, String keyword) {
         try {
+
+            if (lessonId != null && lessonId.isEmpty()) {
+                lessonId = null;
+            }
+            if (keyword != null && keyword.isEmpty()) {
+                keyword = null;
+            }
             Page<Word> words = wordRepository.findAllWithFilter(lessonId, keyword, pageable);
 
             return words.map(word -> {

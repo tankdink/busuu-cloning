@@ -61,15 +61,15 @@ public class WordController {
     public ResponseEntity<Response> getWords (@RequestParam(value = "req-id", required = false) String requestId,
                                               @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                               @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                              @RequestParam(value = "lesson-id", defaultValue = "null", required = false) String lessonId,
-                                              @RequestParam(value = "keyword", defaultValue = "null", required = false) String keyword,
+                                              @RequestParam(value = "lesson-id", required = false) String lessonId,
+                                              @RequestParam(value = "keyword", required = false) String keyword,
                                               @RequestParam(value = "sort-by", defaultValue = "id", required = false) String sortBy,
                                               @RequestParam(value = "sort-dir", defaultValue = "asc", required = false) String sortDir) {
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
 
-        List<String> allowedSortFields = List.of("id", "text", "created-at");
+        List<String> allowedSortFields = List.of("id", "text", "createdAt");
         if (!allowedSortFields.contains(sortBy)) {
             sortBy = "id"; // Default
         }

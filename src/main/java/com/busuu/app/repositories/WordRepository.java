@@ -11,30 +11,21 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WordRepository extends JpaRepository<Word, String> {
 
-    @Query(
-            value = """
-            SELECT * 
-            FROM word w
-            WHERE (:lessonId IS NULL OR w.lesson_id = :lessonId)
-              AND (:keyword IS NULL 
-                   OR LOWER(w.text) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                   OR LOWER(w.translation) LIKE LOWER(CONCAT('%', :keyword, '%')))
-            """,
-            countQuery = """
-            SELECT COUNT(*) 
-            FROM word w
-            WHERE (:lessonId IS NULL OR w.lesson_id = :lessonId)
-              AND (:keyword IS NULL 
-                   OR LOWER(w.text) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                   OR LOWER(w.translation) LIKE LOWER(CONCAT('%', :keyword, '%')))
-            """,
-            nativeQuery = true
-    )
+    @Query("""
+    SELECT w FROM Word w
+    WHERE (:lessonId IS NULL OR w.lesson.id = :lessonId)
+      AND (
+           :keyword IS NULL
+           OR LOWER(w.text) LIKE LOWER(CONCAT('%', :keyword, '%'))
+           OR LOWER(w.translation) LIKE LOWER(CONCAT('%', :keyword, '%'))
+      )
+""")
     Page<Word> findAllWithFilter(
             @Param("lessonId") String lessonId,
             @Param("keyword") String keyword,
             Pageable pageable
     );
+
 
     Page<Word> findByLessonId(String lessonId, Pageable pageable);
 }
