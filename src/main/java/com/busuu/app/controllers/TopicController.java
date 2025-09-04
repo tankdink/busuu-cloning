@@ -43,16 +43,15 @@ public class TopicController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getTopics(@RequestParam(value = "req-id", required = false) String requestId,
 
-                                              @RequestParam(value = "topic_type", required = false) String topicType,
-
                                               @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                               @RequestParam(value = "size", defaultValue = "10", required = false) int size,
 
-                                              @RequestParam(value = "sort_by", required = false) List<String> sortBy,
-                                              @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
-                                              @RequestParam(value = "search_value", required = false) String searchValue,
-                                              @RequestParam(value = "filter_by", required = false) List<String> filterBy,
-                                              @RequestParam(value = "filter_value", required = false) List<String> filterValue) {
+                                              @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                              @RequestParam(value = "sort-direction", required = false) List<String> sortDirection,
+                                              @RequestParam(value = "search-value", required = false) String searchValue,
+
+                                              @RequestParam(value = "topic-type", required = false) String topicType,
+                                              @RequestParam(value = "topic-category", required = false) String topicCategory) {
 
         try {
 
@@ -60,8 +59,8 @@ public class TopicController {
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call update chapter by ID service
-            Page<TopicResponse> topicsList = topicService.getTopicsByType(requestId, topicType, page, size, sortBy, sortDirection, searchValue, filterBy, filterValue);
+            //Call get all topics service
+            Page<TopicResponse> topicsList = topicService.getTopicsByType(requestId, topicType, page, size, sortBy, sortDirection, searchValue, topicCategory);
             Object responseData = PagingResponse.<TopicResponse>builder()
                     .totalPages(topicsList.getTotalPages())
                     .objects(topicsList.getContent())
@@ -78,7 +77,7 @@ public class TopicController {
             );
 
         } catch (Exception e) {
-            log.error("Error when getting topics with type: " + e.getMessage());
+            log.error("Error when getting topics list: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())

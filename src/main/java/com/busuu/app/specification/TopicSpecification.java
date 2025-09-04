@@ -23,14 +23,15 @@ import java.util.regex.Pattern;
 
 public class TopicSpecification
 {
+
+    //For filter with List<String>
     private static final Set<String> FILTER_FIELDS = Set.of("videoCategory");
     private static final Set<String> SORT_FIELDS = Set.of("createdAt", "updatedAt");
 
     public static Specification<Topic> getSpecification(
             String topicType,
             String searchValue,
-            List<String> filterBy,
-            List<String> filterValue,
+            String topicCategory,
             List<String> sortBy,
             List<String> sortDirection
     )
@@ -41,9 +42,9 @@ public class TopicSpecification
             List<Predicate> predicates = new ArrayList<>();
 
             //Join
-            Join<Topic, TopicCategory> categoryJoin = root.join("videoCategory", JoinType.LEFT);
+            Join<Topic, TopicCategory> categoryJoin = root.join("topicCategory", JoinType.LEFT);
 
-            //Get by topic type
+            //Get by topic type first
             if (topicType != null && !topicType.isEmpty()) {
                 predicates.add(cb.equal(root.get("topicType"), TopicType.valueOf(topicType.toUpperCase())));
             }
@@ -52,27 +53,33 @@ public class TopicSpecification
             //Filter then search then sort
 
             //Filter
-            if (filterBy != null && filterValue != null)
-            {
-                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
+            //Filter with List<String>
+//            if (filterBy != null && filterValue != null)
+//            {
+//                if (filterBy.size() != filterValue.size()) throw new IllegalArgumentException("filterBy and filterValue must have the same number of elements");
+//
+//                for (int i = 0; i < filterBy.size(); i++)
+//                {
+//                    String column = filterBy.get(i);
+//                    String value = filterValue.get(i);
+//
+//                    if (!FILTER_FIELDS.contains(column)) {
+//                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
+//                    }
+//
+//                    switch (column)
+//                    {
+//                        case "videoCategory":
+//                            predicates.add(cb.equal(cb.lower(categoryJoin.get("categoryName")), value.toLowerCase()));
+//                            break;
+//
+//                    }
+//                }
+//            }
 
-                for (int i = 0; i < filterBy.size(); i++)
-                {
-                    String column = filterBy.get(i);
-                    String value = filterValue.get(i);
-
-                    if (!FILTER_FIELDS.contains(column)) {
-                        throw new IllegalArgumentException("Unsupported filter column: " + column + "; Support filter by: " + FILTER_FIELDS);
-                    }
-
-                    switch (column)
-                    {
-                        case "videoCategory":
-                            predicates.add(cb.equal(cb.lower(categoryJoin.get("categoryName")), value.toLowerCase()));
-                            break;
-
-                    }
-                }
+            //Manual filter
+            if (topicCategory != null && !topicCategory.isEmpty()) {
+                predicates.add(cb.equal(cb.lower(categoryJoin.get("categoryName")), topicCategory.toLowerCase()));
             }
 
 

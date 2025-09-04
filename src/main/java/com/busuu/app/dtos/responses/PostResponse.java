@@ -45,4 +45,8 @@ public class PostResponse extends BaseResponse
 
     @JsonProperty("post_type")
     private PostType postType;
+
+    @JsonProperty("language_id")
+    private String languageId;
+
 }

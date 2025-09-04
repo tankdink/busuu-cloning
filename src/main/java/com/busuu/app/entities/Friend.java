@@ -1,6 +1,6 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.post.Post;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,38 +10,25 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table(name = "correction")
-@Getter
-@Setter
+@Table(name = "friend")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Correction extends BaseEntity
+public class Friend extends BaseEntity
 {
     @Id
-    @Column(name = "correction_id")
+    @Column(name = "relation_id")
     private String id;
-
-    @Column(name = "correction_audio_name")
-    private String correctionAudioName;
-
-    @Column(name = "correction_audio_url")
-    private String correctionAudioUrl;
-
-    @Column(name = "correction_text")
-    private String correctionText;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
-
+    @JoinColumn(name = "friend_id")
+    private User friend;
 }

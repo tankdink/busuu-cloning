@@ -31,7 +31,7 @@ public class TopicResponse extends BaseResponse
     @JsonProperty("video_description")
     private String videoDescription;
 
-    @JsonProperty("video_category")
+    @JsonProperty("topic_category")
     private String category;
 
     @JsonProperty("topic_type")

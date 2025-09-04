@@ -32,6 +32,7 @@ public class Constants {
     public static final String LANGUAGE = "/languages";
     public static final String GRAMMAR = "/grammars";
     public static final String GRAMMAR_SECTION = "/grammar_sections";
+    public static final String FRIEND = "/friends";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String DETAILS = "/details";
@@ -47,6 +48,7 @@ public class Constants {
     public static final String PATH_PARAM_ID = "/{id}";
     public static final String PATH_PARAM_USER = "/user";
     public static final String PATH_PARAM_POST = "/post";
+    public static final String SELF_DATA = "/self";
 
     public static class URI {
         public static final String INDEX = "/index";
@@ -172,6 +174,8 @@ public class Constants {
         public static final String ERR_CREATE_NEW_CORRECTION = "ERR_CREATE_NEW_CORRECTION";
         public static final String ERR_GET_CORRECTION = "ERR_GET_CORRECTION";
 
+        // Friend
+        public static final String ERR_ADD_FRIEND = "ERR_ADD_FRIEND";
 
     }
 

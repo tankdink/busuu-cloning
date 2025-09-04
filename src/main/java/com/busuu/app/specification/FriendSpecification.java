@@ -1,9 +1,7 @@
 package com.busuu.app.specification;
 
-import com.busuu.app.entities.Language;
+import com.busuu.app.entities.Friend;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.post.Post;
-import com.busuu.app.entities.post.PostType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -17,45 +15,50 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class PostSpecification
+public class FriendSpecification
 {
 
-    private static final Set<String> SORT_FIELDS = Set.of("createdAt");
+    private static final Set<String> SORT_FIELDS = Set.of("createdAt", "firstName");
 
-
-    public static Specification<Post> getSpecification(
-            String postType,
-            String language,
+    public static Specification<Friend> getSpecification(
+            String userId,
+            String searchValue,
             List<String> sortBy,
             List<String> sortDirection,
-            String userId
+            String country
     ) {
 
-        return (Root<Post> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+        return (Root<Friend> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
 
             //Predicate act like a single condition
             List<Predicate> predicates = new ArrayList<>();
 
             //Join
-            Join<Post, Language> languageJoin = root.join("language", JoinType.LEFT);
-            Join<Post, User> userJoin = root.join("user", JoinType.LEFT);
+            Join<Friend, User> friendJoin = root.join("friend", JoinType.LEFT);
 
 
-            //Get posts by user first
+            //Get friend list first
             if (userId != null && !userId.isEmpty()) {
-                predicates.add(cb.equal(userJoin.get("id"), userId));
+                predicates.add(cb.equal(friendJoin.get("id"), userId));
             }
 
             //Filter then search then sort
 
             //Filter
-            if (postType != null && !postType.isEmpty()) {
-                predicates.add(cb.equal(root.get("postType"), PostType.valueOf(postType.toUpperCase())));
-            }
-            if (language != null && !language.isEmpty()) {
-                predicates.add(cb.equal(cb.lower(languageJoin.get("name")), language.toLowerCase()));
+            if (country != null && !country.isEmpty()) {
+                predicates.add(cb.equal(cb.lower(friendJoin.get("country")), country.toLowerCase()));
             }
 
+
+            //Field search (LIKE SEARCH)
+            if (searchValue != null && !searchValue.isEmpty())
+            {
+
+                Predicate fullNamePredicate = cb.like(cb.lower(friendJoin.get("fullName")), searchValue);
+
+                predicates.add(fullNamePredicate);
+
+            }
 
 
             //Sorting
@@ -86,13 +89,18 @@ public class PostSpecification
                                     ? cb.asc(root.get("createdAt"))
                                     : cb.desc(root.get("createdAt")));
                             break;
+                        case "firstName":
+                            orders.add(direction.equalsIgnoreCase("asc")
+                                    ? cb.asc(friendJoin.get("firstName"))
+                                    : cb.desc(friendJoin.get("firstName")));
+                            break;
 
                     }
                 }
             }
             else //Default sort
             {
-                orders.add(cb.desc(root.get("createdAt")));
+                orders.add(cb.desc(friendJoin.get("firstName")));
             }
 
             //Avoid duplicate case
@@ -106,4 +114,5 @@ public class PostSpecification
         };
 
     }
+
 }

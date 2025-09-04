@@ -2,6 +2,7 @@ package com.busuu.app.entities.post;
 
 import com.busuu.app.entities.BaseEntity;
 import com.busuu.app.entities.Correction;
+import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
@@ -68,6 +69,10 @@ public class Post extends BaseEntity
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "language_id")
+    private Language language;
 
     @JsonIgnore
     @Builder.Default

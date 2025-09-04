@@ -30,20 +30,20 @@ public class TopicService implements ITopicService
     private final ModelMapper modelMapper;
 
     @Override
-    public Page<TopicResponse> getTopicsByType(String requestId, String topicType, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue) throws DataNotFoundException
+    public Page<TopicResponse> getTopicsByType(String requestId, String topicType, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String topicCategory) throws DataNotFoundException
     {
         try {
 
             Pageable pageable = PageRequest.of(page, size);
 
-            Specification<Topic> spec = TopicSpecification.getSpecification(topicType, searchValue, filterBy, filterValue, sortBy, sortDirection);
+            Specification<Topic> spec = TopicSpecification.getSpecification(topicType, searchValue, topicCategory, sortBy, sortDirection);
             return topicRepository.findAll(spec, pageable).map(
                     topic ->
                     {
                         TopicResponse response = modelMapper.map(topic, TopicResponse.class);
 
-                        if (topic.getVideoCategory() != null) {
-                            response.setCategory(topic.getVideoCategory().getCategoryName());
+                        if (topic.getTopicCategory() != null) {
+                            response.setCategory(topic.getTopicCategory().getCategoryName());
                         }
                         else response.setCategory(null);
 

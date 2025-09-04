@@ -20,4 +20,7 @@ public interface ICorrectionService
 
     List<CorrectionResponse> getByPostId(String requestId, String postId);
 
+    Page<CorrectionResponse> getSelfCorrection(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String language);
+
+
 }

@@ -42,4 +42,5 @@ public class CorrectionResponse extends BaseResponse
 
     @JsonProperty("post_id")
     private String postId;
+
 }

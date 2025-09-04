@@ -27,6 +27,10 @@ public class PostDTO
     @NotBlank(message = "Subject text cannot be null")
     private String subjectText;
 
+    @JsonProperty("language_id")
+    @NotBlank(message = "Language id cannot be null")
+    private String languageId;
+
     @JsonProperty("subject_img")
     private MultipartFile subjectImg;
 

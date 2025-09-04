@@ -4,13 +4,16 @@ import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.post.PostDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.PostResponse;
+import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.post.Post;
 import com.busuu.app.entities.post.PostType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.InvalidFileException;
+import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.PostRepository;
+import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.specification.PostSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
@@ -43,6 +46,10 @@ public class PostService implements IPostService
 
     private final PostRepository postRepository;
 
+    private final UserRepository userRepository;
+
+    private final LanguageRepository languageRepository;
+
     @Override
     @Transactional
     public PostResponse insertPost(String requestId, PostDTO postDTO)
@@ -58,6 +65,8 @@ public class PostService implements IPostService
                 throw new IllegalArgumentException("Post with TEXT type cannot have null post text");
             if (newPost.getPostType() == PostType.AUDIO && postDTO.getPostAudio() == null)
                 throw new IllegalArgumentException("Post with AUDIO type cannot have null post audio");
+            Language language = languageRepository.findById(postDTO.getLanguageId())
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + postDTO.getLanguageId()) );
 
 
             //Check valid file
@@ -93,11 +102,13 @@ public class PostService implements IPostService
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
             newPost.setUser(user);
+            newPost.setLanguage(language);
 
             //Save and map return
             newPost = postRepository.save(newPost);
             PostResponse postResponse = modelMapper.map(newPost, PostResponse.class);
             postResponse.setUserId(user.getId());
+            postResponse.setLanguageId(language.getId());
             return postResponse;
 
         } catch (Exception e) {
@@ -108,19 +119,20 @@ public class PostService implements IPostService
     }
 
     @Override
-    public Page<PostResponse> getPosts(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue)
+    public Page<PostResponse> getPosts(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String language)
     {
         try {
 
             Pageable pageable = PageRequest.of(page, size);
 
-            Page<Post> posts = postRepository.findAll(PostSpecification.getSpecification(filterBy, filterValue, sortBy, sortDirection),pageable);
+            Page<Post> posts = postRepository.findAll(PostSpecification.getSpecification(postType, language, sortBy, sortDirection, null), pageable);
 
             return posts.map(
                     post -> {
 
                         PostResponse postResponse = modelMapper.map(post, PostResponse.class);
                         postResponse.setUserId(post.getUser().getId());
+                        postResponse.setLanguageId(post.getLanguage().getId());
 
                         return postResponse;
 
@@ -139,11 +151,12 @@ public class PostService implements IPostService
         try
         {
 
-            Post post= postRepository.findById(postId)
+            Post post = postRepository.findById(postId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Post with ID = " + postId));
 
             PostResponse postResponse = modelMapper.map(post, PostResponse.class);
             postResponse.setUserId(post.getUser().getId());
+            postResponse.setLanguageId(post.getLanguage().getId());
 
             return postResponse;
 
@@ -159,12 +172,17 @@ public class PostService implements IPostService
     {
 
         try {
+
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + userId ));
+
             List<Post> posts = postRepository.findByUserId(userId, Sort.by(Sort.Direction.DESC, "createdAt"));
 
             return posts.stream().map(post ->
             {
                 PostResponse postResponse = modelMapper.map(post, PostResponse.class);
                 postResponse.setUserId(post.getUser().getId());
+                postResponse.setLanguageId(post.getLanguage().getId());
 
                 return postResponse;
 
@@ -177,6 +195,37 @@ public class PostService implements IPostService
         }
 
     }
+
+    public Page<PostResponse> getSelfPost(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String language)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<Post> posts = postRepository.findAll(PostSpecification.getSpecification(postType, language, sortBy, sortDirection, user.getId()), pageable);
+
+            return posts.map(
+                    post -> {
+
+                        PostResponse postResponse = modelMapper.map(post, PostResponse.class);
+                        postResponse.setUserId(post.getUser().getId());
+                        postResponse.setLanguageId(post.getLanguage().getId());
+
+                        return postResponse;
+
+                    });
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get posts, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_POST, requestId);
+        }
+    }
+
+
 
     private CloudinaryResponse uploadFile(MultipartFile file) throws Exception
     {

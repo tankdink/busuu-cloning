@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface ITopicService
 {
-    Page<TopicResponse> getTopicsByType(String requestId, String topicType, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue) throws DataNotFoundException;
+    Page<TopicResponse> getTopicsByType(String requestId, String topicType, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String videoCategory) throws DataNotFoundException;
 }

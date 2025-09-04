@@ -13,12 +13,17 @@ import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.InvalidFileException;
 import com.busuu.app.repositories.CorrectionRepository;
 import com.busuu.app.repositories.CorrectionRepository;
+import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.PostRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
+import com.busuu.app.specification.CorrectionSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -42,6 +47,7 @@ public class CorrectionService implements ICorrectionService
     private final ModelMapper modelMapper;
 
     private final IUploadCloudinaryService uploadCloudinaryService;
+
     
     @Override
     public CorrectionResponse insertCorrection(String requestId, CorrectionDTO correctionDTO) 
@@ -163,6 +169,35 @@ public class CorrectionService implements ICorrectionService
             log.error("requestId="+requestId+",failed to get Correction list, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_CORRECTION, requestId);
+        }
+    }
+
+    @Override
+    public Page<CorrectionResponse> getSelfCorrection(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String language)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<Correction> corrections = correctionRepository.findAll(CorrectionSpecification.getSpecification(language, sortBy, sortDirection, user.getId()), pageable);
+
+            return corrections.map(correction ->
+            {
+                CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
+                correctionResponse.setUserId(correction.getUser().getId());
+                correctionResponse.setPostId(correction.getPost().getId());
+
+                return correctionResponse;
+
+            });
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get corrections, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_POST, requestId);
         }
     }
 

@@ -1,12 +1,8 @@
 package com.busuu.app.entities.topic;
 
 import com.busuu.app.entities.BaseEntity;
-import com.busuu.app.entities.progresses.ChapterProgress;
-import com.busuu.app.entities.topic.TopicType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.modelmapper.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +22,7 @@ public class TopicCategory extends BaseEntity
     @Column(name = "category_name")
     private String categoryName;
 
-    @OneToMany(mappedBy = "videoCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "topicCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
 

@@ -91,7 +91,7 @@ public class CorrectionController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by ID service
+            //Call get correction by ID service
             CorrectionResponse correctionResponse = correctionService.getCorrection(requestId, correctionId);
 
             //Return response
@@ -127,7 +127,7 @@ public class CorrectionController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by ID service
+            //Call get correction by user ID service
             List<CorrectionResponse> correctionList = correctionService.getByUserId(requestId, userId);
 
             //Return response
@@ -163,7 +163,7 @@ public class CorrectionController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by ID service
+            //Call get correction by post ID service
             List<CorrectionResponse> correctionList = correctionService.getByPostId(requestId, postId);
 
             //Return response
@@ -180,6 +180,54 @@ public class CorrectionController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.SELF_DATA)
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getSelfCorrection(@RequestParam(value = "req-id", required = false) String requestId,
+
+                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+
+                                                 @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                                 @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
+                                                 @RequestParam(value = "search-value", required = false) String searchValue,
+
+                                                 @RequestParam(value = "language", required = false) String language) {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call get post list service
+            Page<CorrectionResponse> correctionList = correctionService.getSelfCorrection(requestId, page, size, sortBy, sortDirection, searchValue, language);
+            Object responseData = PagingResponse.<CorrectionResponse>builder()
+                    .totalPages(correctionList.getTotalPages())
+                    .objects(correctionList.getContent())
+                    .totalObjects(correctionList.getTotalElements())
+                    .build();
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .data(responseData)
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting correction list: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );

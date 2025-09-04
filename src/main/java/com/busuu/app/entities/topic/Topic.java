@@ -1,15 +1,8 @@
 package com.busuu.app.entities.topic;
 
 import com.busuu.app.entities.BaseEntity;
-import com.busuu.app.entities.progresses.ChapterProgress;
-import com.busuu.app.entities.topic.TopicType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.modelmapper.config.Configuration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "topic")
@@ -44,6 +37,6 @@ public class Topic extends BaseEntity
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private TopicCategory videoCategory;
+    private TopicCategory topicCategory;
 
 }

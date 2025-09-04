@@ -83,11 +83,12 @@ public class PostController
                                               @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                               @RequestParam(value = "size", defaultValue = "10", required = false) int size,
 
-                                              @RequestParam(value = "sort_by", required = false) List<String> sortBy,
-                                              @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
-                                              @RequestParam(value = "search_value", required = false) String searchValue,
-                                              @RequestParam(value = "filter_by", required = false) List<String> filterBy,
-                                              @RequestParam(value = "filter_value", required = false) List<String> filterValue) {
+                                              @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                              @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
+                                              @RequestParam(value = "search-value", required = false) String searchValue,
+
+                                              @RequestParam(value = "post-type", required = false) String postType,
+                                              @RequestParam(value = "language", required = false) String language) {
 
         try {
 
@@ -95,8 +96,8 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call update chapter by ID service
-            Page<PostResponse> postsList = postService.getPosts(requestId, page, size, sortBy, sortDirection, searchValue, filterBy, filterValue);
+            //Call get post list service
+            Page<PostResponse> postsList = postService.getPosts(requestId, page, size, sortBy, sortDirection, searchValue, postType, language);
             Object responseData = PagingResponse.<PostResponse>builder()
                     .totalPages(postsList.getTotalPages())
                     .objects(postsList.getContent())
@@ -136,7 +137,7 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by ID service
+            //Call get post by ID service
             PostResponse post = postService.getPost(requestId, postId);
 
             //Return response
@@ -172,7 +173,7 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get chapter by ID service
+            //Call get post by user ID service
             List<PostResponse> postList = postService.getByUserId(requestId, userId);
 
             //Return response
@@ -189,6 +190,55 @@ public class PostController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.SELF_DATA)
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getSelfPosts(@RequestParam(value = "req-id", required = false) String requestId,
+
+                                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                             @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+
+                                             @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                             @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
+                                             @RequestParam(value = "search-value", required = false) String searchValue,
+
+                                             @RequestParam(value = "post-type", required = false) String postType,
+                                             @RequestParam(value = "language", required = false) String language) {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call get post list service
+            Page<PostResponse> postsList = postService.getSelfPost(requestId, page, size, sortBy, sortDirection, searchValue, postType, language);
+            Object responseData = PagingResponse.<PostResponse>builder()
+                    .totalPages(postsList.getTotalPages())
+                    .objects(postsList.getContent())
+                    .totalObjects(postsList.getTotalElements())
+                    .build();
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .data(responseData)
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting posts list: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );

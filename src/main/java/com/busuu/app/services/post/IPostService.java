@@ -11,10 +11,12 @@ public interface IPostService
 
     PostResponse insertPost(String requestId, PostDTO postDTO);
 
-    Page<PostResponse> getPosts(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, List<String> filterBy, List<String> filterValue);
+    Page<PostResponse> getPosts(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String country);
 
     PostResponse getPost(String requestId, String postId);
 
-   List<PostResponse> getByUserId(String requestId, String userId);
+    Page<PostResponse> getSelfPost(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String country);
+
+    List<PostResponse> getByUserId(String requestId, String userId);
 
 }
