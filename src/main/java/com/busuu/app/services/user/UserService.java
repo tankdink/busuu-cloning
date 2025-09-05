@@ -96,6 +96,7 @@ public class UserService implements IUserService {
             String encodedPassword = passwordEncoder.encode(password);
             newUser.setPassword(encodedPassword);
             newUser.setFullName(newUser.getFirstName() + " " + newUser.getLastName());
+            newUser.setLanguageCode("en");
             newUser.setRoles(roles);
 
             // Active code to active account
@@ -109,7 +110,7 @@ public class UserService implements IUserService {
             emailService.sendEmailActive(newUser.getEmail(), newUser.getActiveCode());
             return modelMapper.map(newUser, UserResponse.class);
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to register user, err=" + e.getMessage());
+            log.error("requestId={},failed to register user, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_REGISTER_USER, requestId);
         }
@@ -157,7 +158,7 @@ public class UserService implements IUserService {
                 throw new Exception("User not found");
             }
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to get detail user from token, err=" + e.getMessage());
+            log.error("requestId={},failed to get detail user from token, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
@@ -169,7 +170,7 @@ public class UserService implements IUserService {
             Token existingToken = tokenRepository.findByRefreshToken(refreshToken);
             return existingToken.getUser();
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to get detail user from fresh token, err=" + e.getMessage());
+            log.error("requestId={},failed to get detail user from fresh token, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
@@ -210,9 +211,8 @@ public class UserService implements IUserService {
             extUser = userRepository.save(extUser);
 
             return modelMapper.map(extUser, UserResponse.class);
-        } catch (
-                Exception e) {
-            log.error("requestId=" + requestId + ",failed to update user, err=" + e.getMessage());
+        } catch (Exception e) {
+            log.error("requestId={},failed to update user, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_UPDATE_USER, requestId);
         }
@@ -247,7 +247,7 @@ public class UserService implements IUserService {
             return false;
 
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to change password, err=" + e.getMessage());
+            log.error("requestId={},failed to change password, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHANGE_PASSWORD, requestId);
         }
@@ -279,7 +279,7 @@ public class UserService implements IUserService {
 
 
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to get users by role, err=" + e.getMessage());
+            log.error("requestId={},failed to get users by role, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
@@ -292,7 +292,7 @@ public class UserService implements IUserService {
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
             return modelMapper.map(existingUser, UserResponse.class);
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to get user by id, err=" + e.getMessage());
+            log.error("requestId={},failed to get user by id, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER, requestId);
         }
@@ -316,7 +316,7 @@ public class UserService implements IUserService {
             }
             return 0;
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to active account, err=" + e.getMessage());
+            log.error("requestId={},failed to active account, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_ACTIVE_ACCOUNT, requestId);
         }
@@ -343,7 +343,7 @@ public class UserService implements IUserService {
                 return 2;
             }
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to generate otp, err=" + e.getMessage());
+            log.error("requestId={},failed to generate otp, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GENERATE_OTP, requestId);
         }
@@ -361,7 +361,7 @@ public class UserService implements IUserService {
             }
             return false;
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to check otp, err=" + e.getMessage());
+            log.error("requestId={},failed to check otp, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHECK_OTP, requestId);
         }
@@ -376,7 +376,7 @@ public class UserService implements IUserService {
             existingUser.setActive(!existingUser.isActive());
             return userRepository.save(existingUser);
         } catch (Exception e) {
-            log.error("requestId=" + requestId + ",failed to block or enable user, err=" + e.getMessage());
+            log.error("requestId={},failed to block or enable user, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHECK_OTP, requestId);
         }

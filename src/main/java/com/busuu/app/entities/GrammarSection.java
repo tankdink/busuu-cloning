@@ -1,20 +1,21 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.progresses.GrammarProgress;
 import com.busuu.app.entities.progresses.GrammarSectionProgress;
 import com.busuu.app.entities.questions.Question;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "grammar_section")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -49,8 +50,10 @@ public class GrammarSection extends BaseEntity {
     private Level level;
 
     @OneToMany(mappedBy = "grammarSection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Question> questions = new ArrayList<>();
 
     @OneToMany(mappedBy = "grammarSection", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GrammarSectionProgress> grammarSectionProgresses;
+    @Builder.Default
+    private List<GrammarSectionProgress> grammarSectionProgresses = new ArrayList<>();
 }

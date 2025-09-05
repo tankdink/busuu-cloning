@@ -1,18 +1,19 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.progresses.CourseProgress;
 import com.busuu.app.entities.progresses.GrammarProgress;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(name = "grammar")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

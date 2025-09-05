@@ -37,4 +37,8 @@ public class CourseDTO {
     @JsonProperty("level_ids")
     @NotBlank(message = "Level ids is required")
     private String levelIds;
+
+    @JsonProperty("language_id")
+    @NotBlank(message = "Language ID cannot be null or empty")
+    private String languageId;
 }
