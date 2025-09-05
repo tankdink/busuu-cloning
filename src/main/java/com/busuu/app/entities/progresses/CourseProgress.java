@@ -1,18 +1,20 @@
 package com.busuu.app.entities.progresses;
 
-import com.busuu.app.entities.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.busuu.app.entities.BaseEntity;
+import com.busuu.app.entities.Course;
+import com.busuu.app.entities.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "course_progress")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

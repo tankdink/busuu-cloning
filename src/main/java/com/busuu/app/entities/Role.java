@@ -5,16 +5,22 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cache;
 
 import java.util.List;
 
 @Entity
 @Table(name = "role")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Role extends BaseEntity{
     @Id
     @Column(name = "role_id")
