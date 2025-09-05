@@ -232,7 +232,6 @@ public class GrammarSectionController
     {
 
         try {
-
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }

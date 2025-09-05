@@ -7,7 +7,9 @@ import com.busuu.app.dtos.responses.GrammarResponse;
 import com.busuu.app.dtos.responses.GrammarResponse;
 import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
+import com.busuu.app.dtos.responses.question.SectionLevelStatsResponse;
 import com.busuu.app.services.grammar.IGrammarService;
+import com.busuu.app.services.progress.grammar_section.IGrammarSectionProgressService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +37,7 @@ import java.util.UUID;
 public class GrammarController
 {
     private final IGrammarService grammarService;
+    private final IGrammarSectionProgressService grammarSectionProgressService;
 
     private final LocalizationUtils localizationUtils;
 
@@ -309,4 +312,29 @@ public class GrammarController
             );
         }
     }
+
+    @GetMapping(Constants.STATS)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Response> statsLevel (@RequestParam(value = "req-id", required = false) String requestId) {
+        if (requestId == null || requestId.isEmpty()) {
+            requestId = UUID.randomUUID().toString();
+        }
+
+        List<SectionLevelStatsResponse> data = grammarSectionProgressService.sectionStats(requestId);
+        long total = grammarSectionProgressService.countSectionProgress(requestId);
+
+        return ResponseEntity.ok().body(
+                Response.builder()
+                        .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
+                        .status(HttpStatus.OK.value())
+                        .data(PagingResponse.<SectionLevelStatsResponse>builder()
+                                .totalObjects(total)
+                                .objects(data)
+                                .build()
+                        )
+                        .build()
+        );
+    }
+
 }

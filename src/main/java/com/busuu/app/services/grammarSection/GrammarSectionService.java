@@ -296,7 +296,6 @@ public class GrammarSectionService implements IGrammarSectionService
     public void deleteGrammarSection(String requestId, String grammarSectionId)
     {
         try {
-
             //Check exist grammar section
             GrammarSection existingGrammarSection = grammarSectionRepository.findById(grammarSectionId)
                     .orElseThrow( ()-> new DataNotFoundException("No grammar section found with ID " + grammarSectionId) );
@@ -309,4 +308,5 @@ public class GrammarSectionService implements IGrammarSectionService
                     Constants.ERROR_CODE.ERR_DELETE_GRAMMAR_SECTION_BY_ID, requestId);
         }
     }
+
 }
