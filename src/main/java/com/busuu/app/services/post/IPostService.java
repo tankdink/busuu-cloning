@@ -19,4 +19,6 @@ public interface IPostService
 
     List<PostResponse> getByUserId(String requestId, String userId);
 
+    Page<PostResponse> getByFriendlist(String requestId, int page, int size);
+
 }

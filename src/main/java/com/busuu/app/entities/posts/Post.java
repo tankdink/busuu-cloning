@@ -1,15 +1,17 @@
-package com.busuu.app.entities.post;
+package com.busuu.app.entities.posts;
 
 import com.busuu.app.entities.BaseEntity;
-import com.busuu.app.entities.Correction;
+import com.busuu.app.entities.corrections.Correction;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
+import com.busuu.app.entities.notifications.Notification;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,7 +19,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -78,5 +79,11 @@ public class Post extends BaseEntity
     @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Correction> corrections = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Notification> notification = new ArrayList<>();
+
 
 }

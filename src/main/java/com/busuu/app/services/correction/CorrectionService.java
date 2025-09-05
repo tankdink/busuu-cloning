@@ -4,17 +4,19 @@ import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.correction.CorrectionDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.CorrectionResponse;
-import com.busuu.app.entities.Correction;
+import com.busuu.app.entities.corrections.Correction;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.post.Post;
-import com.busuu.app.entities.post.PostType;
+import com.busuu.app.entities.posts.Post;
+import com.busuu.app.entities.posts.PostType;
+import com.busuu.app.entities.reactions.Reaction;
+import com.busuu.app.entities.reactions.ReactionType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
+import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.exceptions.InvalidFileException;
 import com.busuu.app.repositories.CorrectionRepository;
-import com.busuu.app.repositories.CorrectionRepository;
-import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.PostRepository;
+import com.busuu.app.repositories.ReactionRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.specification.CorrectionSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
@@ -29,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -44,6 +47,8 @@ public class CorrectionService implements ICorrectionService
 
     private final PostRepository postRepository;
 
+    private final ReactionRepository reactionRepository;
+
     private final ModelMapper modelMapper;
 
     private final IUploadCloudinaryService uploadCloudinaryService;
@@ -54,18 +59,26 @@ public class CorrectionService implements ICorrectionService
     {
         try {
 
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
             Correction newCorrection = modelMapper.map(correctionDTO, Correction.class);
             newCorrection.setId(UUID.randomUUID().toString());
 
             //Valid postId
             Post existingPost = postRepository.findById(correctionDTO.getPostId())
-                    .orElseThrow( ()-> new DataNotFoundException("Cannot find post with ID " + correctionDTO.getPostId()) );
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find posts with ID " + correctionDTO.getPostId()) );
+
+            if (user.getId().equals(existingPost.getUser().getId())) throw new IllegalArgumentException("Cannot correct to yourself!");
+
+
 
             //Exception
             if (existingPost.getPostType() == PostType.TEXT && ( correctionDTO.getCorrectionText() == null || correctionDTO.getCorrectionText().isEmpty() ))
                 throw new IllegalArgumentException("Post with TEXT type cannot have null Correction text");
-            if (existingPost.getPostType() == PostType.AUDIO && correctionDTO.getCorrectionAudio() == null)
-                throw new IllegalArgumentException("Post with AUDIO type cannot have null Correction audio");
+//            if (existingPost.getPostType() == PostType.AUDIO && correctionDTO.getCorrectionAudio() == null)
+//                throw new IllegalArgumentException("Post with AUDIO type cannot have null Correction audio");
+            if (correctionDTO.getCorrectionAudio() != null && correctionDTO.getCorrectionText() != null ) throw new IllegalArgumentException("Both Correction audio and Correction text cannot exist at the same time");
 
 
             //Check valid file
@@ -82,9 +95,7 @@ public class CorrectionService implements ICorrectionService
                 newCorrection.setCorrectionAudioName(cloudinaryResponse.getPublicId());
             }
 
-            //Get and set user/post
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
+            //Get and set user/posts
             newCorrection.setUser(user);
             newCorrection.setPost(existingPost);
 
@@ -93,6 +104,9 @@ public class CorrectionService implements ICorrectionService
             CorrectionResponse correctionResponse = modelMapper.map(newCorrection, CorrectionResponse.class);
             correctionResponse.setUserId(user.getId());
             correctionResponse.setPostId(newCorrection.getPost().getId());
+            correctionResponse.setReaction(null);
+            correctionResponse.setLikeCount(0);
+            correctionResponse.setDislikeCount(0);
             return correctionResponse;
 
         } catch (Exception e) {
@@ -108,12 +122,24 @@ public class CorrectionService implements ICorrectionService
         try
         {
 
-            Correction correction= correctionRepository.findById(correctionId)
+            Correction correction = correctionRepository.findById(correctionId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Correction with ID = " + correctionId));
 
             CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
             correctionResponse.setUserId(correction.getUser().getId());
             correctionResponse.setPostId(correction.getPost().getId());
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            Reaction reaction = reactionRepository.findByUserIdAndId(user.getId(), correctionId);
+            if (reaction != null) correctionResponse.setReaction(reaction.getReactionType().name());
+            else correctionResponse.setReaction(null);
+
+            long likeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.LIKE, correction.getId());
+            long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, correction.getId());
+            correctionResponse.setLikeCount(likeCount);
+            correctionResponse.setDislikeCount(dislikeCount);
 
             return correctionResponse;
 
@@ -129,6 +155,9 @@ public class CorrectionService implements ICorrectionService
     {
         try {
 
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
             List<Correction> corrections = correctionRepository.findByUserId(userId, Sort.by(Sort.Direction.DESC, "createdAt"));
 
             return corrections.stream().map(correction ->
@@ -136,6 +165,16 @@ public class CorrectionService implements ICorrectionService
                 CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
                 correctionResponse.setUserId(correction.getUser().getId());
                 correctionResponse.setPostId(correction.getPost().getId());
+
+                Reaction reaction = reactionRepository.findByUserIdAndId(user.getId(), correction.getId());
+                if (reaction != null) correctionResponse.setReaction(reaction.getReactionType().name());
+                else correctionResponse.setReaction(null);
+
+                long likeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.LIKE, correction.getId());
+                long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, correction.getId());
+                correctionResponse.setLikeCount(likeCount);
+                correctionResponse.setDislikeCount(dislikeCount);
+
 
                 return correctionResponse;
 
@@ -153,6 +192,9 @@ public class CorrectionService implements ICorrectionService
     {
         try {
 
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
             List<Correction> corrections = correctionRepository.findByPostId(postId, Sort.by(Sort.Direction.DESC, "createdAt"));
 
             return corrections.stream().map(correction ->
@@ -160,6 +202,16 @@ public class CorrectionService implements ICorrectionService
                 CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
                 correctionResponse.setUserId(correction.getUser().getId());
                 correctionResponse.setPostId(correction.getPost().getId());
+
+                Reaction reaction = reactionRepository.findByUserIdAndId(user.getId(), correction.getId());
+                if (reaction != null) correctionResponse.setReaction(reaction.getReactionType().name());
+                else correctionResponse.setReaction(null);
+
+                long likeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.LIKE, correction.getId());
+                long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, correction.getId());
+                correctionResponse.setLikeCount(likeCount);
+                correctionResponse.setDislikeCount(dislikeCount);
+
 
                 return correctionResponse;
 
@@ -186,9 +238,16 @@ public class CorrectionService implements ICorrectionService
 
             return corrections.map(correction ->
             {
+
                 CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
                 correctionResponse.setUserId(correction.getUser().getId());
                 correctionResponse.setPostId(correction.getPost().getId());
+                correctionResponse.setReaction(null);
+
+                long likeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.LIKE, correction.getId());
+                long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, correction.getId());
+                correctionResponse.setLikeCount(likeCount);
+                correctionResponse.setDislikeCount(dislikeCount);
 
                 return correctionResponse;
 
@@ -199,6 +258,66 @@ public class CorrectionService implements ICorrectionService
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_POST, requestId);
         }
+    }
+
+    @Override
+    @Transactional
+    public CorrectionResponse reaction(String requestId, String correctionId, String reaction)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            //Valid correctionId, exist reaction, react to self
+            Correction existingCorrection = correctionRepository.findById(correctionId)
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID " + correctionId) );
+
+            boolean existingReaction = reactionRepository.existsByUserIdAndCorrectionId(user.getId(), correctionId);
+            if (existingReaction) throw new ExistDataException("Already react to this post!");
+
+            if (user.getId().equals(existingCorrection.getUser().getId())) throw new IllegalArgumentException("Cannot react to yourself!");
+
+
+            //Valid reaction
+            ReactionType reactionType;
+            try {
+
+                reactionType = ReactionType.valueOf(reaction.toUpperCase());
+
+            } catch (Exception e)
+            {
+                throw new IllegalArgumentException("Illegal reaction! Must be \"LIKE\" or \"DISLIKE\" (ignore case) ");
+            }
+
+            //Add reaction
+            Reaction newReaction = Reaction.builder()
+                    .id(UUID.randomUUID().toString())
+                    .user(user)
+                    .correction(existingCorrection)
+                    .reactionType(reactionType)
+                    .build();
+
+            newReaction = reactionRepository.save(newReaction);
+
+            CorrectionResponse correctionResponse = modelMapper.map(existingCorrection, CorrectionResponse.class);
+            correctionResponse.setUserId(user.getId());
+            correctionResponse.setPostId(existingCorrection.getPost().getId());
+
+            long likeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.LIKE, existingCorrection.getId());
+            long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, existingCorrection.getId());
+            correctionResponse.setLikeCount(likeCount);
+            correctionResponse.setDislikeCount(dislikeCount);
+
+            return correctionResponse;
+
+        } catch (DataNotFoundException e) {
+            log.error("requestId="+requestId+",failed to add reaction, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_POST, requestId);
+        }
+
+
     }
 
     private CloudinaryResponse uploadFile(MultipartFile file) throws Exception

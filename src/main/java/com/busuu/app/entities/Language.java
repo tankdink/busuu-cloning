@@ -1,7 +1,6 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.post.Post;
-import com.busuu.app.entities.progresses.CourseProgress;
+import com.busuu.app.entities.posts.Post;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

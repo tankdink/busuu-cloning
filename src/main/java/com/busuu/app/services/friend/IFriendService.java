@@ -17,6 +17,8 @@ public interface IFriendService
 
     FriendResponse getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String country);
 
+    FriendResponse getFriendsByUserId(String userId);
+
     void deleteFriend(String requestId, String friendId);
 
 }

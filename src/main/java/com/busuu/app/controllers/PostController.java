@@ -52,7 +52,7 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call add post service
+            //Call add posts service
             PostResponse addedPost = postService.insertPost(requestId, newPostDTO);
 
             //Return response
@@ -65,7 +65,7 @@ public class PostController
             );
 
         } catch (Exception e) {
-            log.error("Error when adding new post: " + e.getMessage());
+            log.error("Error when adding new posts: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) +": "+ e.getMessage())
@@ -87,7 +87,7 @@ public class PostController
                                               @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
                                               @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                              @RequestParam(value = "post-type", required = false) String postType,
+                                              @RequestParam(value = "posts-type", required = false) String postType,
                                               @RequestParam(value = "language", required = false) String language) {
 
         try {
@@ -96,7 +96,7 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get post list service
+            //Call get posts list service
             Page<PostResponse> postsList = postService.getPosts(requestId, page, size, sortBy, sortDirection, searchValue, postType, language);
             Object responseData = PagingResponse.<PostResponse>builder()
                     .totalPages(postsList.getTotalPages())
@@ -137,7 +137,7 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get post by ID service
+            //Call get posts by ID service
             PostResponse post = postService.getPost(requestId, postId);
 
             //Return response
@@ -150,7 +150,7 @@ public class PostController
             );
 
         } catch (Exception e) {
-            log.error("Error when getting post with ID: " + e.getMessage());
+            log.error("Error when getting posts with ID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
@@ -173,7 +173,7 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get post by user ID service
+            //Call get posts by user ID service
             List<PostResponse> postList = postService.getByUserId(requestId, userId);
 
             //Return response
@@ -186,7 +186,7 @@ public class PostController
             );
 
         } catch (Exception e) {
-            log.error("Error when getting post with userID: " + e.getMessage());
+            log.error("Error when getting posts with userID: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
@@ -208,7 +208,7 @@ public class PostController
                                              @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
                                              @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                             @RequestParam(value = "post-type", required = false) String postType,
+                                             @RequestParam(value = "posts-type", required = false) String postType,
                                              @RequestParam(value = "language", required = false) String language) {
 
         try {
@@ -217,7 +217,7 @@ public class PostController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get post list service
+            //Call get posts list service
             Page<PostResponse> postsList = postService.getSelfPost(requestId, page, size, sortBy, sortDirection, searchValue, postType, language);
             Object responseData = PagingResponse.<PostResponse>builder()
                     .totalPages(postsList.getTotalPages())
@@ -236,6 +236,50 @@ public class PostController
 
         } catch (Exception e) {
             log.error("Error when getting posts list: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+
+    @GetMapping(Constants.FRIEND)
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getFriendPosts(@RequestParam(value = "req-id", required = false) String requestId,
+
+                                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                             @RequestParam(value = "size", defaultValue = "10", required = false) int size)
+    {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call get posts list service
+            Page<PostResponse> postsList = postService.getByFriendlist(requestId, page, size);
+            Object responseData = PagingResponse.<PostResponse>builder()
+                    .totalPages(postsList.getTotalPages())
+                    .objects(postsList.getContent())
+                    .totalObjects(postsList.getTotalElements())
+                    .build();
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .data(responseData)
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting friend posts list: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())

@@ -1,10 +1,7 @@
 package com.busuu.app.services.correction;
 
 import com.busuu.app.dtos.requests.correction.CorrectionDTO;
-import com.busuu.app.dtos.requests.post.PostDTO;
 import com.busuu.app.dtos.responses.CorrectionResponse;
-import com.busuu.app.dtos.responses.PostResponse;
-import com.busuu.app.entities.Correction;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -21,6 +18,8 @@ public interface ICorrectionService
     List<CorrectionResponse> getByPostId(String requestId, String postId);
 
     Page<CorrectionResponse> getSelfCorrection(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String language);
+
+    CorrectionResponse reaction(String requestId, String correctionId, String reaction);
 
 
 }

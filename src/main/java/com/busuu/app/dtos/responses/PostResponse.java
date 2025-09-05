@@ -1,6 +1,6 @@
 package com.busuu.app.dtos.responses;
 
-import com.busuu.app.entities.post.PostType;
+import com.busuu.app.entities.posts.PostType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,5 +48,9 @@ public class PostResponse extends BaseResponse
 
     @JsonProperty("language_id")
     private String languageId;
+
+    @JsonProperty("correction_count")
+    private long correctionCount;
+
 
 }

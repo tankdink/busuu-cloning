@@ -77,6 +77,42 @@ public class CorrectionController
         }
     }
 
+    @PostMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> addReaction(@RequestParam(value = "req-id", required = false) String requestId,
+                                                 @PathVariable("id") String correctionId,
+                                                 @RequestParam(value = "reaction") String reaction)
+    {
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call add reaction service
+            CorrectionResponse response = correctionService.reaction(requestId, correctionId, reaction);
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.CREATED.value())
+                            .data(response)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when adding reaction: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) +": "+ e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
 
     @GetMapping(Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
@@ -163,7 +199,7 @@ public class CorrectionController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get correction by post ID service
+            //Call get correction by posts ID service
             List<CorrectionResponse> correctionList = correctionService.getByPostId(requestId, postId);
 
             //Return response
@@ -206,7 +242,7 @@ public class CorrectionController
                 requestId = UUID.randomUUID().toString();
             }
 
-            //Call get post list service
+            //Call get posts list service
             Page<CorrectionResponse> correctionList = correctionService.getSelfCorrection(requestId, page, size, sortBy, sortDirection, searchValue, language);
             Object responseData = PagingResponse.<CorrectionResponse>builder()
                     .totalPages(correctionList.getTotalPages())

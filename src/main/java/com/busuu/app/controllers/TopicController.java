@@ -50,8 +50,8 @@ public class TopicController {
                                               @RequestParam(value = "sort-direction", required = false) List<String> sortDirection,
                                               @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                              @RequestParam(value = "topic-type", required = false) String topicType,
-                                              @RequestParam(value = "topic-category", required = false) String topicCategory) {
+                                              @RequestParam(value = "topics-type", required = false) String topicType,
+                                              @RequestParam(value = "topics-category", required = false) String topicCategory) {
 
         try {
 

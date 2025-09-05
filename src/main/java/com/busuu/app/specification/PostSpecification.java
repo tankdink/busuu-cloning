@@ -2,8 +2,8 @@ package com.busuu.app.specification;
 
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.post.Post;
-import com.busuu.app.entities.post.PostType;
+import com.busuu.app.entities.posts.Post;
+import com.busuu.app.entities.posts.PostType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;

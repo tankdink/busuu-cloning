@@ -1,4 +1,4 @@
-package com.busuu.app.entities.topic;
+package com.busuu.app.entities.topics;
 
 import com.busuu.app.entities.BaseEntity;
 import jakarta.persistence.*;

@@ -2,7 +2,7 @@ package com.busuu.app.services.topic;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.TopicResponse;
-import com.busuu.app.entities.topic.Topic;
+import com.busuu.app.entities.topics.Topic;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.TopicRepository;

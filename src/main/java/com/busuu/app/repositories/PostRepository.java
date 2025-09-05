@@ -1,7 +1,6 @@
 package com.busuu.app.repositories;
 
-import com.busuu.app.dtos.responses.PostResponse;
-import com.busuu.app.entities.post.Post;
+import com.busuu.app.entities.posts.Post;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

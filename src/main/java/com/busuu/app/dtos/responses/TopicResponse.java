@@ -1,6 +1,6 @@
 package com.busuu.app.dtos.responses;
 
-import com.busuu.app.entities.topic.TopicType;
+import com.busuu.app.entities.topics.TopicType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

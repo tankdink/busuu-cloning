@@ -1,8 +1,8 @@
 package com.busuu.app.specification;
 
-import com.busuu.app.entities.topic.Topic;
-import com.busuu.app.entities.topic.TopicCategory;
-import com.busuu.app.entities.topic.TopicType;
+import com.busuu.app.entities.topics.Topic;
+import com.busuu.app.entities.topics.TopicCategory;
+import com.busuu.app.entities.topics.TopicType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -44,7 +44,7 @@ public class TopicSpecification
             //Join
             Join<Topic, TopicCategory> categoryJoin = root.join("topicCategory", JoinType.LEFT);
 
-            //Get by topic type first
+            //Get by topics type first
             if (topicType != null && !topicType.isEmpty()) {
                 predicates.add(cb.equal(root.get("topicType"), TopicType.valueOf(topicType.toUpperCase())));
             }

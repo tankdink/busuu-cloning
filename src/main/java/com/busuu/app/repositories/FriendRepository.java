@@ -18,6 +18,8 @@ public interface FriendRepository extends JpaRepository<Friend, String>, JpaSpec
 
     void deleteByUserIdAndFriendId(String userId, String friendId);
 
+    List<Friend> findByUserId(String userId);
+
 
 
 }

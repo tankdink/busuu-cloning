@@ -1,7 +1,6 @@
 package com.busuu.app.services.topic;
 
 import com.busuu.app.dtos.responses.TopicResponse;
-import com.busuu.app.entities.topic.TopicType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import org.springframework.data.domain.Page;
 

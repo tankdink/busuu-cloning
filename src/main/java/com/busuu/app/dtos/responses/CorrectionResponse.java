@@ -32,15 +32,18 @@ public class CorrectionResponse extends BaseResponse
     private String correctionText;
 
     @JsonProperty("like_count")
-    private Integer likeCount;
+    private long likeCount;
 
     @JsonProperty("dislike_count")
-    private Integer dislikeCount;
+    private long dislikeCount;
 
     @JsonProperty("user_id")
     private String userId;
 
     @JsonProperty("post_id")
     private String postId;
+
+    @JsonProperty("reaction")
+    private String reaction;
 
 }

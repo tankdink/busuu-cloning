@@ -112,9 +112,35 @@ public class FriendService implements IFriendService
 
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get lessons, err="+e.getMessage());
+            log.error("requestId="+requestId+",failed to get friend list, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_LESSON, requestId);
+        }
+    }
+
+    @Override
+    public FriendResponse getFriendsByUserId(String userId)
+    {
+        try {
+
+            List<Friend> friendList = friendRepository.findByUserId(userId);
+
+            List<String> friendIds = friendList.stream().map(
+                    friend -> friend.getFriend().getId()
+            ).toList();
+
+            FriendResponse response = FriendResponse.builder()
+                    .userId(userId)
+                    .friendIds(friendIds)
+                    .build();
+
+            return response;
+
+
+        } catch (Exception e) {
+            log.error("request failed to get friend list, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_LESSON, "Internal request" );
         }
     }
 

@@ -1,6 +1,6 @@
 package com.busuu.app.repositories;
 
-import com.busuu.app.entities.Correction;
+import com.busuu.app.entities.corrections.Correction;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -13,6 +13,6 @@ public interface CorrectionRepository extends JpaRepository<Correction, String>,
 {
     List<Correction> findByUserId(String userId, Sort sort);
     List<Correction> findByPostId(String postId, Sort sort);
-
+    long countByPostId(String postId);
 
 }

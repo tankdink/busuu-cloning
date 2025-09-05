@@ -3,24 +3,28 @@ package com.busuu.app.services.post;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.post.PostDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
+import com.busuu.app.dtos.responses.FriendResponse;
 import com.busuu.app.dtos.responses.PostResponse;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.post.Post;
-import com.busuu.app.entities.post.PostType;
+import com.busuu.app.entities.posts.Post;
+import com.busuu.app.entities.posts.PostType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.InvalidFileException;
+import com.busuu.app.repositories.CorrectionRepository;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.PostRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
+import com.busuu.app.services.friend.IFriendService;
 import com.busuu.app.specification.PostSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,6 +35,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,11 +50,15 @@ public class PostService implements IPostService
 
     private final IUploadCloudinaryService uploadCloudinaryService;
 
+    private final IFriendService friendService;
+
     private final PostRepository postRepository;
 
     private final UserRepository userRepository;
 
     private final LanguageRepository languageRepository;
+
+    private final CorrectionRepository correctionRepository;
 
     @Override
     @Transactional
@@ -62,17 +72,20 @@ public class PostService implements IPostService
 
             //Exception
             if (newPost.getPostType() == PostType.TEXT && ( postDTO.getPostText() == null || postDTO.getPostText().isEmpty()) )
-                throw new IllegalArgumentException("Post with TEXT type cannot have null post text");
+                throw new IllegalArgumentException("Post with TEXT type cannot have null posts text");
             if (newPost.getPostType() == PostType.AUDIO && postDTO.getPostAudio() == null)
-                throw new IllegalArgumentException("Post with AUDIO type cannot have null post audio");
+                throw new IllegalArgumentException("Post with AUDIO type cannot have null posts audio");
             Language language = languageRepository.findById(postDTO.getLanguageId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + postDTO.getLanguageId()) );
+            if (postDTO.getPostAudio() != null && postDTO.getPostText() != null ) throw new IllegalArgumentException("Both post audio and Correction text cannot exist at the same time");
 
 
             //Check valid file
             if (postDTO.getSubjectVideo() != null) checkFile(postDTO.getSubjectVideo(), "video");
             if (postDTO.getSubjectImg() != null) checkFile(postDTO.getSubjectImg(), "image");
             if (postDTO.getPostAudio() != null) checkFile(postDTO.getPostAudio(), "audio");
+
+
 
             //MultipartFile process
             CloudinaryResponse cloudinaryResponse = null;
@@ -109,10 +122,11 @@ public class PostService implements IPostService
             PostResponse postResponse = modelMapper.map(newPost, PostResponse.class);
             postResponse.setUserId(user.getId());
             postResponse.setLanguageId(language.getId());
+            postResponse.setCorrectionCount(0);
             return postResponse;
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+", failed to create new post, err= "+e.getMessage());
+            log.error("requestId="+requestId+", failed to create new posts, err= "+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CREATE_NEW_POST, requestId);
         }
@@ -133,6 +147,9 @@ public class PostService implements IPostService
                         PostResponse postResponse = modelMapper.map(post, PostResponse.class);
                         postResponse.setUserId(post.getUser().getId());
                         postResponse.setLanguageId(post.getLanguage().getId());
+
+                        long correctionCount = correctionRepository.countByPostId(post.getId());
+                        postResponse.setCorrectionCount(correctionCount);
 
                         return postResponse;
 
@@ -158,10 +175,13 @@ public class PostService implements IPostService
             postResponse.setUserId(post.getUser().getId());
             postResponse.setLanguageId(post.getLanguage().getId());
 
+            long correctionCount = correctionRepository.countByPostId(postId);
+            postResponse.setCorrectionCount(correctionCount);
+
             return postResponse;
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get post, err="+e.getMessage());
+            log.error("requestId="+requestId+",failed to get posts, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_POST, requestId);
         }
@@ -184,12 +204,59 @@ public class PostService implements IPostService
                 postResponse.setUserId(post.getUser().getId());
                 postResponse.setLanguageId(post.getLanguage().getId());
 
+                long correctionCount = correctionRepository.countByPostId(post.getId());
+                postResponse.setCorrectionCount(correctionCount);
+
                 return postResponse;
 
             }).toList();
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get post list, err="+e.getMessage());
+            log.error("requestId="+requestId+",failed to get posts list, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_POST, requestId);
+        }
+
+    }
+
+    @Override
+    public Page<PostResponse> getByFriendlist(String requestId, int page, int size)
+    {
+
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            //Get friend list
+            FriendResponse friendList = friendService.getFriendsByUserId(user.getId());
+
+            //Get friend's id list
+            List<String> idList = friendList.getFriendIds();
+
+            //Loop through the list to get posts of each friend then apply to response
+            List<PostResponse> response = new ArrayList<>();
+
+            for (String id : idList)
+            {
+                List<PostResponse> friendPost = getByUserId("Internal request", id);
+                response.addAll(friendPost);
+            }
+
+            //Pageable
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+            int totalElement = response.size();
+            int startAt = (int) pageable.getOffset();
+            int endAt = Math.min(startAt + pageable.getPageSize(), totalElement);
+
+            List<PostResponse> resultList = (startAt <= endAt)
+                    ? response.subList(startAt, endAt)
+                    : Collections.emptyList();
+
+            return new PageImpl<>(resultList, pageable, totalElement);
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get posts list, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_POST, requestId);
         }
@@ -213,6 +280,9 @@ public class PostService implements IPostService
                         PostResponse postResponse = modelMapper.map(post, PostResponse.class);
                         postResponse.setUserId(post.getUser().getId());
                         postResponse.setLanguageId(post.getLanguage().getId());
+
+                        long correctionCount = correctionRepository.countByPostId(post.getId());
+                        postResponse.setCorrectionCount(correctionCount);
 
                         return postResponse;
 

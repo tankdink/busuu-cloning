@@ -1,12 +1,14 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.post.Post;
+import com.busuu.app.entities.corrections.Correction;
+import com.busuu.app.entities.notifications.Notification;
+import com.busuu.app.entities.posts.Post;
 import com.busuu.app.entities.progresses.*;
+import com.busuu.app.entities.reactions.Reaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -147,6 +149,21 @@ public class User extends BaseEntity implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Friend> friends;
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Reaction> reactions = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Notification> notificationUser = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Notification> notificationFromUser = new ArrayList<>();
 
 
     @Override

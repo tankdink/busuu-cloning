@@ -1,6 +1,7 @@
-package com.busuu.app.entities.topic;
+package com.busuu.app.entities.topics;
 
 import com.busuu.app.entities.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class TopicCategory extends BaseEntity
     @Column(name = "category_name")
     private String categoryName;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "topicCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
