@@ -78,7 +78,11 @@ spring:
             token-uri: https://graph.facebook.com/v21.0/oauth/access_token
             user-info-uri: https://graph.facebook.com/me?fields=id,name,email,picture
             user-name-attribute: id
-
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
 server:
   servlet:
     context-path: ${CONTEXT_PATH:/api/v1}

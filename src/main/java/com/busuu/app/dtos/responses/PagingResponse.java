@@ -1,5 +1,6 @@
 package com.busuu.app.dtos.responses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,14 +13,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PagingResponse<T> {
 
     @JsonProperty("objects")
     private List<T> objects;
 
     @JsonProperty("total_pages")
-    private int totalPages;
+    private Integer totalPages;
 
     @JsonProperty("total_objects")
-    private long totalObjects;
+    private Long totalObjects;
 }

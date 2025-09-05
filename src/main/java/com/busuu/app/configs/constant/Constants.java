@@ -50,6 +50,7 @@ public class Constants {
     public static final String FAVORITE = "/favorite";
     public static final String FILTER = "/filter";
     public static final String REVIEW = "/review";
+    public static final String STATS = "/stats";
 
     public static final String PATH_PARAM_ID = "/{id}";
     public static final String PATH_PARAM_USER = "/user";
@@ -174,6 +175,7 @@ public class Constants {
         public static final String ERR_UPSERT_PROGRESS = "ERR_UPSERT_PROGRESS";
         public static final String ERR_DELETE_PROGRESS = "ERR_DELETE_PROGRESS";
 
+
         // Topic
         public static final String ERR_GET_TOPIC = "ERR_GET_TOPIC";
 
@@ -190,6 +192,11 @@ public class Constants {
 
         // Friend
         public static final String ERR_ADD_FRIEND = "ERR_ADD_FRIEND";
+
+
+        // Stats
+        public static final String ERR_GET_STATS_GRAMMAR_SECTION = "ERR_GET_STATS_GRAMMAR_SECTION";
+        public static final String ERR_GET_COUNT_GRAMMAR_SECTION_PROGRESS = "ERR_GET_COUNT_GRAMMAR_SECTION_PROGRESS";
 
     }
 

@@ -32,6 +32,10 @@ public class GrammarSectionProgress extends BaseEntity {
     @Column(name = "progress")
     private Double progress;
 
+    @Column(name = "level")
+    @Enumerated(EnumType.STRING)
+    private SectionLevel level;
+
     @Column(name = "is_completed")
     private Boolean isCompleted;
 }
