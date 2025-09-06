@@ -31,7 +31,7 @@ public class UserLanguage {
     @Enumerated(EnumType.STRING)
     @Column(name = "learning_status", nullable = false)
     @Builder.Default
-    private LearningStatus learningStatus = LearningStatus.NOTE_STARTED;
+    private LearningStatus learningStatus = LearningStatus.NOT_STARTED;
 
     @Column(name = "date_started")
     private Date dateStarted;
