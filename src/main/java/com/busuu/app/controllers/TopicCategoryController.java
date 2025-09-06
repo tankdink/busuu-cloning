@@ -35,7 +35,8 @@ public class TopicCategoryController
     @GetMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<Response> getTopicCategories(@RequestParam(value = "req-id", required = false) String requestId)
+    public ResponseEntity<Response> getTopicCategories(@RequestParam(value = "req-id", required = false) String requestId,
+                                                       @RequestParam(value = "topic-type", required = false) String topicType)
     {
 
         try {
@@ -45,7 +46,7 @@ public class TopicCategoryController
             }
 
             //Call get topics categories service
-            List<TopicCategory> gettedList = topicCategoryService.getTopicCategories(requestId);
+            List<TopicCategory> gettedList = topicCategoryService.getTopicCategories(requestId, topicType);
 
             //Return response
             return ResponseEntity.ok().body(

@@ -50,8 +50,8 @@ public class TopicController {
                                               @RequestParam(value = "sort-direction", required = false) List<String> sortDirection,
                                               @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                              @RequestParam(value = "topics-type", required = false) String topicType,
-                                              @RequestParam(value = "topics-category", required = false) String topicCategory) {
+                                              @RequestParam(value = "topic-type", required = false) String topicType,
+                                              @RequestParam(value = "topic-category", required = false) String topicCategory) {
 
         try {
 
@@ -60,17 +60,18 @@ public class TopicController {
             }
 
             //Call get all topics service
-            Page<TopicResponse> topicsList = topicService.getTopicsByType(requestId, topicType, page, size, sortBy, sortDirection, searchValue, topicCategory);
-            Object responseData = PagingResponse.<TopicResponse>builder()
-                    .totalPages(topicsList.getTotalPages())
-                    .objects(topicsList.getContent())
-                    .totalObjects(topicsList.getTotalElements())
-                    .build();
+            List<TopicResponse> topicsList = topicService.getTopicsByType(requestId, topicType, page, size, sortBy, sortDirection, searchValue, topicCategory);
+
+//            Object responseData = PagingResponse.<TopicResponse>builder()
+//                    .totalPages(topicsList.getTotalPages())
+//                    .objects(topicsList.getContent())
+//                    .totalObjects(topicsList.getTotalElements())
+//                    .build();
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
-                            .data(responseData)
+                            .data(topicsList)
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK.value())
                             .build()

@@ -27,5 +27,9 @@ public class TopicCategory extends BaseEntity
     @OneToMany(mappedBy = "topicCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "topic_type")
+    private TopicType topicType;
+
 
 }

@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ITopicCategoryService
 {
-    List<TopicCategory> getTopicCategories(String requestId);
+    List<TopicCategory> getTopicCategories(String requestId, String topicType);
 
 }

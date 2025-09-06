@@ -3,6 +3,7 @@ package com.busuu.app.services.topic;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.TopicResponse;
 import com.busuu.app.entities.topics.Topic;
+import com.busuu.app.entities.topics.TopicType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.TopicRepository;
@@ -17,6 +18,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,14 +33,25 @@ public class TopicService implements ITopicService
     private final ModelMapper modelMapper;
 
     @Override
-    public Page<TopicResponse> getTopicsByType(String requestId, String topicType, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String topicCategory) throws DataNotFoundException
+    public List<TopicResponse> getTopicsByType(String requestId, String topicType, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String topicCategory) throws DataNotFoundException
     {
         try {
 
-            Pageable pageable = PageRequest.of(page, size);
+            try {
+
+                TopicType type;
+
+                type = TopicType.valueOf(topicType.toUpperCase());
+
+            } catch (Exception e)
+            {
+                throw new IllegalArgumentException("Illegal topic type! Must be \"IMAGE\" or \"VIDEO\" (ignore case) ");
+            }
+
+            //Pageable pageable = PageRequest.of(page, size);
 
             Specification<Topic> spec = TopicSpecification.getSpecification(topicType, searchValue, topicCategory, sortBy, sortDirection);
-            return topicRepository.findAll(spec, pageable).map(
+            List<TopicResponse> responseList = topicRepository.findAll(spec).stream().map(
                     topic ->
                     {
                         TopicResponse response = modelMapper.map(topic, TopicResponse.class);
@@ -49,7 +63,9 @@ public class TopicService implements ITopicService
 
                         return response;
                     }
-            );
+            ).toList(); //This list is unmodifiable
+
+            return randomize(responseList);
 
 
         } catch (Exception e) {
@@ -57,6 +73,27 @@ public class TopicService implements ITopicService
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_TOPIC, requestId);
         }
+
+    }
+
+    public List<TopicResponse> randomize(List<TopicResponse> list)
+    {
+
+        if (list.size() <= 5) {
+            return list;
+        }
+
+        //Response list
+        List<TopicResponse> resultList = new ArrayList<>(5);
+
+        //Shuffle the copy list
+        List<TopicResponse> copy = new ArrayList<>(list);
+        Collections.shuffle(copy);
+
+        //Add the first 5 elements of the shuffled list to result list
+        for (int i = 0; i < 5; i++) resultList.add(copy.get(i));
+
+        return resultList;
 
     }
 }
