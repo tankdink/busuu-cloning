@@ -16,20 +16,20 @@ public class PostResponse extends BaseResponse
     @JsonProperty("post_id")
     private String id;
 
-    @JsonProperty("subject_text")
-    private String subjectText;
-
-    @JsonProperty("subject_image_name")
-    private String subjectImageName;
-
-    @JsonProperty("subject_image_url")
-    private String subjectImageUrl;
-
-    @JsonProperty("subject_video_name")
-    private String subjectVideoName;
-
-    @JsonProperty("subject_video_url")
-    private String subjectVideoUrl;
+//    @JsonProperty("subject_text")
+//    private String subjectText;
+//
+//    @JsonProperty("subject_image_name")
+//    private String subjectImageName;
+//
+//    @JsonProperty("subject_image_url")
+//    private String subjectImageUrl;
+//
+//    @JsonProperty("subject_video_name")
+//    private String subjectVideoName;
+//
+//    @JsonProperty("subject_video_url")
+//    private String subjectVideoUrl;
 
     @JsonProperty("post_audio_name")
     private String postAudioName;
@@ -51,6 +51,9 @@ public class PostResponse extends BaseResponse
 
     @JsonProperty("correction_count")
     private long correctionCount;
+
+    @JsonProperty("topic_id")
+    private String topicId;
 
 
 }

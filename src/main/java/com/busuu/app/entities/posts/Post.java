@@ -5,6 +5,7 @@ import com.busuu.app.entities.corrections.Correction;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.notifications.Notification;
+import com.busuu.app.entities.topics.Topic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,20 +44,20 @@ public class Post extends BaseEntity
     @Column(name = "post_type")
     private PostType postType;
 
-    @Column(name = "subject_text")
-    private String subjectText;
-
-    @Column(name = "subject_img_name")
-    private String subjectImageName;
-
-    @Column(name = "subject_img_url")
-    private String subjectImageUrl;
-
-    @Column(name = "subject_video_name")
-    private String subjectVideoName;
-
-    @Column(name = "subject_video_url")
-    private String subjectVideoUrl;
+//    @Column(name = "subject_text")
+//    private String subjectText;
+//
+//    @Column(name = "subject_img_name")
+//    private String subjectImageName;
+//
+//    @Column(name = "subject_img_url")
+//    private String subjectImageUrl;
+//
+//    @Column(name = "subject_video_name")
+//    private String subjectVideoName;
+//
+//    @Column(name = "subject_video_url")
+//    private String subjectVideoUrl;
 
     @Column(name = "post_audio_name")
     private String postAudioName;
@@ -74,6 +75,10 @@ public class Post extends BaseEntity
     @ManyToOne
     @JoinColumn(name = "language_id")
     private Language language;
+
+    @ManyToOne
+    @JoinColumn(name = "topic_id")
+    private Topic topic;
 
     @JsonIgnore
     @Builder.Default

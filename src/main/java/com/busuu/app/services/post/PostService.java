@@ -5,16 +5,19 @@ import com.busuu.app.dtos.requests.post.PostDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.FriendResponse;
 import com.busuu.app.dtos.responses.PostResponse;
+import com.busuu.app.dtos.responses.TopicResponse;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.posts.Post;
 import com.busuu.app.entities.posts.PostType;
+import com.busuu.app.entities.topics.Topic;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.InvalidFileException;
 import com.busuu.app.repositories.CorrectionRepository;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.PostRepository;
+import com.busuu.app.repositories.TopicRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.services.friend.IFriendService;
@@ -60,6 +63,8 @@ public class PostService implements IPostService
 
     private final CorrectionRepository correctionRepository;
 
+    private final TopicRepository topicRepository;
+
     @Override
     @Transactional
     public PostResponse insertPost(String requestId, PostDTO postDTO)
@@ -78,11 +83,13 @@ public class PostService implements IPostService
             Language language = languageRepository.findById(postDTO.getLanguageId())
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + postDTO.getLanguageId()) );
             if (postDTO.getPostAudio() != null && postDTO.getPostText() != null ) throw new IllegalArgumentException("Both post audio and Correction text cannot exist at the same time");
+            Topic topic = topicRepository.findById(postDTO.getTopicId())
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find topic with ID = " + postDTO.getTopicId()));
 
 
             //Check valid file
-            if (postDTO.getSubjectVideo() != null) checkFile(postDTO.getSubjectVideo(), "video");
-            if (postDTO.getSubjectImg() != null) checkFile(postDTO.getSubjectImg(), "image");
+//            if (postDTO.getSubjectVideo() != null) checkFile(postDTO.getSubjectVideo(), "video");
+//            if (postDTO.getSubjectImg() != null) checkFile(postDTO.getSubjectImg(), "image");
             if (postDTO.getPostAudio() != null) checkFile(postDTO.getPostAudio(), "audio");
 
 
@@ -91,18 +98,18 @@ public class PostService implements IPostService
             CloudinaryResponse cloudinaryResponse = null;
 
             //Subject video
-            if (postDTO.getSubjectVideo() != null) cloudinaryResponse = uploadFile(postDTO.getSubjectVideo());
-            if (cloudinaryResponse != null) {
-                newPost.setSubjectVideoUrl(cloudinaryResponse.getUrl());
-                newPost.setSubjectVideoName(cloudinaryResponse.getPublicId());
-            }
+//            if (postDTO.getSubjectVideo() != null) cloudinaryResponse = uploadFile(postDTO.getSubjectVideo());
+//            if (cloudinaryResponse != null) {
+//                newPost.setSubjectVideoUrl(cloudinaryResponse.getUrl());
+//                newPost.setSubjectVideoName(cloudinaryResponse.getPublicId());
+//            }
 
             //Subject image
-            if (postDTO.getSubjectImg() != null) cloudinaryResponse = uploadFile(postDTO.getSubjectImg());
-            if (cloudinaryResponse != null) {
-                newPost.setSubjectImageUrl(cloudinaryResponse.getUrl());
-                newPost.setSubjectImageName(cloudinaryResponse.getPublicId());
-            }
+//            if (postDTO.getSubjectImg() != null) cloudinaryResponse = uploadFile(postDTO.getSubjectImg());
+//            if (cloudinaryResponse != null) {
+//                newPost.setSubjectImageUrl(cloudinaryResponse.getUrl());
+//                newPost.setSubjectImageName(cloudinaryResponse.getPublicId());
+//            }
 
             //Post audio
             if (postDTO.getPostAudio() != null) cloudinaryResponse = uploadFile(postDTO.getPostAudio());
@@ -116,6 +123,7 @@ public class PostService implements IPostService
             User user = (User) auth.getPrincipal();
             newPost.setUser(user);
             newPost.setLanguage(language);
+            newPost.setTopic(topic);
 
             //Save and map return
             newPost = postRepository.save(newPost);
@@ -123,6 +131,7 @@ public class PostService implements IPostService
             postResponse.setUserId(user.getId());
             postResponse.setLanguageId(language.getId());
             postResponse.setCorrectionCount(0);
+            postResponse.setTopicId(newPost.getTopic().getId());
             return postResponse;
 
         } catch (Exception e) {
@@ -150,6 +159,7 @@ public class PostService implements IPostService
 
                         long correctionCount = correctionRepository.countByPostId(post.getId());
                         postResponse.setCorrectionCount(correctionCount);
+                        postResponse.setTopicId(post.getTopic().getId());
 
                         return postResponse;
 
@@ -177,6 +187,7 @@ public class PostService implements IPostService
 
             long correctionCount = correctionRepository.countByPostId(postId);
             postResponse.setCorrectionCount(correctionCount);
+            postResponse.setTopicId(post.getTopic().getId());
 
             return postResponse;
 
@@ -206,6 +217,7 @@ public class PostService implements IPostService
 
                 long correctionCount = correctionRepository.countByPostId(post.getId());
                 postResponse.setCorrectionCount(correctionCount);
+                postResponse.setTopicId(post.getTopic().getId());
 
                 return postResponse;
 
@@ -283,6 +295,7 @@ public class PostService implements IPostService
 
                         long correctionCount = correctionRepository.countByPostId(post.getId());
                         postResponse.setCorrectionCount(correctionCount);
+                        postResponse.setTopicId(post.getTopic().getId());
 
                         return postResponse;
 

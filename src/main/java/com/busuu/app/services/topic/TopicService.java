@@ -76,6 +76,30 @@ public class TopicService implements ITopicService
 
     }
 
+    @Override
+    public TopicResponse getTopic(String requestId, String topicId)
+    {
+        try {
+
+            Topic topic = topicRepository.findById(topicId)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find topic with ID = " + topicId));
+
+            TopicResponse response = modelMapper.map(topic, TopicResponse.class);
+
+            if (topic.getTopicCategory() != null) {
+                response.setCategory(topic.getTopicCategory().getCategoryName());
+            }
+            else response.setCategory(null);
+
+            return response;
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get topic, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_COURSE, requestId);
+        }
+    }
+
     public List<TopicResponse> randomize(List<TopicResponse> list)
     {
 

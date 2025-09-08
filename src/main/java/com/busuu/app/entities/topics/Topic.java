@@ -1,8 +1,14 @@
 package com.busuu.app.entities.topics;
 
 import com.busuu.app.entities.BaseEntity;
+import com.busuu.app.entities.notifications.Notification;
+import com.busuu.app.entities.posts.Post;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "topic")
@@ -38,5 +44,11 @@ public class Topic extends BaseEntity
     @ManyToOne
     @JoinColumn(name = "category_id")
     private TopicCategory topicCategory;
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
 
 }
