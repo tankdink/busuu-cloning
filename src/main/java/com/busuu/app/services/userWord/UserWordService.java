@@ -5,7 +5,7 @@ import com.busuu.app.dtos.responses.UserWordResponse;
 import com.busuu.app.dtos.responses.WordExampleResponse;
 import com.busuu.app.dtos.responses.WordFilterResponse;
 import com.busuu.app.dtos.responses.WordResponse;
-import com.busuu.app.entities.StrengthLevel;
+import com.busuu.app.entities.enums.StrengthLevel;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.UserWord;
 import com.busuu.app.entities.UserWordHistory;

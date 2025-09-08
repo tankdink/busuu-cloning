@@ -34,6 +34,7 @@ public class CourseSpecification
     public static Specification<Course> getSpecification(
             String searchValue,
             String level,
+            String language,
             List<String> sortBy,
             List<String> sortDirection
     )
@@ -77,6 +78,11 @@ public class CourseSpecification
 //            }
 
             //Manual filter
+
+            if (language != null && !language.isEmpty()) {
+                predicates.add(cb.equal(root.get("language").get("id"), language));
+            }
+
             if (level != null && !level.isEmpty() ) predicates.add(cb.equal(levelJoin.get("id"), level));
 
 

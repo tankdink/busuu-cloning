@@ -330,7 +330,7 @@ public class GrammarController
 
         return ResponseEntity.ok().body(
                 Response.builder()
-                        .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_SUCCESSFULLY))
+                        .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                         .status(HttpStatus.OK.value())
                         .data(PagingResponse.<SectionLevelStatsResponse>builder()
                                 .totalObjects(total)

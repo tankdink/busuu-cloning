@@ -155,7 +155,7 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public Page<CourseResponse> getCourses(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String level) {
+    public Page<CourseResponse> getCourses(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String level, String language) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
@@ -170,7 +170,7 @@ public class CourseService implements ICourseService {
 
             Pageable pageable = PageRequest.of(page, size);
 
-            Page<Course> courses = courseRepository.findAll(CourseSpecification.getSpecification(searchValue, level, sortBy, sortDirection),pageable);
+            Page<Course> courses = courseRepository.findAll(CourseSpecification.getSpecification(searchValue, level, language, sortBy, sortDirection),pageable);
 
             return courses.map(
                     course -> {

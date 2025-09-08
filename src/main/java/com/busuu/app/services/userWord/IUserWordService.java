@@ -4,9 +4,7 @@ import com.busuu.app.dtos.requests.word.ReviewResultRequest;
 import com.busuu.app.dtos.responses.UserWordResponse;
 import com.busuu.app.dtos.responses.WordFilterResponse;
 import com.busuu.app.dtos.responses.WordResponse;
-import com.busuu.app.entities.StrengthLevel;
-import com.busuu.app.entities.UserWord;
-import com.busuu.app.entities.Word;
+import com.busuu.app.entities.enums.StrengthLevel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

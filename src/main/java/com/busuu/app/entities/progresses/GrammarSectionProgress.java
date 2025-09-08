@@ -1,6 +1,7 @@
 package com.busuu.app.entities.progresses;
 
 import com.busuu.app.entities.*;
+import com.busuu.app.entities.enums.SectionLevel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

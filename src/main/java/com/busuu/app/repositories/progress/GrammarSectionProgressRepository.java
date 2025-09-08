@@ -1,6 +1,6 @@
 package com.busuu.app.repositories.progress;
 
-import com.busuu.app.entities.SectionLevel;
+import com.busuu.app.entities.enums.SectionLevel;
 import com.busuu.app.entities.progresses.GrammarSectionProgress;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
