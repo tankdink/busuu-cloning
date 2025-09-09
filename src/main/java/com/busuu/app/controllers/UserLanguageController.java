@@ -58,12 +58,16 @@ public class UserLanguageController {
     @GetMapping()
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    public ResponseEntity<Response> getUserLanguage (@RequestParam(value = "req-id", required = false) String requestId) {
+    public ResponseEntity<Response> getUserLanguage (@RequestParam(value = "req-id", required = false) String requestId,
+                                                     @RequestParam(value = "is-learning", required = false) String isLearning) {
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
 
-        List<UserLanguageResponse> res = userLanguageService.getUserLanguages(requestId);
+        Object res;
+
+        if (isLearning == null || isLearning.isEmpty())  res = userLanguageService.getUserLanguages(requestId);
+        else res = userLanguageService.getLearningLanguage(requestId, Boolean.parseBoolean(isLearning));
 
         return ResponseEntity.ok(
                 Response.builder()
@@ -73,4 +77,6 @@ public class UserLanguageController {
                         .build()
         );
     }
+
+
 }

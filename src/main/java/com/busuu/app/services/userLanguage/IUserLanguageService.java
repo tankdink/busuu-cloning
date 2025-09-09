@@ -10,4 +10,7 @@ public interface IUserLanguageService {
     UserLanguageResponse upSertUserLanguage (String requestId, UserLanguageDTO userLanguageDTO);
 
     List<UserLanguageResponse> getUserLanguages (String requestId);
+
+    UserLanguageResponse getLearningLanguage(String requestId, boolean isLearning);
+
 }

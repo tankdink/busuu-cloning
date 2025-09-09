@@ -101,4 +101,30 @@ public class UserLanguageService implements IUserLanguageService {
                     Constants.ERROR_CODE.ERR_GET_USER_LANGUAGE, requestId);
         }
     }
+
+    @Override
+    public UserLanguageResponse getLearningLanguage(String requestId, boolean isLearning)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
+            UserLanguage languageLearning = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), isLearning);
+
+            UserLanguageResponse response = modelMapper.map(languageLearning, UserLanguageResponse.class);
+            response.setLanguageId(languageLearning.getLanguage().getId());
+            response.setUserId(languageLearning.getUser().getId());
+
+            return response;
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get user languages, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_USER_LANGUAGE, requestId);
+        }
+    }
+
+
 }

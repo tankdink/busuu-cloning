@@ -12,4 +12,7 @@ public interface UserLanguageRepository extends JpaRepository<UserLanguage, Stri
     List<UserLanguage> findByUserId (String userId);
 
     UserLanguage findByUserIdAndLanguageId (String userId, String languageId);
+
+    UserLanguage findByUserIdAndIsLearning(String userId, boolean isLearning);
+
 }
