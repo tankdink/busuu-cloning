@@ -11,7 +11,7 @@ public class UploadCloudinaryUtil {
     public static final long MAX_FILE_SIZE = 50 * 1024 * 1024;
     public static final String IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg|jpeg|png|gif|bmp))$)";
     public static final String VIDEO_PATTERN = "([^\\s]+(\\.(?i)(mp4|avi|mov|wmv|flv))$)";
-    public static final String AUDIO_PATTERN = "([^\\s]+(\\.(?i)(mp3|wav|ogg|aac|flac))$)";
+    public static final String AUDIO_PATTERN = "([^\\s]+(\\.(?i)(mp3|wav|ogg|aac|flac|webm))$)";
 
     public static boolean isAllowedExtension(String fileName, String pattern) {
         Matcher matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(fileName);
