@@ -1,7 +1,7 @@
 package com.busuu.app.dtos.responses.question;
 
 import com.busuu.app.dtos.responses.GrammarSectionResponse;
-import com.busuu.app.entities.SectionLevel;
+import com.busuu.app.entities.enums.SectionLevel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

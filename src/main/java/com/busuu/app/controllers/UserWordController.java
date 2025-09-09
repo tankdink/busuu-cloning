@@ -7,7 +7,7 @@ import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.UserWordResponse;
 import com.busuu.app.dtos.responses.WordFilterResponse;
 import com.busuu.app.dtos.responses.WordResponse;
-import com.busuu.app.entities.StrengthLevel;
+import com.busuu.app.entities.enums.StrengthLevel;
 import com.busuu.app.services.userWord.UserWordService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;

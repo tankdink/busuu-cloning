@@ -1,4 +1,4 @@
-package com.busuu.app.entities;
+package com.busuu.app.entities.enums;
 
 public enum SectionLevel {
     NEEDS_PRACTICE(0, 30),

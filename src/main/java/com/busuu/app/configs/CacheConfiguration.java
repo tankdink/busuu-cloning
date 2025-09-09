@@ -1,6 +1,6 @@
 package com.busuu.app.configs;
 
-import com.busuu.app.entities.CacheKey;
+import com.busuu.app.entities.enums.CacheKey;
 import com.busuu.app.entities.Chapter;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.Lesson;

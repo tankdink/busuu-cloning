@@ -14,7 +14,7 @@ public interface ICourseService {
 
     CourseResponse getCourse (String requestId, String courseId);
 
-    Page<CourseResponse> getCourses (String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String level);
+    Page<CourseResponse> getCourses (String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String level, String language);
 
     CourseResponse updateCourse (String requestId, String courseId, CourseDTO courseDTO);
 

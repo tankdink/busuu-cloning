@@ -1,6 +1,6 @@
 package com.busuu.app.repositories;
 
-import com.busuu.app.entities.StrengthLevel;
+import com.busuu.app.entities.enums.StrengthLevel;
 import com.busuu.app.entities.UserWord;
 import com.busuu.app.entities.Word;
 import org.springframework.data.domain.Pageable;
