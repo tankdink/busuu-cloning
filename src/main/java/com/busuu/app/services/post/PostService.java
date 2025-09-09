@@ -6,6 +6,7 @@ import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.FriendResponse;
 import com.busuu.app.dtos.responses.PostResponse;
 import com.busuu.app.dtos.responses.TopicResponse;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.posts.Post;
@@ -18,6 +19,7 @@ import com.busuu.app.repositories.CorrectionRepository;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.PostRepository;
 import com.busuu.app.repositories.TopicRepository;
+import com.busuu.app.repositories.UserLanguageRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
 import com.busuu.app.services.friend.IFriendService;
@@ -65,6 +67,8 @@ public class PostService implements IPostService
 
     private final TopicRepository topicRepository;
 
+    private final UserLanguageRepository userLanguageRepository;
+
     @Override
     @Transactional
     public PostResponse insertPost(String requestId, PostDTO postDTO)
@@ -80,8 +84,6 @@ public class PostService implements IPostService
                 throw new IllegalArgumentException("Post with TEXT type cannot have null posts text");
             if (newPost.getPostType() == PostType.AUDIO && postDTO.getPostAudio() == null)
                 throw new IllegalArgumentException("Post with AUDIO type cannot have null posts audio");
-            Language language = languageRepository.findById(postDTO.getLanguageId())
-                    .orElseThrow( ()-> new DataNotFoundException("Cannot find language with ID " + postDTO.getLanguageId()) );
             if (postDTO.getPostAudio() != null && postDTO.getPostText() != null ) throw new IllegalArgumentException("Both post audio and Correction text cannot exist at the same time");
             Topic topic = topicRepository.findById(postDTO.getTopicId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find topic with ID = " + postDTO.getTopicId()));
@@ -118,9 +120,12 @@ public class PostService implements IPostService
                 newPost.setPostAudioName(cloudinaryResponse.getPublicId());
             }
 
-            //Get and set user
+            //Get and set post
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
+
+            Language language = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true).getLanguage();
+
             newPost.setUser(user);
             newPost.setLanguage(language);
             newPost.setTopic(topic);
@@ -146,7 +151,17 @@ public class PostService implements IPostService
     {
         try {
 
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
             Pageable pageable = PageRequest.of(page, size);
+
+            if (language == null || language.isEmpty())
+            {
+                Language languageLearning = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true).getLanguage();
+                language = languageLearning.getName();
+
+            }
 
             Page<Post> posts = postRepository.findAll(PostSpecification.getSpecification(postType, language, sortBy, sortDirection, null), pageable);
 
