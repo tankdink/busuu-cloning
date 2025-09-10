@@ -7,9 +7,11 @@ import com.busuu.app.dtos.responses.GrammarResponse;
 import com.busuu.app.dtos.responses.GrammarResponse;
 import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.dtos.responses.question.SectionLevelStatsResponse;
 import com.busuu.app.services.grammar.IGrammarService;
 import com.busuu.app.services.progress.grammar_section.IGrammarSectionProgressService;
+import com.busuu.app.services.userLanguage.IUserLanguageService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +40,7 @@ public class GrammarController
 {
     private final IGrammarService grammarService;
     private final IGrammarSectionProgressService grammarSectionProgressService;
+    private final IUserLanguageService userLanguageService;
 
     private final LocalizationUtils localizationUtils;
 
@@ -95,7 +98,7 @@ public class GrammarController
 
     @GetMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getGrammars(@RequestParam(value = "req-id", required = false) String requestId,
 
                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -181,7 +184,7 @@ public class GrammarController
 
     @GetMapping(Constants.LANGUAGE + Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getByLanguageId(@RequestParam(value = "req-id", required = false) String requestId,
                                                     @PathVariable("id") String languageId,
 
@@ -200,6 +203,55 @@ public class GrammarController
 
             //Call get chapter by ID service
             Page<GrammarResponse> gettedGrammarList = grammarService.getByLanguageId(requestId, languageId, page, size, sortBy, sortDirection);
+
+            Object responseData = PagingResponse.<GrammarResponse>builder()
+                    .totalPages(gettedGrammarList.getTotalPages())
+                    .objects(gettedGrammarList.getContent())
+                    .totalObjects(gettedGrammarList.getTotalElements())
+                    .build();
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK.value())
+                            .data(responseData)
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting chapter with ID: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) +": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.LANGUAGE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getByLanguage (@RequestParam(value = "req-id", required = false) String requestId,
+
+                                                    @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                    @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                    @RequestParam(value = "sort_by", defaultValue = "grammarOrder", required = false) String sortBy,
+                                                    @RequestParam(value = "sort_direction", defaultValue = "ASC", required = false) String sortDirection)
+
+    {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            UserLanguageResponse userLanguageResponse = userLanguageService.getLearningLanguage(requestId, true);
+
+            //Call get chapter by ID service
+            Page<GrammarResponse> gettedGrammarList = grammarService.getByLanguageId(requestId, userLanguageResponse.getLanguageId(), page, size, sortBy, sortDirection);
 
             Object responseData = PagingResponse.<GrammarResponse>builder()
                     .totalPages(gettedGrammarList.getTotalPages())

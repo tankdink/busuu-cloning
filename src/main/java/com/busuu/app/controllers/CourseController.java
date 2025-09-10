@@ -5,7 +5,10 @@ import com.busuu.app.dtos.requests.course.CourseDTO;
 import com.busuu.app.dtos.responses.CourseResponse;
 import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.services.course.ICourseService;
+import com.busuu.app.services.userLanguage.IUserLanguageService;
+import com.busuu.app.services.userLanguage.UserLanguageService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +37,8 @@ import java.util.UUID;
 public class CourseController {
 
     private final ICourseService courseService;
+    private final IUserLanguageService userLanguageService;
+
     private final LocalizationUtils localizationUtils;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -83,7 +88,7 @@ public class CourseController {
 
     @GetMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getCourses (@RequestParam(value = "req-id", required = false) String requestId,
 
                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -102,6 +107,52 @@ public class CourseController {
             }
 
             Page<CourseResponse> courses = courseService.getCourses(requestId, page, size, sortBy, sortDirection, searchValue, level, language);
+            Object responseData = PagingResponse.<CourseResponse>builder()
+                    .totalPages(courses.getTotalPages())
+                    .objects(courses.getContent())
+                    .totalObjects(courses.getTotalElements())
+                    .build();
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(responseData)
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("Error when get courses, " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.LANGUAGE)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getCoursesByLanguage (@RequestParam(value = "req-id", required = false) String requestId,
+
+                                                @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+
+                                                @RequestParam(value = "sort_by", required = false) List<String> sortBy,
+                                                @RequestParam(value = "sort_direction", required = false) List<String> sortDirection,
+                                                @RequestParam(value = "search_value",required = false) String searchValue,
+
+                                                @RequestParam(value = "level",required = false) String level)
+    {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            UserLanguageResponse userLanguageResponse = userLanguageService.getLearningLanguage(requestId, true);
+
+            Page<CourseResponse> courses = courseService.getCourses(requestId, page, size, sortBy, sortDirection, searchValue, level, userLanguageResponse.getLanguageId());
             Object responseData = PagingResponse.<CourseResponse>builder()
                     .totalPages(courses.getTotalPages())
                     .objects(courses.getContent())
