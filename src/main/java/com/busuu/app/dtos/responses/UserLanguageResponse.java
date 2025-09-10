@@ -2,6 +2,7 @@ package com.busuu.app.dtos.responses;
 
 import com.busuu.app.entities.enums.LearningStatus;
 import com.busuu.app.entities.enums.SpeakingStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,9 +34,11 @@ public class UserLanguageResponse extends BaseResponse {
     private SpeakingStatus speakingStatus;
 
     @JsonProperty("date_started")
+    @JsonIgnore
     private Date dateStarted;
 
     @JsonProperty("date_completed")
+    @JsonIgnore
     private Date dateCompleted;
 
     @JsonProperty("is_learning")

@@ -1,18 +1,24 @@
 package com.busuu.app.services.userWord;
 
 import com.busuu.app.dtos.requests.word.ReviewResultRequest;
+import com.busuu.app.dtos.responses.LanguageResponse;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.dtos.responses.UserWordResponse;
 import com.busuu.app.dtos.responses.WordExampleResponse;
 import com.busuu.app.dtos.responses.WordFilterResponse;
 import com.busuu.app.dtos.responses.WordResponse;
+import com.busuu.app.entities.Language;
 import com.busuu.app.entities.enums.StrengthLevel;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.UserWord;
 import com.busuu.app.entities.UserWordHistory;
 import com.busuu.app.entities.Word;
 import com.busuu.app.exceptions.DataNotFoundException;
+import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.UserWordHistoryRepository;
 import com.busuu.app.repositories.UserWordRepository;
+import com.busuu.app.services.language.LanguageService;
+import com.busuu.app.services.userLanguage.UserLanguageService;
 import com.busuu.app.services.word.WordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,16 +47,19 @@ public class UserWordService implements IUserWordService{
 
     private final UserWordRepository userWordRepository;
     private final WordService wordService;
+    private final UserLanguageService userLanguageService;
+    private final LanguageService languageService;
     private final UserWordHistoryRepository userWordHistoryRepository;
 
     private final ModelMapper modelMapper;
 
     @Override
     public List<WordFilterResponse> listFilter (String requestId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        UserLanguageResponse userLanguageResponse = userLanguageService.getLearningLanguage(requestId, true);
 
-        List<Object[]> counts = userWordRepository.countGroupedByStrengthAndFavorite(user.getId());
+        LanguageResponse language = languageService.getLanguage(requestId, userLanguageResponse.getLanguageId());
+
+        List<Object[]> counts = userWordRepository.countGroupedByStrengthAndFavorite(userLanguageResponse.getUserId(), language.getCode());
 
         long totalAll = 0;
         long countWeak = 0;
@@ -86,7 +95,11 @@ public class UserWordService implements IUserWordService{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
 
-        List<UserWord> userWords = userWordRepository.findByUserIdWithFilter(user.getId(), strengthLevel, isFavorite);
+        UserLanguageResponse userLanguageResponse = userLanguageService.getLearningLanguage(requestId, true);
+
+        LanguageResponse language = languageService.getLanguage(requestId, userLanguageResponse.getLanguageId());
+
+        List<UserWord> userWords = userWordRepository.findByUserIdWithFilter(user.getId(), strengthLevel, isFavorite, language.getCode());
 
         List<UserWordResponse> res = new ArrayList<>();
         userWords.forEach(userWord -> {
@@ -108,9 +121,6 @@ public class UserWordService implements IUserWordService{
     @Override
     @Transactional
     public void favoriteWord(String requestId, String userWordId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-
         Optional<UserWord> existingUserWord = userWordRepository.findById(userWordId);
 
         if (existingUserWord.isPresent()) {
@@ -141,8 +151,9 @@ public class UserWordService implements IUserWordService{
 
     @Override
     public List<WordResponse> getReviewWords(String requestId, String type, StrengthLevel strengthLevel) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+        UserLanguageResponse userLanguageResponse = userLanguageService.getLearningLanguage(requestId, true);
+
+        LanguageResponse language = languageService.getLanguage(requestId, userLanguageResponse.getLanguageId());
 
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -150,16 +161,16 @@ public class UserWordService implements IUserWordService{
 
         switch (type.toUpperCase()) {
             case "ALL" -> {
-                words = userWordRepository.findReviewAll(user.getId(), pageable);
+                words = userWordRepository.findReviewAll(userLanguageResponse.getUserId(), language.getCode(), pageable);
             }
             case "STRENGTH" -> {
                 if (strengthLevel == null) {
                     throw new IllegalArgumentException("StrengthLevel is required when type = STRENGTH");
                 }
-                words = userWordRepository.findReviewByStrength(user.getId(), strengthLevel, pageable);
+                words = userWordRepository.findReviewByStrength(userLanguageResponse.getUserId(), strengthLevel, language.getCode(), pageable);
             }
             case "FAVORITE" -> {
-                words = userWordRepository.findReviewFavorite(user.getId(), pageable);
+                words = userWordRepository.findReviewFavorite(userLanguageResponse.getUserId(), language.getCode(), pageable);
             }
             default -> throw new IllegalArgumentException("Invalid review type: " + type);
         }

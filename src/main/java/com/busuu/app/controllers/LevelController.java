@@ -27,19 +27,17 @@ import java.util.UUID;
 @RequestMapping(Constants.LEVEL)
 @RequiredArgsConstructor
 @Slf4j
-public class LevelController
-{
+public class LevelController {
 
     private final ILevelService levelService;
 
     private final LocalizationUtils localizationUtils;
 
     @PostMapping()
-    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> insertLevel(@RequestParam(value = "req-id", required = false) String requestId,
-                                                @Valid @RequestBody LevelDTO newLevelDTO)
-    {
+                                                @Valid @RequestBody LevelDTO newLevelDTO) {
         try {
 
             if (requestId == null || requestId.isEmpty()) {
@@ -71,7 +69,7 @@ public class LevelController
 
     @GetMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getLevels(@RequestParam(value = "req-id", required = false) String requestId,
                                               @RequestParam(value = "code", required = false) String code,
                                               @RequestParam(value = "course_id", required = false) String courseId)
@@ -154,12 +152,48 @@ public class LevelController
         }
     }
 
+
+    @GetMapping(Constants.COURSE + Constants.PATH_PARAM_ID)
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getLevelsByCourse(@RequestParam(value = "req-id", required = false) String requestId,
+                                                      @PathVariable("id") String courseId) {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call get level by courseId
+            List<LevelResponse> levelList = levelService.getLevelsByCourseId(requestId, courseId);
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK.value())
+                            .data(levelList)
+                            .build()
+            );
+
+
+        } catch (Exception e) {
+            log.error("Error when getting level list: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
     @GetMapping(Constants.PATH_PARAM_ID)
-    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getLevel(@RequestParam(value = "req-id", required = false) String requestId,
-                                             @PathVariable("id") String levelId)
-    {
+                                             @PathVariable("id") String levelId) {
 
         try {
 
@@ -191,12 +225,11 @@ public class LevelController
     }
 
     @PutMapping(Constants.PATH_PARAM_ID)
-    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> updateLevel(@RequestParam(value = "req-id", required = false) String requestId,
                                                 @PathVariable("id") String levelId,
-                                                @Valid @RequestBody LevelDTO infoUpdate)
-    {
+                                                @Valid @RequestBody LevelDTO infoUpdate) {
 
         try {
 
@@ -228,11 +261,10 @@ public class LevelController
     }
 
     @DeleteMapping(Constants.PATH_PARAM_ID)
-    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> deleteLevel(@RequestParam(value = "req-id", required = false) String requestId,
-                                                    @PathVariable("id") String levelId)
-    {
+                                                @PathVariable("id") String levelId) {
 
         try {
 

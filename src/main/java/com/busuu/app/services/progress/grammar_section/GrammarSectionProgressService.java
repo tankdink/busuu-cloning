@@ -2,6 +2,7 @@ package com.busuu.app.services.progress.grammar_section;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.GrammarSectionResponse;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.dtos.responses.question.SectionLevelStatsResponse;
 import com.busuu.app.entities.GrammarSection;
 import com.busuu.app.entities.enums.SectionLevel;
@@ -9,6 +10,7 @@ import com.busuu.app.entities.User;
 import com.busuu.app.entities.progresses.GrammarSectionProgress;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.progress.GrammarSectionProgressRepository;
+import com.busuu.app.services.userLanguage.UserLanguageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,6 +30,7 @@ import java.util.UUID;
 public class GrammarSectionProgressService implements IGrammarSectionProgressService {
 
     private final GrammarSectionProgressRepository grammarSectionProgressRepository;
+    private final UserLanguageService userLanguageService;
 
     private final ModelMapper modelMapper;
 
@@ -62,16 +65,14 @@ public class GrammarSectionProgressService implements IGrammarSectionProgressSer
     @Override
     public List<SectionLevelStatsResponse> sectionStats(String requestId) {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            String userId = user.getId();
+            UserLanguageResponse userLanguageResponse = userLanguageService.getLearningLanguage(requestId, true);
 
             // Get list section level
             SectionLevel[] levels = SectionLevel.values();
 
             return Arrays.stream(levels).map(level -> {
-                long total = grammarSectionProgressRepository.countByLevelAndUserId(level, userId);
-                List<GrammarSectionProgress> sectionProgresses = grammarSectionProgressRepository.findByLevelAndUserId(level, userId);
+                long total = grammarSectionProgressRepository.countByLevelAndUserIdAndLanguageId(level, userLanguageResponse.getUserId(), userLanguageResponse.getLanguageId());
+                List<GrammarSectionProgress> sectionProgresses = grammarSectionProgressRepository.findByLevelAndUserIdAndLanguageId(level, userLanguageResponse.getUserId(), userLanguageResponse.getLanguageId());
                 return SectionLevelStatsResponse.builder()
                         .level(level)
                         .total(total)
@@ -103,11 +104,9 @@ public class GrammarSectionProgressService implements IGrammarSectionProgressSer
     @Override
     public long countSectionProgress (String requestId) {
        try {
-           Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-           User user = (User) auth.getPrincipal();
-           String userId = user.getId();
+           UserLanguageResponse userLanguageResponse = userLanguageService.getLearningLanguage(requestId, true);
 
-           return grammarSectionProgressRepository.countByUserId(userId);
+           return grammarSectionProgressRepository.countByUserIdAndLanguageId(userLanguageResponse.getUserId(), userLanguageResponse.getLanguageId());
        } catch (Exception e) {
            log.error("requestId="+requestId+",failed to get count grammar section progress, err="+e.getMessage());
            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,

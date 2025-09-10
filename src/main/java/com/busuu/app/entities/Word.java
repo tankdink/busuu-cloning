@@ -35,7 +35,7 @@ public class Word extends BaseEntity {
     @Column(name = "word_id")
     private String id;
 
-    @Column(name = "language_code")
+    @Column(name = "language_code", nullable = false)
     private String languageCode;
 
     @Column(name = "text", nullable = false)

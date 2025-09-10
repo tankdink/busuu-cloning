@@ -103,6 +103,27 @@ public class UserLanguageService implements IUserLanguageService {
     }
 
     @Override
+    public List<UserLanguageResponse> getUserLanguages(String requestId, String userId) {
+        try {
+            List<UserLanguage> userLanguages = userLanguageRepository.findByUserId(userId);
+
+            return userLanguages.stream().map(
+                    userLanguage ->  {
+                        UserLanguageResponse res = modelMapper.map(userLanguage, UserLanguageResponse.class);
+                        res.setLanguageId(userLanguage.getLanguage().getId());
+                        res.setUserId(userLanguage.getUser().getId());
+
+                        return res;
+                    }
+            ).toList();
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get user languages, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_USER_LANGUAGE, requestId);
+        }
+    }
+
+    @Override
     public UserLanguageResponse getLearningLanguage(String requestId, boolean isLearning)
     {
         try {
@@ -111,16 +132,16 @@ public class UserLanguageService implements IUserLanguageService {
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            UserLanguage languageLearning = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), isLearning);
+            UserLanguage languageLearning = userLanguageRepository.findByUserIdAndIsLearning(userId, isLearning);
 
             UserLanguageResponse response = modelMapper.map(languageLearning, UserLanguageResponse.class);
             response.setLanguageId(languageLearning.getLanguage().getId());
-            response.setUserId(languageLearning.getUser().getId());
+            response.setUserId(userId);
 
             return response;
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to get user languages, err="+e.getMessage());
+            log.error("requestId="+requestId+",failed to get user language, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_USER_LANGUAGE, requestId);
         }

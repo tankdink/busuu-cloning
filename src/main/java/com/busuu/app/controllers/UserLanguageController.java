@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,18 +57,18 @@ public class UserLanguageController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> getUserLanguage (@RequestParam(value = "req-id", required = false) String requestId,
-                                                     @RequestParam(value = "is-learning", required = false) String isLearning) {
+                                                     @RequestParam(value = "is-learning", required = false) Boolean isLearning) {
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
         }
 
         Object res;
 
-        if (isLearning == null || isLearning.isEmpty())  res = userLanguageService.getUserLanguages(requestId);
-        else res = userLanguageService.getLearningLanguage(requestId, Boolean.parseBoolean(isLearning));
+        if (isLearning == null)  res = userLanguageService.getUserLanguages(requestId);
+        else res = userLanguageService.getLearningLanguage(requestId, isLearning);
 
         return ResponseEntity.ok(
                 Response.builder()
@@ -78,5 +79,23 @@ public class UserLanguageController {
         );
     }
 
+    @GetMapping(Constants.USER + Constants.PATH_PARAM_ID)
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    public ResponseEntity<Response> getUserLanguages (@RequestParam(value = "req-id", required = false) String requestId,
+                                                      @PathVariable("id") String userId) {
+        if (requestId == null || requestId.isEmpty()) {
+            requestId = UUID.randomUUID().toString();
+        }
 
+        List<UserLanguageResponse> res = userLanguageService.getUserLanguages(requestId, userId);
+
+        return ResponseEntity.ok(
+                Response.builder()
+                        .data(res)
+                        .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                        .status(HttpStatus.OK.value())
+                        .build()
+        );
+    }
 }

@@ -13,4 +13,6 @@ public interface IUserLanguageService {
 
     UserLanguageResponse getLearningLanguage(String requestId, boolean isLearning);
 
+    List<UserLanguageResponse> getUserLanguages(String requestId, String userId);
+
 }

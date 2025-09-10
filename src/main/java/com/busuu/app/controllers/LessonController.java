@@ -83,8 +83,8 @@ public class LessonController {
 
     @GetMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<Response> getLesson (@RequestParam(value = "req-id", required = false) String requestId,
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Response> getLessons (@RequestParam(value = "req-id", required = false) String requestId,
 
                                                @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                @RequestParam(value = "size", defaultValue = "10", required = false) int size,

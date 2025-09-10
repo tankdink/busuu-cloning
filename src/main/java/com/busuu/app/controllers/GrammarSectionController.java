@@ -72,7 +72,7 @@ public class GrammarSectionController
 
     @GetMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Response> getGrammarSections(@RequestParam(value = "req-id", required = false) String requestId,
 
                                                        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
