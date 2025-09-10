@@ -21,6 +21,8 @@ public class Constants {
     public static final String POST = "/posts";
     public static final String CORRECTION = "/corrections";
     public static final String WORD = "/words";
+
+    public static final String RANDOM = "/random";
     public static final String USER_WORD = "/user_words";
     public static final String USER_LANGUAGE = "/user_languages";
     public static final String QUESTION = "/questions";

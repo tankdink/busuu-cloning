@@ -246,6 +246,8 @@ public class PostController
     }
 
 
+
+
     @GetMapping(Constants.FRIEND)
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
@@ -280,6 +282,49 @@ public class PostController
 
         } catch (Exception e) {
             log.error("Error when getting friend posts list: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.CORRECTION + Constants.SELF_DATA)
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getPostsContainSelfCorrection(@RequestParam(value = "req-id", required = false) String requestId,
+
+                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size)
+    {
+
+        try {
+
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            //Call get posts list service
+            Page<PostResponse> postsList = postService.getPostsContainSelfCorrection(requestId, page, size);
+            Object responseData = PagingResponse.<PostResponse>builder()
+                    .totalPages(postsList.getTotalPages())
+                    .objects(postsList.getContent())
+                    .totalObjects(postsList.getTotalElements())
+                    .build();
+
+            //Return response
+            return ResponseEntity.ok().body(
+                    Response.builder()
+                            .data(responseData)
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("Error when getting posts list: " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())

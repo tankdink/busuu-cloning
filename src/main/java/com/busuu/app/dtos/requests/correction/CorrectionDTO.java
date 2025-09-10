@@ -24,9 +24,11 @@ public class CorrectionDTO
     @JsonProperty("correction_text")
     private String correctionText;
 
-    @JsonProperty("correction_text")
-    @NotBlank(message = "Post id which this correction belong to cannot be null")
+    @JsonProperty("post_id")
     private String postId;
+
+    @JsonProperty("correction_id")
+    private String correctionId;
 
 
 }

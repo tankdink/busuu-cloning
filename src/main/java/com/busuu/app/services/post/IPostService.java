@@ -21,4 +21,6 @@ public interface IPostService
 
     Page<PostResponse> getByFriendlist(String requestId, int page, int size);
 
+    Page<PostResponse> getPostsContainSelfCorrection(String requestId, int page, int size);
+
 }

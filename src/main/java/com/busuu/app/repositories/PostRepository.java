@@ -10,4 +10,6 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, String>, JpaSpecificationExecutor<Post>
 {
     List<Post> findByUserId(String userId, Sort sort);
+
+
 }

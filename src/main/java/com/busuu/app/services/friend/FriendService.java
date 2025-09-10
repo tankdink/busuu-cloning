@@ -2,27 +2,39 @@ package com.busuu.app.services.friend;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.FriendResponse;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.entities.Friend;
 import com.busuu.app.entities.User;
+import com.busuu.app.entities.UserLanguage;
+import com.busuu.app.entities.enums.LearningStatus;
+import com.busuu.app.entities.enums.SpeakingStatus;
+import com.busuu.app.entities.posts.Post;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.FriendRepository;
+import com.busuu.app.repositories.UserLanguageRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.specification.FriendSpecification;
+import com.busuu.app.specification.UserLanguageSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -34,6 +46,10 @@ public class FriendService implements IFriendService
     private final FriendRepository friendRepository;
 
     private final UserRepository userRepository;
+
+    private final UserLanguageRepository userLanguageRepository;
+
+    private final ModelMapper modelMapper;
 
 
     @Override
@@ -145,6 +161,59 @@ public class FriendService implements IFriendService
     }
 
     @Override
+    public List<String> getRandomList(String requestId)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            //Get speaking and learning language of self
+            List<String> learning = new ArrayList<>();
+            List<String> speaking = new ArrayList<>();
+
+            List<UserLanguage> userLanguages = userLanguageRepository.findByUserId(user.getId());
+
+            for (UserLanguage userLanguage : userLanguages)
+            {
+
+                if (userLanguage.getLearningStatus().equals(LearningStatus.IN_PROGRESS)) learning.add(userLanguage.getLanguage().getName());
+                if (!userLanguage.getSpeakingStatus().equals(SpeakingStatus.NO_PROFICIENCY)) speaking.add(userLanguage.getLanguage().getName());
+
+            }
+
+
+            Specification<UserLanguage> spec = UserLanguageSpecification.getSpecification(learning, speaking);
+            List<UserLanguageResponse> responseList = userLanguageRepository.findAll(spec).stream().map(
+                    userLanguage ->  {
+
+                        UserLanguageResponse res = modelMapper.map(userLanguage, UserLanguageResponse.class);
+                        res.setLanguageId(userLanguage.getLanguage().getId());
+                        res.setUserId(userLanguage.getUser().getId());
+
+                        return res;
+                    }
+            ).toList(); //This list is unmodifiable
+
+            //Get user id from list
+            List<String> userIdList = new ArrayList<>();
+            for (UserLanguageResponse userLanguage : responseList) userIdList.add(userLanguage.getUserId());
+
+            //Remove duplicate
+            Set<String> set = new HashSet<>(userIdList);
+            List<String> response = new ArrayList<>(set);
+            response.remove(user.getId());
+
+            return randomize(response);
+
+        } catch (Exception e) {
+            log.error("requestId=" + requestId + ",failed to get topics by type, err=" + e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_TOPIC, requestId);
+        }
+    }
+
+    @Override
     @Transactional
     public void deleteFriend(String requestId, String userId)
     {
@@ -176,5 +245,26 @@ public class FriendService implements IFriendService
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_DELETE_COURSE, requestId);
         }
+    }
+
+    public List<String> randomize(List<String> list)
+    {
+
+        if (list.size() <= 5) {
+            return list;
+        }
+
+        //Response list
+        List<String> resultList = new ArrayList<>(5);
+
+        //Shuffle the copy list
+        List<String> copy = new ArrayList<>(list);
+        Collections.shuffle(copy);
+
+        //Add the first 5 elements of the shuffled list to result list
+        for (int i = 0; i < 5; i++) resultList.add(copy.get(i));
+
+        return resultList;
+
     }
 }

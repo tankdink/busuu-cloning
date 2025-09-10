@@ -3,6 +3,7 @@ package com.busuu.app.controllers;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.FriendResponse;
 import com.busuu.app.dtos.responses.Response;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.services.friend.IFriendService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
@@ -94,6 +95,37 @@ public class FriendController
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.RANDOM)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getRandomList(@RequestParam(value = "req-id", required = false) String requestId)
+    {
+
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            List<String> response = friendService.getRandomList(requestId);
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(response)
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("Error when get user list, " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );

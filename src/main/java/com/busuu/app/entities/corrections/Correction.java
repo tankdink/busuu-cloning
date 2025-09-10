@@ -60,6 +60,14 @@ public class Correction extends BaseEntity
     private List<Reaction> reactions = new ArrayList<>();
 
     @JsonIgnore
+    @OneToMany(mappedBy = "correction", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Correction> corrections;
+    //Self relation
+    @ManyToOne
+    @JoinColumn(name = "parent_correction_id")
+    private Correction correction;
+
+    @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "correction", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Notification> notification = new ArrayList<>();

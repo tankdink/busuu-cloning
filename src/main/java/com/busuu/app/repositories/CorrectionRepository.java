@@ -12,7 +12,9 @@ import java.util.List;
 public interface CorrectionRepository extends JpaRepository<Correction, String>, JpaSpecificationExecutor<Correction>
 {
     List<Correction> findByUserId(String userId, Sort sort);
+    List<Correction> findByUserIdAndPostLanguageName(String userId, String language);
     List<Correction> findByPostId(String postId, Sort sort);
     long countByPostId(String postId);
+    List<Correction> findByCorrectionId(String correctionId);
 
 }

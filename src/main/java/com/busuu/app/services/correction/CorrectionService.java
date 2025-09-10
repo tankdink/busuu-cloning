@@ -55,6 +55,7 @@ public class CorrectionService implements ICorrectionService
 
     
     @Override
+    @Transactional
     public CorrectionResponse insertCorrection(String requestId, CorrectionDTO correctionDTO) 
     {
         try {
@@ -65,20 +66,37 @@ public class CorrectionService implements ICorrectionService
             Correction newCorrection = modelMapper.map(correctionDTO, Correction.class);
             newCorrection.setId(UUID.randomUUID().toString());
 
-            //Valid postId
-            Post existingPost = postRepository.findById(correctionDTO.getPostId())
-                    .orElseThrow( ()-> new DataNotFoundException("Cannot find posts with ID " + correctionDTO.getPostId()) );
+            //Valid postId, correctionId
+            Post existingPost = null;
+            Correction existingCorrection = null;
 
-            if (user.getId().equals(existingPost.getUser().getId())) throw new IllegalArgumentException("Cannot correct to yourself!");
+            if ( correctionDTO.getCorrectionId() != null  && correctionDTO.getPostId() != null  ) throw new IllegalArgumentException("A correction cannot both belong to a post and another correction!");
+            if ( correctionDTO.getCorrectionId() == null  && correctionDTO.getPostId() == null  ) throw new IllegalArgumentException("A correction must belong to a post or another correction!");
 
 
+            if (correctionDTO.getCorrectionId() != null)
+            {
+                existingCorrection = correctionRepository.findById(correctionDTO.getCorrectionId())
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find correction with ID " + correctionDTO.getCorrectionId()));
 
-            //Exception
-            if (existingPost.getPostType() == PostType.TEXT && ( correctionDTO.getCorrectionText() == null || correctionDTO.getCorrectionText().isEmpty() ))
-                throw new IllegalArgumentException("Post with TEXT type cannot have null Correction text");
-//            if (existingPost.getPostType() == PostType.AUDIO && correctionDTO.getCorrectionAudio() == null)
-//                throw new IllegalArgumentException("Post with AUDIO type cannot have null Correction audio");
+                if (user.getId().equals(existingCorrection.getUser().getId()))
+                    throw new IllegalArgumentException("Cannot reply to your correction!");
+            }
+            else {
+
+                existingPost = postRepository.findById(correctionDTO.getPostId())
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find post with ID " + correctionDTO.getPostId()));
+
+                if (user.getId().equals(existingPost.getUser().getId()))
+                    throw new IllegalArgumentException("Cannot correct to yourself!");
+
+                if (existingPost.getPostType() == PostType.TEXT && ( correctionDTO.getCorrectionText() == null || correctionDTO.getCorrectionText().isEmpty() ))
+                    throw new IllegalArgumentException("Post with TEXT type cannot have null Correction text");
+
+            }
+
             if (correctionDTO.getCorrectionAudio() != null && correctionDTO.getCorrectionText() != null ) throw new IllegalArgumentException("Both Correction audio and Correction text cannot exist at the same time");
+            if (correctionDTO.getCorrectionAudio() == null && correctionDTO.getCorrectionText() == null ) throw new IllegalArgumentException("Either Correction audio and Correction must be exist");
 
 
             //Check valid file
@@ -98,12 +116,14 @@ public class CorrectionService implements ICorrectionService
             //Get and set user/posts
             newCorrection.setUser(user);
             newCorrection.setPost(existingPost);
+            newCorrection.setCorrection(existingCorrection);
 
             //Save and map return
             newCorrection = correctionRepository.save(newCorrection);
             CorrectionResponse correctionResponse = modelMapper.map(newCorrection, CorrectionResponse.class);
             correctionResponse.setUserId(user.getId());
-            correctionResponse.setPostId(newCorrection.getPost().getId());
+            correctionResponse.setPostId(newCorrection.getPost() != null ? newCorrection.getPost().getId() : null);
+            correctionResponse.setCorrectionId(newCorrection.getCorrection() != null ? newCorrection.getCorrection().getId() : null);
             correctionResponse.setReaction(null);
             correctionResponse.setLikeCount(0);
             correctionResponse.setDislikeCount(0);
@@ -127,7 +147,8 @@ public class CorrectionService implements ICorrectionService
 
             CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
             correctionResponse.setUserId(correction.getUser().getId());
-            correctionResponse.setPostId(correction.getPost().getId());
+            correctionResponse.setPostId(correction.getPost() != null ? correction.getPost().getId() : null);
+            correctionResponse.setCorrectionId(correction.getCorrection() != null ? correction.getCorrection().getId() : null);
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
@@ -140,6 +161,7 @@ public class CorrectionService implements ICorrectionService
             long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, correction.getId());
             correctionResponse.setLikeCount(likeCount);
             correctionResponse.setDislikeCount(dislikeCount);
+            correctionResponse.setReplyIds(getReplyList(correctionResponse.getId()));
 
             return correctionResponse;
 
@@ -164,7 +186,8 @@ public class CorrectionService implements ICorrectionService
             {
                 CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
                 correctionResponse.setUserId(correction.getUser().getId());
-                correctionResponse.setPostId(correction.getPost().getId());
+                correctionResponse.setPostId(correction.getPost() != null ? correction.getPost().getId() : null);
+                correctionResponse.setCorrectionId(correction.getCorrection() != null ? correction.getCorrection().getId() : null);
 
                 Reaction reaction = reactionRepository.findByUserIdAndId(user.getId(), correction.getId());
                 if (reaction != null) correctionResponse.setReaction(reaction.getReactionType().name());
@@ -174,6 +197,7 @@ public class CorrectionService implements ICorrectionService
                 long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, correction.getId());
                 correctionResponse.setLikeCount(likeCount);
                 correctionResponse.setDislikeCount(dislikeCount);
+                correctionResponse.setReplyIds(getReplyList(correctionResponse.getId()));
 
 
                 return correctionResponse;
@@ -201,7 +225,8 @@ public class CorrectionService implements ICorrectionService
             {
                 CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
                 correctionResponse.setUserId(correction.getUser().getId());
-                correctionResponse.setPostId(correction.getPost().getId());
+                correctionResponse.setPostId(correction.getPost() != null ? correction.getPost().getId() : null);
+                correctionResponse.setCorrectionId(correction.getCorrection() != null ? correction.getCorrection().getId() : null);
 
                 Reaction reaction = reactionRepository.findByUserIdAndId(user.getId(), correction.getId());
                 if (reaction != null) correctionResponse.setReaction(reaction.getReactionType().name());
@@ -211,7 +236,7 @@ public class CorrectionService implements ICorrectionService
                 long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, correction.getId());
                 correctionResponse.setLikeCount(likeCount);
                 correctionResponse.setDislikeCount(dislikeCount);
-
+                correctionResponse.setReplyIds(getReplyList(correctionResponse.getId()));
 
                 return correctionResponse;
 
@@ -241,13 +266,15 @@ public class CorrectionService implements ICorrectionService
 
                 CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
                 correctionResponse.setUserId(correction.getUser().getId());
-                correctionResponse.setPostId(correction.getPost().getId());
+                correctionResponse.setPostId(correction.getPost() != null ? correction.getPost().getId() : null);
+                correctionResponse.setCorrectionId(correction.getCorrection() != null ? correction.getCorrection().getId() : null);
                 correctionResponse.setReaction(null);
 
                 long likeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.LIKE, correction.getId());
                 long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, correction.getId());
                 correctionResponse.setLikeCount(likeCount);
                 correctionResponse.setDislikeCount(dislikeCount);
+                correctionResponse.setReplyIds(getReplyList(correctionResponse.getId()));
 
                 return correctionResponse;
 
@@ -302,12 +329,14 @@ public class CorrectionService implements ICorrectionService
 
             CorrectionResponse correctionResponse = modelMapper.map(existingCorrection, CorrectionResponse.class);
             correctionResponse.setUserId(user.getId());
-            correctionResponse.setPostId(existingCorrection.getPost().getId());
+            correctionResponse.setPostId(existingCorrection.getPost() != null ? existingCorrection.getPost().getId() : null);
+            correctionResponse.setCorrectionId(existingCorrection.getCorrection() != null ? existingCorrection.getCorrection().getId() : null);
 
             long likeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.LIKE, existingCorrection.getId());
             long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, existingCorrection.getId());
             correctionResponse.setLikeCount(likeCount);
             correctionResponse.setDislikeCount(dislikeCount);
+            correctionResponse.setReplyIds(getReplyList(correctionResponse.getId()));
 
             return correctionResponse;
 
@@ -318,6 +347,11 @@ public class CorrectionService implements ICorrectionService
         }
 
 
+    }
+
+    private List<String> getReplyList(String correctionId)
+    {
+        return correctionRepository.findByCorrectionId(correctionId).stream().map(Correction::getId).toList();
     }
 
     private CloudinaryResponse uploadFile(MultipartFile file) throws Exception

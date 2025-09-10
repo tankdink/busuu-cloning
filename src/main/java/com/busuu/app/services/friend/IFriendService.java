@@ -5,6 +5,7 @@ import com.busuu.app.dtos.requests.course.CourseDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.CourseResponse;
 import com.busuu.app.dtos.responses.FriendResponse;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +20,10 @@ public interface IFriendService
 
     FriendResponse getFriendsByUserId(String userId);
 
+    List<String> getRandomList(String requestId);
+
     void deleteFriend(String requestId, String friendId);
+
 
 }
 

@@ -9,6 +9,8 @@ import com.busuu.app.dtos.responses.TopicResponse;
 import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
+import com.busuu.app.entities.UserLanguage;
+import com.busuu.app.entities.corrections.Correction;
 import com.busuu.app.entities.posts.Post;
 import com.busuu.app.entities.posts.PostType;
 import com.busuu.app.entities.topics.Topic;
@@ -42,7 +44,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -315,6 +319,70 @@ public class PostService implements IPostService
                         return postResponse;
 
                     });
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get posts, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_POST, requestId);
+        }
+    }
+
+    public Page<PostResponse> getPostsContainSelfCorrection(String requestId, int page, int size)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            UserLanguage language = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true);
+            String languageName = language.getLanguage().getName();
+
+            //Temp value
+            List<Post> responseTemp = new ArrayList<>();
+
+            //Get list of self correction
+            List<Correction> selfCorrections = correctionRepository.findByUserIdAndPostLanguageName(user.getId(), languageName);
+
+            //Get list of post that contain these correction (may duplicate due to multiple correction in 1 post)
+            for (Correction correction : selfCorrections)
+            {
+
+                Post post = correction.getPost();
+                responseTemp.add(post);
+
+            }
+
+            //Remove duplicate
+            Set<Post> set = new HashSet<>(responseTemp);
+            List<Post> response = new ArrayList<>(set);
+
+
+            List<PostResponse> res = response.stream().map(
+                    post -> {
+
+                        PostResponse postResponse = modelMapper.map(post, PostResponse.class);
+                        postResponse.setUserId(post.getUser().getId());
+                        postResponse.setLanguageId(post.getLanguage().getId());
+
+                        long correctionCount = correctionRepository.countByPostId(post.getId());
+                        postResponse.setCorrectionCount(correctionCount);
+                        postResponse.setTopicId(post.getTopic().getId());
+
+                        return postResponse;
+
+                    }).toList();
+
+            //Pageable
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+            int totalElement = response.size();
+            int startAt = (int) pageable.getOffset();
+            int endAt = Math.min(startAt + pageable.getPageSize(), totalElement);
+
+            List<PostResponse> resultList = (startAt <= endAt)
+                    ? res.subList(startAt, endAt)
+                    : Collections.emptyList();
+
+            return new PageImpl<>(resultList, pageable, totalElement);
 
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get posts, err="+e.getMessage());
