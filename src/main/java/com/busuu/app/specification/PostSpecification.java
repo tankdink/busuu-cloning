@@ -43,34 +43,44 @@ public class PostSpecification
 
             //Filter
             //Filter by user first
-            if (userId != null && !userId.isEmpty())
-            {
-                if (postType != null && !postType.isEmpty())
-                {
-                    predicates.add(cb.and(
-                            cb.equal(root.get("postType"), PostType.valueOf(postType.toUpperCase())),
-                            cb.equal(userJoin.get("id"), userId)
-                    ));
-                }
-                if (language != null && !language.isEmpty())
-                {
-                    predicates.add(cb.and(
-                            cb.equal(cb.lower(languageJoin.get("name")), language.toLowerCase()),
-                            cb.equal(userJoin.get("id"), userId)
-                    ));
-                }
+//            if (userId != null && !userId.isEmpty())
+//            {
+//                if (postType != null && !postType.isEmpty())
+//                {
+//                    predicates.add(cb.and(
+//                            cb.equal(root.get("postType"), PostType.valueOf(postType.toUpperCase())),
+//                            cb.equal(userJoin.get("id"), userId)
+//                    ));
+//                }
+//                if (language != null && !language.isEmpty())
+//                {
+//                    predicates.add(cb.and(
+//                            cb.equal(cb.lower(languageJoin.get("name")), language.toLowerCase()),
+//                            cb.equal(userJoin.get("id"), userId)
+//                    ));
+//                }
+//
+//            }
+//            else
+//            {
+//                if (postType != null && !postType.isEmpty()) {
+//                    predicates.add(cb.equal(root.get("postType"), PostType.valueOf(postType.toUpperCase())));
+//                }
+//                if (language != null && !language.isEmpty()) {
+//                    predicates.add(cb.equal(cb.lower(languageJoin.get("name")), language.toLowerCase()));
+//                }
+//            }
 
+            //Filter
+            if (userId != null && !userId.isEmpty()) {
+                predicates.add(cb.equal(userJoin.get("id"), userId));
             }
-            else
-            {
-                if (postType != null && !postType.isEmpty()) {
-                    predicates.add(cb.equal(root.get("postType"), PostType.valueOf(postType.toUpperCase())));
-                }
-                if (language != null && !language.isEmpty()) {
-                    predicates.add(cb.equal(cb.lower(languageJoin.get("name")), language.toLowerCase()));
-                }
+            if (postType != null && !postType.isEmpty()) {
+                predicates.add(cb.equal(root.get("postType"), PostType.valueOf(postType.toUpperCase())));
             }
-
+            if (language != null && !language.isEmpty()) {
+                predicates.add(cb.equal(cb.lower(languageJoin.get("name")), language.toLowerCase()));
+            }
 
             //Sorting
             List<Order> orders = new ArrayList<>();
