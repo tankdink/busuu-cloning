@@ -87,7 +87,7 @@ public class PostController
                                               @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
                                               @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                              @RequestParam(value = "posts-type", required = false) String postType,
+                                              @RequestParam(value = "post-type", required = false) String postType,
                                               @RequestParam(value = "language", required = false) String language) {
 
         try {
@@ -208,7 +208,7 @@ public class PostController
                                              @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
                                              @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                             @RequestParam(value = "posts-type", required = false) String postType,
+                                             @RequestParam(value = "post-type", required = false) String postType,
                                              @RequestParam(value = "language", required = false) String language) {
 
         try {

@@ -303,6 +303,13 @@ public class PostService implements IPostService
 
             Pageable pageable = PageRequest.of(page, size);
 
+            if (language == null || language.isEmpty())
+            {
+                Language languageLearning = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true).getLanguage();
+                language = languageLearning.getName();
+
+            }
+
             Page<Post> posts = postRepository.findAll(PostSpecification.getSpecification(postType, language, sortBy, sortDirection, user.getId()), pageable);
 
             return posts.map(
