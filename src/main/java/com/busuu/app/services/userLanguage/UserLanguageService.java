@@ -38,18 +38,16 @@ public class UserLanguageService implements IUserLanguageService {
     @Transactional
     public UserLanguageResponse upSertUserLanguage(String requestId, UserLanguageDTO userLanguageDTO) {
         try {
-            String userId = "";
+            User user = null;
             if (userLanguageDTO.getUserId() != null || !userLanguageDTO.getUserId().isEmpty()) {
 
-                User user = userRepository.findById(userLanguageDTO.getUserId())
+                user = userRepository.findById(userLanguageDTO.getUserId())
                         .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userLanguageDTO.getUserId()));
-                userId = user.getId();
             } else {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                User user = (User) auth.getPrincipal();
-                userId = user.getId();
+                user = (User) auth.getPrincipal();
             }
-            UserLanguage existingUserLanguage = userLanguageRepository.findByUserIdAndLanguageId(userId, userLanguageDTO.getLanguageId());
+            UserLanguage existingUserLanguage = userLanguageRepository.findByUserIdAndLanguageId(user.getId(), userLanguageDTO.getLanguageId());
 
             if (existingUserLanguage != null) {
                 modelMapper.map(userLanguageDTO, existingUserLanguage);
@@ -58,7 +56,7 @@ public class UserLanguageService implements IUserLanguageService {
 
                 UserLanguageResponse res = modelMapper.map(existingUserLanguage, UserLanguageResponse.class);
                 res.setLanguageId(existingUserLanguage.getLanguage().getId());
-                res.setUserId(userId);
+                res.setUserId(user.getId());
 
                 return res;
             }
@@ -75,7 +73,7 @@ public class UserLanguageService implements IUserLanguageService {
 
             UserLanguageResponse res = modelMapper.map(userLanguage, UserLanguageResponse.class);
             res.setLanguageId(existingLanguage.getId());
-            res.setUserId(userId);
+            res.setUserId(user.getId());
 
             return res;
 
