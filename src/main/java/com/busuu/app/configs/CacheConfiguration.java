@@ -7,11 +7,9 @@ import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.Level;
 import com.busuu.app.entities.Role;
 import com.busuu.app.entities.Word;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.cache.jcache.ConfigSettings;
-import org.redisson.Redisson;
-import org.redisson.config.ClusterServersConfig;
-import org.redisson.config.Config;
-import org.redisson.config.SingleServerConfig;
+import org.redisson.api.RedissonClient;
 import org.redisson.jcache.configuration.RedissonConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,74 +25,29 @@ import org.springframework.context.annotation.Configuration;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
-import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableCaching
+@RequiredArgsConstructor
 public class CacheConfiguration {
 
     private GitProperties gitProperties;
     private BuildProperties buildProperties;
 
-    @Value("${cache.redis.server}")
-    private String[] redisServer;
-
-    @Value("${cache.redis.db}")
-    private int db;
-
-    @Value("${cache.redis.cluster}")
-    private boolean isCluster = false;
+    private final RedissonClient redissonClient;
 
     @Value("${cache.redis.expiration}")
     private Long expiration;
 
-    @Value("${cache.redis.connection-pool-size}")
-    private int connectionPoolSize;
-
-    @Value("${cache.redis.connection-minimum-idle-size}")
-    private int connectionMinimumIdleSize;
-
-    @Value("${cache.redis.subscription-connection-pool-size}")
-    private int subscriptionConnectionPoolSize;
-
     @Bean
     public javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration() {
         MutableConfiguration<Object, Object> jcacheConfig = new MutableConfiguration<>();
-
-        URI redisUri = URI.create(redisServer[0]);
-
-        Config config = new Config();
-        config.setCodec(new org.redisson.codec.SerializationCodec());
-        if (isCluster) {
-            ClusterServersConfig clusterServersConfig = config
-                    .useClusterServers()
-                    .setMasterConnectionPoolSize(connectionPoolSize)
-                    .setMasterConnectionMinimumIdleSize(connectionMinimumIdleSize)
-                    .setSubscriptionConnectionPoolSize(subscriptionConnectionPoolSize)
-                    .addNodeAddress(redisServer);
-
-            if (redisUri.getUserInfo() != null) {
-                clusterServersConfig.setPassword(redisUri.getUserInfo().substring(redisUri.getUserInfo().indexOf(':') + 1));
-            }
-        } else {
-            SingleServerConfig singleServerConfig = config
-                    .useSingleServer()
-                    .setDatabase(db)
-                    .setConnectionPoolSize(connectionPoolSize)
-                    .setConnectionMinimumIdleSize(connectionMinimumIdleSize)
-                    .setSubscriptionConnectionPoolSize(subscriptionConnectionPoolSize)
-                    .setAddress(redisServer[0]);
-
-            if (redisUri.getUserInfo() != null) {
-                singleServerConfig.setPassword(redisUri.getUserInfo().substring(redisUri.getUserInfo().indexOf(':') + 1));
-            }
-        }
         jcacheConfig.setStatisticsEnabled(true);
         jcacheConfig.setExpiryPolicyFactory(
                 CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, expiration))
         );
-        return RedissonConfiguration.fromInstance(Redisson.create(config), jcacheConfig);
+        return RedissonConfiguration.fromInstance(redissonClient, jcacheConfig);
     }
 
     @Bean
@@ -105,6 +58,7 @@ public class CacheConfiguration {
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer(javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration) {
         return cm -> {
+            // Hibernate regions
             createCache(cm, "default-update-timestamps-region", jcacheConfiguration);
             createCache(cm, "default-query-results-region", jcacheConfiguration);
 
@@ -119,16 +73,14 @@ public class CacheConfiguration {
             // Cache Queries
             createCache(cm, "word-cache", jcacheConfiguration);
 
-            // service
+            // Service Cache
             createCache(cm, CacheKey.USER_PRINCIPAL.getName(), jcacheConfiguration);
         };
     }
 
-    private void createCache(
-            javax.cache.CacheManager cm,
-            String cacheName,
-            javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration
-    ) {
+    private void createCache(javax.cache.CacheManager cm,
+                             String cacheName,
+                             javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration) {
         javax.cache.Cache<Object, Object> cache = cm.getCache(cacheName);
         if (cache != null) {
             cache.clear();

@@ -14,4 +14,5 @@ public interface ILanguageService
     LanguageResponse getLanguage(String requestId, String languageID);
     LanguageResponse updateLanguage(String requestId, String languageId, LanguageDTO infoUpdateLanguage);
     void deleteLanguage(String requestId, String languageId);
+    List<LanguageResponse> getAllWithTotalUsersLearning (String requestId);
 }

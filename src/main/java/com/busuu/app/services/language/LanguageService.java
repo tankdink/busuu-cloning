@@ -41,6 +41,17 @@ public class LanguageService implements ILanguageService
     private final ModelMapper modelMapper;
 
     @Override
+    public List<LanguageResponse> getAllWithTotalUsersLearning (String requestId) {
+        try {
+            return languageRepository.findAllWithTotalUsersLearning();
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get language list, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_ALL_LANGUAGE, requestId);
+        }
+    }
+
+    @Override
     @Transactional
     public LanguageResponse insertLanguage(String requestId, LanguageDTO languageDTO)
     {

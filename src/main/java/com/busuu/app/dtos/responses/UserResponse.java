@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
 
 
@@ -53,6 +54,9 @@ public class UserResponse extends BaseResponse {
 
     @JsonProperty("is_active")
     private boolean isActive;
+
+    @JsonProperty("last_seen_at")
+    private Instant lastSeenAt;
 
     @JsonProperty("roles")
     private List<Role> roles;
