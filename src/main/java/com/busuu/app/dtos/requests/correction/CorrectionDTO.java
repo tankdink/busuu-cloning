@@ -30,5 +30,9 @@ public class CorrectionDTO
     @JsonProperty("correction_id")
     private String correctionId;
 
+    @JsonProperty("comment")
+    @NotBlank(message = "Comment cannot be blank")
+    private String comment;
+
 
 }

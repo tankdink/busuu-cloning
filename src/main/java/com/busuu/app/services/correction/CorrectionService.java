@@ -79,8 +79,10 @@ public class CorrectionService implements ICorrectionService
                 existingCorrection = correctionRepository.findById(correctionDTO.getCorrectionId())
                         .orElseThrow(() -> new DataNotFoundException("Cannot find correction with ID " + correctionDTO.getCorrectionId()));
 
-                if (user.getId().equals(existingCorrection.getUser().getId()))
-                    throw new IllegalArgumentException("Cannot reply to your correction!");
+                if (existingCorrection.getCorrection() != null) throw new IllegalArgumentException("Correction cannot belong to a correction having father is another correction! Only allow post - correction - reply correction hierarchy!");
+
+//                if (user.getId().equals(existingCorrection.getUser().getId()))
+//                    throw new IllegalArgumentException("Cannot reply to your correction!");
             }
             else {
 
@@ -90,13 +92,16 @@ public class CorrectionService implements ICorrectionService
                 if (user.getId().equals(existingPost.getUser().getId()))
                     throw new IllegalArgumentException("Cannot correct to yourself!");
 
-                if (existingPost.getPostType() == PostType.TEXT && ( correctionDTO.getCorrectionText() == null || correctionDTO.getCorrectionText().isEmpty() ))
-                    throw new IllegalArgumentException("Post with TEXT type cannot have null Correction text");
+                if (existingPost.getPostType() == PostType.TEXT && correctionDTO.getCorrectionAudio() != null)
+                    throw new IllegalArgumentException("Post with TEXT type cannot have correction audio");
+
+//                if (existingPost.getPostType() == PostType.TEXT && ( correctionDTO.getCorrectionText() == null || correctionDTO.getCorrectionText().isEmpty() ))
+//                    throw new IllegalArgumentException("Post with TEXT type cannot have null Correction text");
 
             }
 
             if (correctionDTO.getCorrectionAudio() != null && correctionDTO.getCorrectionText() != null ) throw new IllegalArgumentException("Both Correction audio and Correction text cannot exist at the same time");
-            if (correctionDTO.getCorrectionAudio() == null && correctionDTO.getCorrectionText() == null ) throw new IllegalArgumentException("Either Correction audio and Correction must be exist");
+            //if (correctionDTO.getCorrectionAudio() == null && correctionDTO.getCorrectionText() == null ) throw new IllegalArgumentException("Either Correction audio and Correction must be exist");
 
 
             //Check valid file

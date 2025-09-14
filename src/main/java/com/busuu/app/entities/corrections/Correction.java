@@ -46,6 +46,9 @@ public class Correction extends BaseEntity
     @Column(name = "correction_text")
     private String correctionText;
 
+    @Column(name = "comment")
+    private String comment;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
