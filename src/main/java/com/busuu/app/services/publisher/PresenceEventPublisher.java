@@ -28,6 +28,7 @@ public class PresenceEventPublisher {
                 .data(PresenceFriendResponse.builder()
                         .userId(userId)
                         .status(status)
+                        .lastSeenAt(Instant.now())
                         .build())
                 .timestamp(Instant.now())
                 .type(TypeSocket.PRESENCE_CHANGE)
