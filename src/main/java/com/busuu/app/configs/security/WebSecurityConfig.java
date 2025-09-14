@@ -64,6 +64,9 @@ public class WebSecurityConfig {
 
                             .requestMatchers(GET,
                                     "/actuator/**").permitAll()
+
+                            .requestMatchers(POST, "/user_languages").permitAll()
+
                             .requestMatchers("/ws/**").permitAll()
                             .anyRequest()
                             .authenticated();

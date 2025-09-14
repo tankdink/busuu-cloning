@@ -37,7 +37,6 @@ public class UserLanguageController {
     private final UserLanguageService userLanguageService;
 
     @PostMapping()
-    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> upsertUserLanguage (@RequestParam(value = "req-id", required = false) String requestId,
                                                         @Valid @RequestBody UserLanguageDTO userLanguageDTO) {
