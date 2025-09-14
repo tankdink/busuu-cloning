@@ -10,6 +10,7 @@ import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.UserLanguageRepository;
+import com.busuu.app.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,7 @@ public class UserLanguageService implements IUserLanguageService {
 
     private final UserLanguageRepository userLanguageRepository;
     private final LanguageRepository languageRepository;
+    private final UserRepository userRepository;
 
     private final ModelMapper modelMapper;
 
@@ -36,10 +38,17 @@ public class UserLanguageService implements IUserLanguageService {
     @Transactional
     public UserLanguageResponse upSertUserLanguage(String requestId, UserLanguageDTO userLanguageDTO) {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            String userId = user.getId();
+            String userId = "";
+            if (userLanguageDTO.getUserId() != null || !userLanguageDTO.getUserId().isEmpty()) {
 
+                User user = userRepository.findById(userLanguageDTO.getUserId())
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userLanguageDTO.getUserId()));
+                userId = user.getId();
+            } else {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                User user = (User) auth.getPrincipal();
+                userId = user.getId();
+            }
             UserLanguage existingUserLanguage = userLanguageRepository.findByUserIdAndLanguageId(userId, userLanguageDTO.getLanguageId());
 
             if (existingUserLanguage != null) {

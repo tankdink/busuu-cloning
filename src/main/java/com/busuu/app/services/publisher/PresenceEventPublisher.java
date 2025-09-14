@@ -42,5 +42,4 @@ public class PresenceEventPublisher {
         log.info("Publishing [{}] event for user={} to friends={}",
                 payload.getType(), userId, friendIds);
     }
-
 }

@@ -28,6 +28,9 @@ public class UserLanguageDTO {
     @JsonProperty("speaking_status")
     private SpeakingStatus speakingStatus;
 
+    @JsonProperty("user_id")
+    private String userId;
+
     @JsonProperty("is_learning")
     @NotNull(message = "Is learning cannot be null")
     private Boolean isLearning;
