@@ -6,6 +6,7 @@ import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.UserLanguage;
+import com.busuu.app.entities.enums.LearningStatus;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.LanguageRepository;
@@ -38,45 +39,55 @@ public class UserLanguageService implements IUserLanguageService {
     @Transactional
     public UserLanguageResponse upSertUserLanguage(String requestId, UserLanguageDTO userLanguageDTO) {
         try {
-            User user;
-            if (userLanguageDTO.getUserId() != null && !userLanguageDTO.getUserId().isEmpty()) {
-                user = userRepository.findById(userLanguageDTO.getUserId())
-                        .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userLanguageDTO.getUserId()));
-            } else {
-                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                user = (User) auth.getPrincipal();
-            }
+            User user = userRepository.findById(userLanguageDTO.getUserId())
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userLanguageDTO.getUserId()));
 
             UserLanguage existing = userLanguageRepository.findByUserIdAndLanguageId(user.getId(), userLanguageDTO.getLanguageId());
 
             if (existing != null) {
-                handleLearningFlag(user, userLanguageDTO.getIsLearning());
+                if (existing.getLearningStatus() == LearningStatus.IN_PROGRESS
+                        && userLanguageDTO.getLearningStatus() == LearningStatus.NOT_STARTED) {
+                    throw new ErrorHandleException("Cannot set learning status from IN_PROGRESS to NOT_STARTED",
+                            HttpStatus.BAD_REQUEST, Constants.ERROR_CODE.ERR_UPSERT_USER_LANGUAGE, requestId);
+                }
 
-                modelMapper.map(userLanguageDTO, existing);
+                if (Boolean.FALSE.equals(userLanguageDTO.getIsLearning())) {
+                    modelMapper.map(userLanguageDTO, existing);
+
+                    if (userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true) == null) {
+                        throw new ErrorHandleException("Must have at least one language being learned!",
+                                HttpStatus.BAD_REQUEST, Constants.ERROR_CODE.ERR_UPSERT_USER_LANGUAGE, requestId);
+                    }
+                } else {
+                    handleLearningFlag(user, true);
+                    modelMapper.map(userLanguageDTO, existing);
+                }
+
                 existing = userLanguageRepository.save(existing);
-
                 return buildResponse(existing, user);
             }
 
-            if (userLanguageDTO.getIsLearning()) {
+            Language lang = languageRepository.findById(userLanguageDTO.getLanguageId())
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find Language with ID = " + userLanguageDTO.getLanguageId()));
+
+            UserLanguage newUL = modelMapper.map(userLanguageDTO, UserLanguage.class);
+            newUL.setId(UUID.randomUUID().toString());
+            newUL.setLanguage(lang);
+            newUL.setUser(user);
+
+            if (Boolean.TRUE.equals(userLanguageDTO.getIsLearning())) {
+                if (userLanguageDTO.getLearningStatus() != LearningStatus.IN_PROGRESS) {
+                    throw new ErrorHandleException("Cannot set learning status different IN_PROGRESS when learning is true",
+                            HttpStatus.BAD_REQUEST, Constants.ERROR_CODE.ERR_UPSERT_USER_LANGUAGE, requestId);
+                }
                 handleLearningFlag(user, true);
-
-                Language lang = languageRepository.findById(userLanguageDTO.getLanguageId())
-                        .orElseThrow(() -> new DataNotFoundException("Cannot find Language with ID = " + userLanguageDTO.getLanguageId()));
-
-                UserLanguage newUL = modelMapper.map(userLanguageDTO, UserLanguage.class);
-                newUL.setId(UUID.randomUUID().toString());
-                newUL.setLanguage(lang);
-                newUL.setUser(user);
-
-                newUL = userLanguageRepository.save(newUL);
-
-                return buildResponse(newUL, user);
+                newUL.setLearningStatus(LearningStatus.IN_PROGRESS);
             } else {
                 ensureAtLeastOneLearning(user);
-                throw new ErrorHandleException("Cannot add a non-learning language without at least one active learning language",
-                        HttpStatus.BAD_REQUEST, Constants.ERROR_CODE.ERR_UPSERT_USER_LANGUAGE, requestId);
             }
+
+            newUL = userLanguageRepository.save(newUL);
+            return buildResponse(newUL, user);
 
         } catch (Exception e) {
             log.error("requestId={}, failed to upsert user language, err={}", requestId, e.getMessage());
@@ -84,6 +95,7 @@ public class UserLanguageService implements IUserLanguageService {
                     Constants.ERROR_CODE.ERR_UPSERT_USER_LANGUAGE, requestId);
         }
     }
+
 
     private void handleLearningFlag(User user, boolean isLearning) throws Exception {
         if (isLearning) {
