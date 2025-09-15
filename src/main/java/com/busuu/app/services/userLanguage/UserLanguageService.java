@@ -38,50 +38,77 @@ public class UserLanguageService implements IUserLanguageService {
     @Transactional
     public UserLanguageResponse upSertUserLanguage(String requestId, UserLanguageDTO userLanguageDTO) {
         try {
-            User user = null;
-            if (userLanguageDTO.getUserId() != null || !userLanguageDTO.getUserId().isEmpty()) {
-
+            User user;
+            if (userLanguageDTO.getUserId() != null && !userLanguageDTO.getUserId().isEmpty()) {
                 user = userRepository.findById(userLanguageDTO.getUserId())
                         .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userLanguageDTO.getUserId()));
             } else {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                 user = (User) auth.getPrincipal();
             }
-            UserLanguage existingUserLanguage = userLanguageRepository.findByUserIdAndLanguageId(user.getId(), userLanguageDTO.getLanguageId());
 
-            if (existingUserLanguage != null) {
-                modelMapper.map(userLanguageDTO, existingUserLanguage);
+            UserLanguage existing = userLanguageRepository.findByUserIdAndLanguageId(user.getId(), userLanguageDTO.getLanguageId());
 
-                existingUserLanguage = userLanguageRepository.save(existingUserLanguage);
+            if (existing != null) {
+                handleLearningFlag(user, userLanguageDTO.getIsLearning());
 
-                UserLanguageResponse res = modelMapper.map(existingUserLanguage, UserLanguageResponse.class);
-                res.setLanguageId(existingUserLanguage.getLanguage().getId());
-                res.setUserId(user.getId());
+                modelMapper.map(userLanguageDTO, existing);
+                existing = userLanguageRepository.save(existing);
 
-                return res;
+                return buildResponse(existing, user);
             }
 
-            Language existingLanguage = languageRepository.findById(userLanguageDTO.getLanguageId())
-                    .orElseThrow(() -> new DataNotFoundException("Cannot find Language with ID = " + userLanguageDTO.getLanguageId()));
+            if (userLanguageDTO.getIsLearning()) {
+                handleLearningFlag(user, true);
 
-            UserLanguage userLanguage = modelMapper.map(userLanguageDTO, UserLanguage.class);
-            userLanguage.setId(UUID.randomUUID().toString());
-            userLanguage.setLanguage(existingLanguage);
-            userLanguage.setUser(user);
+                Language lang = languageRepository.findById(userLanguageDTO.getLanguageId())
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find Language with ID = " + userLanguageDTO.getLanguageId()));
 
-            userLanguage = userLanguageRepository.save(userLanguage);
+                UserLanguage newUL = modelMapper.map(userLanguageDTO, UserLanguage.class);
+                newUL.setId(UUID.randomUUID().toString());
+                newUL.setLanguage(lang);
+                newUL.setUser(user);
 
-            UserLanguageResponse res = modelMapper.map(userLanguage, UserLanguageResponse.class);
-            res.setLanguageId(existingLanguage.getId());
-            res.setUserId(user.getId());
+                newUL = userLanguageRepository.save(newUL);
 
-            return res;
+                return buildResponse(newUL, user);
+            } else {
+                ensureAtLeastOneLearning(user);
+                throw new ErrorHandleException("Cannot add a non-learning language without at least one active learning language",
+                        HttpStatus.BAD_REQUEST, Constants.ERROR_CODE.ERR_UPSERT_USER_LANGUAGE, requestId);
+            }
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to upsert user language, err="+e.getMessage());
+            log.error("requestId={}, failed to upsert user language, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_UPSERT_USER_LANGUAGE, requestId);
         }
+    }
+
+    private void handleLearningFlag(User user, boolean isLearning) throws Exception {
+        if (isLearning) {
+            userLanguageRepository.findByUserId(user.getId())
+                    .forEach(ul -> {
+                        ul.setIsLearning(false);
+                        userLanguageRepository.save(ul);
+                    });
+        } else {
+            ensureAtLeastOneLearning(user);
+        }
+    }
+
+    private void ensureAtLeastOneLearning(User user) throws Exception {
+        UserLanguage learning = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true);
+        if (learning == null) {
+            throw new Exception("Must have at least one language being learned!");
+        }
+    }
+
+    private UserLanguageResponse buildResponse(UserLanguage ul, User user) {
+        UserLanguageResponse res = modelMapper.map(ul, UserLanguageResponse.class);
+        res.setLanguageId(ul.getLanguage().getId());
+        res.setUserId(user.getId());
+        return res;
     }
 
     @Override
