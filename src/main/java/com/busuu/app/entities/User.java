@@ -16,12 +16,8 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.time.Instant;
 import java.util.*;
 
 
@@ -87,6 +83,21 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "langauge_code", nullable = false)
     private String languageCode;
+
+    @Column(name = "last_seen_at")
+    private Instant lastSeenAt;
+
+    //user is having a friend relationship with ...
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<FriendShip> fromUsers = new ArrayList<>();
+    //... this user
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "toUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<FriendShip> toUsers = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

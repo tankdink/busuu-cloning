@@ -25,6 +25,10 @@ public class Constants {
     public static final String RANDOM = "/random";
     public static final String USER_WORD = "/user_words";
     public static final String USER_LANGUAGE = "/user_languages";
+    public static final String PRESENCE ="/presence";
+    public static final String HEARTBEAT = "/heartbeat";
+
+
     public static final String QUESTION = "/questions";
     public static final String FILE = "/file";
     public static final String ANSWER = "/answers";
@@ -54,6 +58,7 @@ public class Constants {
     public static final String FILTER = "/filter";
     public static final String REVIEW = "/review";
     public static final String STATS = "/stats";
+    public static final String FRIENDS = "/friends";
 
     public static final String PATH_PARAM_ID = "/{id}";
     public static final String PATH_PARAM_USER = "/user";
@@ -201,11 +206,12 @@ public class Constants {
         public static final String ERR_GET_STATS_GRAMMAR_SECTION = "ERR_GET_STATS_GRAMMAR_SECTION";
         public static final String ERR_GET_COUNT_GRAMMAR_SECTION_PROGRESS = "ERR_GET_COUNT_GRAMMAR_SECTION_PROGRESS";
 
-
+        // User Language
         public static final String ERR_UPSERT_USER_LANGUAGE = "ERR_UPSERT_USER_LANGUAGE";
         public static final String ERR_GET_USER_LANGUAGE = "ERR_GET_USER_LANGUAGE";
 
+        // Presence
+        public static final String ERR_UPDATE_PRESENCE_STATUS = "ERR_UPDATE_PRESENCE_STATUS";
+        public static final String ERR_GET_PRESENCE_STATUS = "ERR_GET_PRESENCE_STATUS";
     }
-
-
 }

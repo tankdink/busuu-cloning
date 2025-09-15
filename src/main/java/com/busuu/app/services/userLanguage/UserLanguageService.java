@@ -10,6 +10,7 @@ import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.UserLanguageRepository;
+import com.busuu.app.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,7 @@ public class UserLanguageService implements IUserLanguageService {
 
     private final UserLanguageRepository userLanguageRepository;
     private final LanguageRepository languageRepository;
+    private final UserRepository userRepository;
 
     private final ModelMapper modelMapper;
 
@@ -36,11 +38,16 @@ public class UserLanguageService implements IUserLanguageService {
     @Transactional
     public UserLanguageResponse upSertUserLanguage(String requestId, UserLanguageDTO userLanguageDTO) {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            String userId = user.getId();
+            User user = null;
+            if (userLanguageDTO.getUserId() != null || !userLanguageDTO.getUserId().isEmpty()) {
 
-            UserLanguage existingUserLanguage = userLanguageRepository.findByUserIdAndLanguageId(userId, userLanguageDTO.getLanguageId());
+                user = userRepository.findById(userLanguageDTO.getUserId())
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userLanguageDTO.getUserId()));
+            } else {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                user = (User) auth.getPrincipal();
+            }
+            UserLanguage existingUserLanguage = userLanguageRepository.findByUserIdAndLanguageId(user.getId(), userLanguageDTO.getLanguageId());
 
             if (existingUserLanguage != null) {
                 modelMapper.map(userLanguageDTO, existingUserLanguage);
@@ -49,7 +56,7 @@ public class UserLanguageService implements IUserLanguageService {
 
                 UserLanguageResponse res = modelMapper.map(existingUserLanguage, UserLanguageResponse.class);
                 res.setLanguageId(existingUserLanguage.getLanguage().getId());
-                res.setUserId(userId);
+                res.setUserId(user.getId());
 
                 return res;
             }
@@ -66,7 +73,7 @@ public class UserLanguageService implements IUserLanguageService {
 
             UserLanguageResponse res = modelMapper.map(userLanguage, UserLanguageResponse.class);
             res.setLanguageId(existingLanguage.getId());
-            res.setUserId(userId);
+            res.setUserId(user.getId());
 
             return res;
 

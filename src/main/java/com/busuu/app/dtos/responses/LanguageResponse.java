@@ -1,5 +1,6 @@
 package com.busuu.app.dtos.responses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LanguageResponse extends BaseResponse
 {
     @JsonProperty("id")
@@ -29,4 +31,6 @@ public class LanguageResponse extends BaseResponse
     @JsonProperty("flag_icon_name")
     private String flagIconName;
 
+    @JsonProperty("total_users_learning")
+    private Long totalUsersLearning;
 }

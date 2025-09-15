@@ -1,10 +1,11 @@
-package systems.bt.reconn.config;
+package com.busuu.app.configs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.codec.JsonJacksonCodec;
+import org.redisson.codec.Kryo5Codec;
 import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
@@ -38,13 +39,13 @@ public class RedisCacheConfig {
     private int subscriptionConnectionPoolSize;
 
     @Bean(destroyMethod = "shutdown")
-    public RedissonClient redissonClient(ObjectMapper objectMapper) {
+    public RedissonClient redissonClient() {
         if (redisServers == null || redisServers.length == 0) {
             throw new IllegalArgumentException("Redis servers must be configured!");
         }
 
         Config config = new Config();
-        config.setCodec(new JsonJacksonCodec(objectMapper));
+        config.setCodec(new Kryo5Codec());
 
         if (isCluster) {
             ClusterServersConfig cluster = config.useClusterServers()

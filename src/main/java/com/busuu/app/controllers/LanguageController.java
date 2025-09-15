@@ -23,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +36,23 @@ public class LanguageController
     private final ILanguageService languageService;
 
     private final LocalizationUtils localizationUtils;
+
+    @GetMapping(Constants.USER)
+    public ResponseEntity<Response> getLanguagesWithTotalUsersLearning(@RequestParam(value = "req-id", required = false) String requestId) {
+        if (requestId == null || requestId.isEmpty()) {
+            requestId = UUID.randomUUID().toString();
+        }
+
+        List<LanguageResponse> languageResponses = languageService.getAllWithTotalUsersLearning(requestId);
+
+        return ResponseEntity.ok().body(
+                Response.builder()
+                        .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                        .status(HttpStatus.OK.value())
+                        .data(languageResponses)
+                        .build()
+        );
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })

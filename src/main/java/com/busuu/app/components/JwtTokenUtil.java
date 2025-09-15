@@ -89,4 +89,8 @@ public class JwtTokenUtil {
         return (email.equals(userDetails.getUsername()))
                 && !isTokenExpired(token);
     }
+
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", String.class));
+    }
 }
