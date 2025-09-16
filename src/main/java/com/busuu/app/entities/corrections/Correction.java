@@ -70,9 +70,4 @@ public class Correction extends BaseEntity
     @JoinColumn(name = "parent_correction_id")
     private Correction correction;
 
-    @JsonIgnore
-    @Builder.Default
-    @OneToMany(mappedBy = "correction", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Notification> notification = new ArrayList<>();
-
 }

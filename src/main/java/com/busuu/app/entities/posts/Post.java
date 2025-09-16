@@ -87,7 +87,7 @@ public class Post extends BaseEntity
 
     @JsonIgnore
     @Builder.Default
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "fromPost", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Notification> notification = new ArrayList<>();
 
 

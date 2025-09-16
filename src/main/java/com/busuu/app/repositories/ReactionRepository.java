@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReactionRepository extends JpaRepository<Reaction, String>
 {
-    Reaction findByUserIdAndId(String userId, String id);
+    Reaction findByUserIdAndCorrectionId(String userId, String correctionId);
     boolean existsByUserIdAndCorrectionId(String userId, String correctionId);
     long countByReactionTypeAndCorrectionId(ReactionType reactionType, String correctionId);
 

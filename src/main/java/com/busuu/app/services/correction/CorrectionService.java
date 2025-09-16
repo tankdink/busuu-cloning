@@ -158,7 +158,7 @@ public class CorrectionService implements ICorrectionService
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
 
-            Reaction reaction = reactionRepository.findByUserIdAndId(user.getId(), correctionId);
+            Reaction reaction = reactionRepository.findByUserIdAndCorrectionId(user.getId(), correctionId);
             if (reaction != null) correctionResponse.setReaction(reaction.getReactionType().name());
             else correctionResponse.setReaction(null);
 
@@ -194,7 +194,7 @@ public class CorrectionService implements ICorrectionService
                 correctionResponse.setPostId(correction.getPost() != null ? correction.getPost().getId() : null);
                 correctionResponse.setCorrectionId(correction.getCorrection() != null ? correction.getCorrection().getId() : null);
 
-                Reaction reaction = reactionRepository.findByUserIdAndId(user.getId(), correction.getId());
+                Reaction reaction = reactionRepository.findByUserIdAndCorrectionId(user.getId(), correction.getId());
                 if (reaction != null) correctionResponse.setReaction(reaction.getReactionType().name());
                 else correctionResponse.setReaction(null);
 
@@ -233,7 +233,7 @@ public class CorrectionService implements ICorrectionService
                 correctionResponse.setPostId(correction.getPost() != null ? correction.getPost().getId() : null);
                 correctionResponse.setCorrectionId(correction.getCorrection() != null ? correction.getCorrection().getId() : null);
 
-                Reaction reaction = reactionRepository.findByUserIdAndId(user.getId(), correction.getId());
+                Reaction reaction = reactionRepository.findByUserIdAndCorrectionId(user.getId(), correction.getId());
                 if (reaction != null) correctionResponse.setReaction(reaction.getReactionType().name());
                 else correctionResponse.setReaction(null);
 
@@ -336,6 +336,7 @@ public class CorrectionService implements ICorrectionService
             correctionResponse.setUserId(user.getId());
             correctionResponse.setPostId(existingCorrection.getPost() != null ? existingCorrection.getPost().getId() : null);
             correctionResponse.setCorrectionId(existingCorrection.getCorrection() != null ? existingCorrection.getCorrection().getId() : null);
+            correctionResponse.setReaction(newReaction.getReactionType().name());
 
             long likeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.LIKE, existingCorrection.getId());
             long dislikeCount = reactionRepository.countByReactionTypeAndCorrectionId(ReactionType.DISLIKE, existingCorrection.getId());

@@ -46,11 +46,7 @@ public class Notification extends BaseEntity
 
     @ManyToOne
     @JoinColumn(name = "from_post_id")
-    private Post post;
-
-    @ManyToOne
-    @JoinColumn(name = "from_correction_id")
-    private Correction correction;
+    private Post fromPost;
 
     @Column(name = "message")
     private String message;
