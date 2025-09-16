@@ -305,11 +305,7 @@ public class CorrectionService implements ICorrectionService
             Correction existingCorrection = correctionRepository.findById(correctionId)
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID " + correctionId) );
 
-            boolean existingReaction = reactionRepository.existsByUserIdAndCorrectionId(user.getId(), correctionId);
-            if (existingReaction) throw new ExistDataException("Already react to this post!");
-
             if (user.getId().equals(existingCorrection.getUser().getId())) throw new IllegalArgumentException("Cannot react to yourself!");
-
 
             //Valid reaction
             ReactionType reactionType;
@@ -322,15 +318,28 @@ public class CorrectionService implements ICorrectionService
                 throw new IllegalArgumentException("Illegal reaction! Must be \"LIKE\" or \"DISLIKE\" (ignore case) ");
             }
 
-            //Add reaction
-            Reaction newReaction = Reaction.builder()
-                    .id(UUID.randomUUID().toString())
-                    .user(user)
-                    .correction(existingCorrection)
-                    .reactionType(reactionType)
-                    .build();
+            Reaction newReaction = null;
 
-            newReaction = reactionRepository.save(newReaction);
+            Reaction existingReaction = reactionRepository.findByUserIdAndCorrectionId(user.getId(), correctionId);
+            if (existingReaction != null)
+            {
+                existingReaction.setReactionType(reactionType);
+                newReaction = reactionRepository.save(existingReaction);
+            }
+            else
+            {
+                //Add reaction
+                newReaction = Reaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .user(user)
+                        .correction(existingCorrection)
+                        .reactionType(reactionType)
+                        .build();
+
+                newReaction = reactionRepository.save(newReaction);
+
+            }
+
 
             CorrectionResponse correctionResponse = modelMapper.map(existingCorrection, CorrectionResponse.class);
             correctionResponse.setUserId(user.getId());
