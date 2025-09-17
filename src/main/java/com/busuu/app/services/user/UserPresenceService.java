@@ -56,7 +56,7 @@ public class UserPresenceService {
                     .set("1", ONLINE_TTL_SECONDS, TimeUnit.SECONDS);
 
             if (wasOffline) {
-                List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+                List<String> friends = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
                 presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.ONLINE, friends);
             }
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class UserPresenceService {
             redissonClient.getBucket(key, StringCodec.INSTANCE).delete();
 
             if (!isOnline(requestId, userId)) {
-                List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+                List<String> friends = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
                 presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.OFFLINE, friends);
             }
         } catch (Exception e) {

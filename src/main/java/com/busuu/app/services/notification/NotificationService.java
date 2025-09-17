@@ -158,7 +158,12 @@ public class NotificationService implements INotificationService
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            return notificationRepository.findByUserId(userId, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))).map(
+            Sort sort = Sort.by(
+                    Sort.Order.asc("status"),
+                    Sort.Order.desc("createdAt")
+            );
+
+            return notificationRepository.findByUserId(userId, PageRequest.of(page, size, sort)).map(
                     notification -> modelMapper.map(notification, NotificationResponse.class)
             );
 
@@ -206,5 +211,16 @@ public class NotificationService implements INotificationService
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHANGE_STATUS_NOTIFICATION, requestId);
         }
+    }
+
+    @Override
+    public Long countUnreadNotifications()
+    {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        String userId = user.getId();
+
+        return notificationRepository.countByUserIdAndStatus(userId, NotificationStatus.UNREAD);
     }
 }

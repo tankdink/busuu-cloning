@@ -57,7 +57,7 @@ public class NotificationController
             Object responseData = PagingResponse.<NotificationResponse>builder()
                     .totalPages(notifications.getTotalPages())
                     .objects(notifications.getContent())
-                    .totalObjects(notifications.getTotalElements())
+                    .totalObjects(notificationService.countUnreadNotifications())
                     .build();
 
             return ResponseEntity.ok(

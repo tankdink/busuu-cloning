@@ -20,4 +20,6 @@ public interface INotificationService
 
     NotificationResponse changeStatus(String requestId, String notificationId);
 
+    Long countUnreadNotifications();
+
 }

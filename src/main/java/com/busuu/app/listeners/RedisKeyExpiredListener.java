@@ -50,7 +50,7 @@ public class RedisKeyExpiredListener {
                 boolean stillOnline = userPresenceService.isOnline(requestId, userId);
                 if (!stillOnline) {
                     userRepository.updateLastSeenAt(userId, Instant.now());
-                    List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+                    List<String> friends = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
                     presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.OFFLINE, friends);
                 } else {
                     log.info("User {} still has active sessions, skip OFFLINE event", userId);
