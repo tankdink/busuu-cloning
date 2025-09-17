@@ -33,6 +33,7 @@ public class UserPresenceController {
 
     private final LocalizationUtils localizationUtils;
 
+
     @PutMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -41,7 +42,7 @@ public class UserPresenceController {
             requestId = UUID.randomUUID().toString();
         }
 
-        userPresenceService.setOnline(requestId);
+        userPresenceService.setOnline(requestId, requestId, null);
 
         return ResponseEntity.ok(
                 Response.builder()
@@ -59,7 +60,7 @@ public class UserPresenceController {
             requestId = UUID.randomUUID().toString();
         }
 
-        boolean isOnline = userPresenceService.isOnline(requestId);
+        boolean isOnline = userPresenceService.isOnline(requestId, null);
 
         return ResponseEntity.ok(
                 Response.builder()
@@ -77,7 +78,7 @@ public class UserPresenceController {
             requestId = UUID.randomUUID().toString();
         }
 
-        userPresenceService.refreshPresence(requestId);
+        userPresenceService.refreshPresence(requestId, requestId, null);
 
         return ResponseEntity.ok(
                 Response.builder()

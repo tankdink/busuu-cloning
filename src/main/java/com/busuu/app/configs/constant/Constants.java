@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 public class Constants {
     @Value("${api.prefix}")
-    public static final String PREFIX = "";
     public static final String USER = "/users";
     public static final String ROLE = "/roles";
     public static final String INFO = "/info";
@@ -29,7 +28,6 @@ public class Constants {
     public static final String PRESENCE ="/presence";
     public static final String HEARTBEAT = "/heartbeat";
     public static final String PENDING = "/pending";
-
 
     public static final String QUESTION = "/questions";
     public static final String FILE = "/file";
@@ -66,6 +64,10 @@ public class Constants {
     public static final String PATH_PARAM_USER = "/user";
     public static final String PATH_PARAM_POST = "/posts";
     public static final String SELF_DATA = "/self";
+
+    public static class SOCKET_DESTINATION {
+        public static final String HEARTBEAT = ".heartbeat";
+    }
 
     public static class URI {
         public static final String INDEX = "/index";

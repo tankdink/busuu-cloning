@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import java.security.Principal;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,9 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
             }
 
             String userId = jwtTokenUtil.extractUserId(token);
-            attributes.put("userId", userId);
+
+            Principal principal = () -> userId;
+            attributes.put("principal", principal);
 
             log.info("WebSocket handshake success: userId={}", userId);
             return true;
