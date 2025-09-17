@@ -28,6 +28,7 @@ public class Constants {
     public static final String USER_LANGUAGE = "/user_languages";
     public static final String PRESENCE ="/presence";
     public static final String HEARTBEAT = "/heartbeat";
+    public static final String PENDING = "/pending";
 
 
     public static final String QUESTION = "/questions";

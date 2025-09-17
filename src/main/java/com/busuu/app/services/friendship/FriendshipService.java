@@ -65,42 +65,14 @@ public class FriendshipService implements IFriendshipService
 
             if (user.getId().equals(existingUser.getId())) throw new IllegalArgumentException("Cannot add friend to yourself!");
 
+            Friendship friendship = null;
+            Friendship friendshipDirect = friendshipRepository.findByFromUserAndToUser(user, existingUser);
+            Friendship friendshipReverse = friendshipRepository.findByFromUserAndToUser(existingUser, user);
 
-            //Is already friend
-            boolean alreadyFrom = friendshipRepository.existsByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.ACCEPT);
-            boolean alreadyTo = friendshipRepository.existsByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.ACCEPT);
-            if (alreadyFrom || alreadyTo) throw new ExistDataException("You and that user is already friend!");
+            if ( friendshipDirect != null ) friendship = friendshipDirect;
+            else friendship = friendshipReverse;
 
-            //Is having a pending invitation
-            boolean pendingFrom = friendshipRepository.existsByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.PENDING);
-            if ( pendingFrom ) throw new ExistDataException("You have already sent request to that user!");
-            boolean pendingTo = friendshipRepository.existsByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.PENDING);
-            if ( pendingTo ) throw new ExistDataException("Please respond the friend request from that user!");
-
-            //Is having a rejected invitation -> switch from and to, set PENDING if the rejection is from initial user; if the rejection is from toUser, delete that invitation and add a new request
-            Friendship rejectFrom = friendshipRepository.findByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.REJECT);
-            if ( rejectFrom != null)
-            {
-                rejectFrom.setStatus(FriendshipStatus.PENDING);
-                friendshipRepository.save(rejectFrom);
-                return "Send friend request to user " + existingUser.getFullName() + " successfully!";
-            }
-
-            Friendship rejectTo = friendshipRepository.findByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.REJECT);
-            if ( rejectTo != null)
-            {
-
-                User tempToUser = rejectTo.getFromUser();
-                rejectTo.setStatus(FriendshipStatus.PENDING);
-                rejectTo.setFromUser(rejectTo.getToUser());
-                rejectTo.setToUser(tempToUser);
-
-                friendshipRepository.save(rejectTo);
-
-                return "Send friend request to user " + existingUser.getFullName() + " successfully!";
-
-            }
-            else
+            if ( friendship == null)
             {
                 //Adding relationship if no friendship exist
                 Friendship newFriendship = Friendship.builder()
@@ -110,18 +82,53 @@ public class FriendshipService implements IFriendshipService
                         .build();
 
                 friendshipRepository.save(newFriendship);
-
                 return "Send friend request to user " + existingUser.getFullName() + " successfully!";
-
             }
+            else
+            {
+                switch (friendship.getStatus())
+                {
+                    //Is already friend
+                    case ACCEPT:
+                    {
+                        throw new ExistDataException("You and that user is already friend!");
+                    }
+                    //Is having pending request
+                    case PENDING:
+                    {
+                        if ( friendship.getFromUser().getId().equals(user.getId())) throw new ExistDataException("You have already sent request to that user!");
+                        else throw new ExistDataException("Please respond the friend request from that user!");
+                    }
+                    //Is having reject request
+                    case REJECT:
+                    {
+                        if ( friendship.getFromUser().getId().equals(user.getId()))
+                        {
+                            friendship.setStatus(FriendshipStatus.PENDING);
+                            friendshipRepository.save(friendship);
+                            return "Send friend request to user " + existingUser.getFullName() + " successfully!";
+                        }
+                        else
+                        {
+                            User tempToUser = friendship.getFromUser();
+                            friendship.setStatus(FriendshipStatus.PENDING);
+                            friendship.setFromUser(friendship.getToUser());
+                            friendship.setToUser(tempToUser);
 
+                            friendshipRepository.save(friendship);
+
+                            return "Send friend request to user " + existingUser.getFullName() + " successfully!";
+                        }
+                    }
+                    default: return "Invalid status!";
+                }
+            }
 
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to add relationship, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_ADD_FRIENDSHIP, requestId);
         }
-
 
     }
 
@@ -142,7 +149,7 @@ public class FriendshipService implements IFriendshipService
             if (user.getId().equals(existingUser.getId())) throw new IllegalArgumentException("Cannot add friend to yourself!");
 
             Friendship friendship = friendshipRepository.findByFromUserAndToUser(existingUser, user);
-            if ( friendship == null ) throw new DataNotFoundException("You and that user do not have any friend invitation!");
+            if ( friendship == null ) throw new DataNotFoundException("That user doesn't send you request to respond");
             else
             {
                 FriendshipStatus friendshipStatus = friendship.getStatus();
@@ -189,6 +196,8 @@ public class FriendshipService implements IFriendshipService
         }
     }
 
+
+
     @Override
     public FriendshipResponse getFriendsByUserId(String userId)
     {
@@ -206,6 +215,35 @@ public class FriendshipService implements IFriendshipService
 
         } catch (Exception e) {
             log.error("request failed to get friend list, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_FRIENDSHIP, "Internal request" );
+        }
+    }
+
+    @Override
+    public FriendshipResponse getPendingRequest(String requestId)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            List<Friendship> friendList = friendshipRepository.findByToUserAndAndStatus(user, FriendshipStatus.PENDING);
+
+            List<String> userIdList = new ArrayList<>();
+            for (Friendship friendship : friendList) userIdList.add(friendship.getFromUser().getId());
+
+
+            FriendshipResponse response = FriendshipResponse.builder()
+                    .userId(user.getId())
+                    .friendIds(userIdList)
+                    .build();
+
+            return response;
+
+
+        } catch (Exception e) {
+            log.error("request failed to get pending friend list, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_FRIENDSHIP, "Internal request" );
         }
@@ -279,7 +317,6 @@ public class FriendshipService implements IFriendshipService
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + userId ));
 
             if (user.getId().equals(existingUser.getId())) throw new IllegalArgumentException("Cannot get status to yourself!");
-
 
             //Is already friend
             boolean alreadyFrom = friendshipRepository.existsByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.ACCEPT);

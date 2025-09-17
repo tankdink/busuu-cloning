@@ -19,6 +19,8 @@ public interface FriendshipRepository extends JpaRepository<Friendship, String>,
 
     Friendship findByFromUserAndToUserAndStatus(User fromUser, User toUser, FriendshipStatus status);
 
+    List<Friendship> findByToUserAndAndStatus(User toUser, FriendshipStatus status);
+
     Friendship findByFromUserAndToUser(User fromUser, User toUser);
 
     @Query("SELECT CASE WHEN fs.fromUser.id = :userId THEN fs.toUser.id ELSE fs.fromUser.id END " +

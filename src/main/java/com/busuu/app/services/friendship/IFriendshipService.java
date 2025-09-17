@@ -16,6 +16,8 @@ public interface IFriendshipService
 
     FriendshipResponse getFriendsByUserId(String userId);
 
+    FriendshipResponse getPendingRequest(String requestId);
+
     List<String> getRandomList(String requestId);
 
     String getFriendshipStatus(String requestId, String userId);

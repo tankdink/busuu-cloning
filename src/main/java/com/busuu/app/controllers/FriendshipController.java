@@ -157,6 +157,36 @@ public class FriendshipController
         }
     }
 
+    @GetMapping(Constants.PENDING)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getPendingRequest(@RequestParam(value = "req-id", required = false) String requestId)
+    {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            FriendshipResponse response = friendService.getPendingRequest(requestId);
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(response)
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("Error when get pending request, " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
     @PostMapping(Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
