@@ -29,6 +29,7 @@ public class UserLanguageDTO {
     private SpeakingStatus speakingStatus;
 
     @JsonProperty("user_id")
+    @NotBlank(message = "User ID cannot be null or empty")
     private String userId;
 
     @JsonProperty("is_learning")
