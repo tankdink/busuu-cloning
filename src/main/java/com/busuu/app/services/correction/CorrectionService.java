@@ -6,6 +6,7 @@ import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.CorrectionResponse;
 import com.busuu.app.entities.corrections.Correction;
 import com.busuu.app.entities.User;
+import com.busuu.app.entities.notifications.NotificationType;
 import com.busuu.app.entities.posts.Post;
 import com.busuu.app.entities.posts.PostType;
 import com.busuu.app.entities.reactions.Reaction;
@@ -18,6 +19,7 @@ import com.busuu.app.repositories.CorrectionRepository;
 import com.busuu.app.repositories.PostRepository;
 import com.busuu.app.repositories.ReactionRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
+import com.busuu.app.services.notification.NotificationService;
 import com.busuu.app.specification.CorrectionSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +54,8 @@ public class CorrectionService implements ICorrectionService
     private final ModelMapper modelMapper;
 
     private final IUploadCloudinaryService uploadCloudinaryService;
+
+    private final NotificationService notificationService;
 
     
     @Override
@@ -132,6 +136,10 @@ public class CorrectionService implements ICorrectionService
             correctionResponse.setReaction(null);
             correctionResponse.setLikeCount(0);
             correctionResponse.setDislikeCount(0);
+
+            if ( existingPost != null ) notificationService.addNotification(existingPost.getId(), NotificationType.POST_CORRECTED);
+            else notificationService.addNotification(existingCorrection.getId(), NotificationType.CORRECTION_REPLIED);
+
             return correctionResponse;
 
         } catch (Exception e) {
@@ -337,6 +345,8 @@ public class CorrectionService implements ICorrectionService
                         .build();
 
                 newReaction = reactionRepository.save(newReaction);
+
+                if (newReaction.getReactionType().equals(ReactionType.LIKE)) notificationService.addNotification(newReaction.getCorrection().getId(), NotificationType.CORRECTION_LIKED);
 
             }
 

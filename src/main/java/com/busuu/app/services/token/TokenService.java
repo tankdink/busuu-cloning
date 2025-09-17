@@ -86,5 +86,6 @@ public class TokenService implements ITokenService {
         existingToken.setRefreshToken(UUID.randomUUID().toString());
         existingToken.setRefreshExpirationDate(LocalDateTime.now().plusSeconds(expirationRefreshToken));
         return existingToken;
+
     }
 }

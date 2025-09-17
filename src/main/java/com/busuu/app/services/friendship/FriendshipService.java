@@ -9,12 +9,14 @@ import com.busuu.app.entities.UserLanguage;
 import com.busuu.app.entities.enums.FriendshipStatus;
 import com.busuu.app.entities.enums.LearningStatus;
 import com.busuu.app.entities.enums.SpeakingStatus;
+import com.busuu.app.entities.notifications.NotificationType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.repositories.FriendshipRepository;
 import com.busuu.app.repositories.UserLanguageRepository;
 import com.busuu.app.repositories.UserRepository;
+import com.busuu.app.services.notification.NotificationService;
 import com.busuu.app.specification.UserLanguageSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,8 @@ public class FriendshipService implements IFriendshipService
 {
 
     private final FriendshipRepository friendshipRepository;
+
+    private final NotificationService notificationService;
 
     private final UserRepository userRepository;
 
@@ -82,6 +86,8 @@ public class FriendshipService implements IFriendshipService
                         .build();
 
                 friendshipRepository.save(newFriendship);
+                notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED);
+
                 return "Send friend request to user " + existingUser.getFullName() + " successfully!";
             }
             else
@@ -106,6 +112,7 @@ public class FriendshipService implements IFriendshipService
                         {
                             friendship.setStatus(FriendshipStatus.PENDING);
                             friendshipRepository.save(friendship);
+                            notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED);
                             return "Send friend request to user " + existingUser.getFullName() + " successfully!";
                         }
                         else
@@ -116,6 +123,7 @@ public class FriendshipService implements IFriendshipService
                             friendship.setToUser(tempToUser);
 
                             friendshipRepository.save(friendship);
+                            notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED);
 
                             return "Send friend request to user " + existingUser.getFullName() + " successfully!";
                         }
@@ -127,7 +135,7 @@ public class FriendshipService implements IFriendshipService
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to add relationship, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_ADD_FRIENDSHIP, requestId);
+                    Constants.ERROR_CODE.ERR_CREATE_FRIENDSHIP, requestId);
         }
 
     }
@@ -158,6 +166,7 @@ public class FriendshipService implements IFriendshipService
                 {
                     friendship.setStatus(FriendshipStatus.valueOf(respond.toUpperCase()));
                     friendshipRepository.save(friendship);
+                    notificationService.addNotification(userId, NotificationType.FRIEND_ACCEPTED);
                     return "Respond friend request to user " + existingUser.getFullName() + " successfully!";
                 }
             }
@@ -166,7 +175,7 @@ public class FriendshipService implements IFriendshipService
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to respond invitation, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_ADD_FRIENDSHIP, requestId);
+                    Constants.ERROR_CODE.ERR_CREATE_FRIENDSHIP, requestId);
         }
     }
 

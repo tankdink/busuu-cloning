@@ -3,8 +3,14 @@ package com.busuu.app.entities.notifications;
 public enum NotificationType
 {
 
-    FRIEND,
+    FRIEND_REQUESTED,
 
-    POST
+    FRIEND_ACCEPTED,
+
+    POST_CORRECTED,
+
+    CORRECTION_LIKED,
+
+    CORRECTION_REPLIED
 
 }

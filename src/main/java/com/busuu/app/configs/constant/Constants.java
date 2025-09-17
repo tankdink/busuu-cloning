@@ -22,7 +22,7 @@ public class Constants {
     public static final String POST = "/posts";
     public static final String CORRECTION = "/corrections";
     public static final String WORD = "/words";
-
+    public static final String NOTIFICATION = "/notifications";
     public static final String RANDOM = "/random";
     public static final String USER_WORD = "/user_words";
     public static final String USER_LANGUAGE = "/user_languages";
@@ -201,10 +201,16 @@ public class Constants {
         public static final String ERR_GET_CORRECTION = "ERR_GET_CORRECTION";
 
         // Friendship
-        public static final String ERR_ADD_FRIENDSHIP = "ERR_ADD_FRIEND";
+        public static final String ERR_CREATE_FRIENDSHIP = "ERR_ADD_FRIEND";
         public static final String ERR_GET_FRIENDSHIP = "ERR_ADD_FRIEND";
         public static final String ERR_DELETE_FRIENDSHIP = "ERR_ADD_FRIEND";
 
+
+        // Notification
+        public static final String ERR_CREATE_NOTIFICATION = "ERR_CREATE_NOTIFICATION";
+        public static final String ERR_GET_NOTIFICATION = "ERR_GET_NOTIFICATION";
+        public static final String ERR_DELETE_NOTIFICATION = "ERR_DELETE_NOTIFICATION";
+        public static final String ERR_CHANGE_STATUS_NOTIFICATION = "ERR_CHANGE_STATUS_NOTIFICATION";
 
         // Stats
         public static final String ERR_GET_STATS_GRAMMAR_SECTION = "ERR_GET_STATS_GRAMMAR_SECTION";
