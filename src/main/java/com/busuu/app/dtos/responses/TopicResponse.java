@@ -2,6 +2,7 @@ package com.busuu.app.dtos.responses;
 
 import com.busuu.app.entities.topics.TopicType;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,5 +37,17 @@ public class TopicResponse extends BaseResponse
 
     @JsonProperty("topic_type")
     private TopicType topicType;
+
+    @JsonProperty("header")
+    private String header;
+
+    @JsonProperty("topic_question")
+    private String topicQuestion;
+
+    @JsonProperty("hint")
+    private String hint;
+
+    @JsonProperty("lesson_id")
+    private String lessonId;
 
 }

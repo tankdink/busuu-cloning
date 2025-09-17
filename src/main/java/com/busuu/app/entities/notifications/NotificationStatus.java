@@ -1,6 +1,6 @@
 package com.busuu.app.entities.notifications;
 
-public enum Status
+public enum NotificationStatus
 {
     READ,
 

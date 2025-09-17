@@ -7,6 +7,7 @@ public class Constants {
     public static final String PREFIX = "";
     public static final String USER = "/users";
     public static final String ROLE = "/roles";
+    public static final String INFO = "/info";
     public static final String LEVEL = "/levels";
     public static final String CHAPTER = "/chapters";
     public static final String COURSE = "/courses";
@@ -42,7 +43,7 @@ public class Constants {
     public static final String LANGUAGE = "/languages";
     public static final String GRAMMAR = "/grammars";
     public static final String GRAMMAR_SECTION = "/grammar_sections";
-    public static final String FRIEND = "/friends";
+    public static final String FRIENDSHIP = "/friendships";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String DETAILS = "/details";
@@ -198,8 +199,10 @@ public class Constants {
         public static final String ERR_CREATE_NEW_CORRECTION = "ERR_CREATE_NEW_CORRECTION";
         public static final String ERR_GET_CORRECTION = "ERR_GET_CORRECTION";
 
-        // Friend
-        public static final String ERR_ADD_FRIEND = "ERR_ADD_FRIEND";
+        // Friendship
+        public static final String ERR_ADD_FRIENDSHIP = "ERR_ADD_FRIEND";
+        public static final String ERR_GET_FRIENDSHIP = "ERR_ADD_FRIEND";
+        public static final String ERR_DELETE_FRIENDSHIP = "ERR_ADD_FRIEND";
 
 
         // Stats

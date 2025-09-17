@@ -3,10 +3,8 @@ package com.busuu.app.services.post;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.post.PostDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
-import com.busuu.app.dtos.responses.FriendResponse;
+import com.busuu.app.dtos.responses.FriendshipResponse;
 import com.busuu.app.dtos.responses.PostResponse;
-import com.busuu.app.dtos.responses.TopicResponse;
-import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.UserLanguage;
@@ -24,7 +22,7 @@ import com.busuu.app.repositories.TopicRepository;
 import com.busuu.app.repositories.UserLanguageRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.cloudinary.IUploadCloudinaryService;
-import com.busuu.app.services.friend.IFriendService;
+import com.busuu.app.services.friendship.IFriendshipService;
 import com.busuu.app.specification.PostSpecification;
 import com.busuu.app.utils.UploadCloudinaryUtil;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +57,7 @@ public class PostService implements IPostService
 
     private final IUploadCloudinaryService uploadCloudinaryService;
 
-    private final IFriendService friendService;
+    private final IFriendshipService friendService;
 
     private final PostRepository postRepository;
 
@@ -260,7 +258,7 @@ public class PostService implements IPostService
             User user = (User) auth.getPrincipal();
 
             //Get friend list
-            FriendResponse friendList = friendService.getFriendsByUserId(user.getId());
+            FriendshipResponse friendList = friendService.getFriendsByUserId(user.getId());
 
             //Get friend's id list
             List<String> idList = friendList.getFriendIds();
@@ -334,21 +332,28 @@ public class PostService implements IPostService
         }
     }
 
-    public Page<PostResponse> getPostsContainSelfCorrection(String requestId, int page, int size)
+    public Page<PostResponse> getPostsContainUserCorrection(String requestId, int page, int size, String userId)
     {
         try {
 
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
+            if (userId == null || userId.isEmpty())
+            {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                User user = (User) auth.getPrincipal();
+                userId = user.getId();
 
-            UserLanguage language = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true);
-            String languageName = language.getLanguage().getName();
+            }
+
+            UserLanguage language = userLanguageRepository.findByUserIdAndIsLearning(userId, true);
+            String languageName;
+            if (language == null) languageName = "English";
+            else languageName = language.getLanguage().getName();
 
             //Temp value
             List<Post> responseTemp = new ArrayList<>();
 
             //Get list of self correction
-            List<Correction> selfCorrections = correctionRepository.findByUserIdAndPostLanguageName(user.getId(), languageName);
+            List<Correction> selfCorrections = correctionRepository.findByUserIdAndPostLanguageName(userId, languageName);
 
             //Get list of post that contain these correction (may duplicate due to multiple correction in 1 post)
             for (Correction correction : selfCorrections)

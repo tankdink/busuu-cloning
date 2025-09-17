@@ -118,4 +118,33 @@ public class TopicController {
         }
     }
 
+    @GetMapping(value = Constants.LESSON + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getTopicByLessonId(@RequestParam(value = "req-id", required = false) String requestId,
+                                             @PathVariable("id") String lessonId) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            List<TopicResponse> topic = topicService.getTopicsByLessonId(requestId, lessonId);
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(topic)
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("Error when get topic, " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
 }

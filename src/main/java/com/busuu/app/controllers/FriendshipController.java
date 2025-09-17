@@ -1,10 +1,9 @@
 package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.responses.FriendResponse;
+import com.busuu.app.dtos.responses.FriendshipResponse;
 import com.busuu.app.dtos.responses.Response;
-import com.busuu.app.dtos.responses.UserLanguageResponse;
-import com.busuu.app.services.friend.IFriendService;
+import com.busuu.app.services.friendship.IFriendshipService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,24 +14,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @Controller
 @RestController
-@RequestMapping(Constants.FRIEND)
+@RequestMapping(Constants.FRIENDSHIP)
 @RequiredArgsConstructor
 @Slf4j
-public class FriendController
+public class FriendshipController
 {
-    private final IFriendService friendService;
+    private final IFriendshipService friendService;
 
     private final LocalizationUtils localizationUtils;
 
@@ -52,7 +46,7 @@ public class FriendController
                 requestId = UUID.randomUUID().toString();
             }
 
-            FriendResponse response = friendService.getFriends(requestId, sortBy, sortDirection, searchValue, country);
+            FriendshipResponse response = friendService.getFriends(requestId, sortBy, sortDirection, searchValue, country);
 
             return ResponseEntity.ok(
                     Response.builder()
@@ -131,5 +125,71 @@ public class FriendController
             );
         }
     }
+
+    @GetMapping(Constants.STATS + Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getFriendshipStatus(@RequestParam(value = "req-id", required = false) String requestId,
+                                                  @PathVariable("id") String userId)
+    {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            String response = friendService.getFriendshipStatus(requestId, userId);
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(response)
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("Error when get friend status, " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
+    @PostMapping(Constants.PATH_PARAM_ID)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<Response> addOrRespondFriendshipRequest(@RequestParam(value = "req-id", required = false) String requestId,
+                                                                  @PathVariable("id") String userId,
+                                                                  @RequestParam(value = "respond", required = false) String respond) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+            String response = null;
+
+            if (respond == null || respond.isEmpty()) response = friendService.addFriendRequest(requestId, userId);
+            else response = friendService.respondRequest(requestId, userId, respond);
+
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(response)
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("Error when add friend request, " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .build()
+            );
+        }
+    }
+
 
 }

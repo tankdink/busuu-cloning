@@ -1,6 +1,6 @@
 package com.busuu.app.entities.enums;
 
-public enum FriendShipStatus {
+public enum FriendshipStatus {
     PENDING,
     ACCEPT,
     REJECT

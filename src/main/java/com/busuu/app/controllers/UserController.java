@@ -6,10 +6,7 @@ import com.busuu.app.dtos.requests.user.UserActionPasswordDTO;
 import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserLoginDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
-import com.busuu.app.dtos.responses.LoginResponse;
-import com.busuu.app.dtos.responses.PagingResponse;
-import com.busuu.app.dtos.responses.Response;
-import com.busuu.app.dtos.responses.UserResponse;
+import com.busuu.app.dtos.responses.*;
 import com.busuu.app.entities.Token;
 import com.busuu.app.entities.User;
 import com.busuu.app.exceptions.DataNotFoundException;
@@ -575,6 +572,34 @@ public class UserController {
             }
 
             UserResponse userResponse = userService.getUserById(requestId, userId);
+
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .data(userResponse)
+                            .status(HttpStatus.OK.value())
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED))
+                            .status(HttpStatus.UNAUTHORIZED.value())
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(Constants.PATH_PARAM_ID + Constants.INFO)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Response> getUserInfoById (@RequestParam(value = "req-id", required = false) String requestId,
+                                                 @PathVariable("id") String userId) {
+        try {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+            }
+
+            UserInfoResponse userResponse = userService.getUserInfoById(requestId, userId);
 
             return ResponseEntity.ok(
                     Response.builder()

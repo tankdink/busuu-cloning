@@ -1,7 +1,7 @@
 package com.busuu.app.repositories;
 
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.enums.FriendShipStatus;
+import com.busuu.app.entities.enums.FriendshipStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,10 +48,10 @@ public interface UserRepository extends JpaRepository<User, String>, JpaSpecific
     void updateLastSeenAt(String userId, Instant time);
 
     @Query("SELECT DISTINCT CASE WHEN fs.fromUser.id = :userId THEN fs.toUser.id ELSE fs.fromUser.id END " +
-            "FROM FriendShip fs " +
+            "FROM Friendship fs " +
             "WHERE (fs.fromUser.id = :userId OR fs.toUser.id = :userId) " +
-            "AND fs.status = :friendShipStatus")
+            "AND fs.status = :friendshipStatus")
     List<String> findFriendIds(@Param("userId") String userId,
-                               @Param("friendShipStatus") FriendShipStatus friendShipStatus);
+                               @Param("friendshipStatus") FriendshipStatus friendShipStatus);
 
 }

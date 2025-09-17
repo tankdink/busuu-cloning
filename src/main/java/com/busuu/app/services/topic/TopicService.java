@@ -2,10 +2,12 @@ package com.busuu.app.services.topic;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.TopicResponse;
+import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.topics.Topic;
 import com.busuu.app.entities.topics.TopicType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
+import com.busuu.app.repositories.LessonRepository;
 import com.busuu.app.repositories.TopicRepository;
 import com.busuu.app.specification.TopicSpecification;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,8 @@ public class TopicService implements ITopicService
 {
 
     private final TopicRepository topicRepository;
+
+    private final LessonRepository lessonRepository;
 
     private final ModelMapper modelMapper;
 
@@ -60,6 +64,7 @@ public class TopicService implements ITopicService
                             response.setCategory(topic.getTopicCategory().getCategoryName());
                         }
                         else response.setCategory(null);
+                        response.setLessonId(topic.getLesson().getId());
 
                         return response;
                     }
@@ -77,6 +82,38 @@ public class TopicService implements ITopicService
     }
 
     @Override
+    public List<TopicResponse> getTopicsByLessonId(String requestId, String lessonId) {
+        try {
+
+            boolean existingLesson = lessonRepository.existsById(lessonId);
+
+            if (!existingLesson) throw new DataNotFoundException("No lesson found with id " + lessonId);
+
+
+            return topicRepository.findByLessonId(lessonId).stream().map(
+                    topic ->
+                    {
+                        TopicResponse response = modelMapper.map(topic, TopicResponse.class);
+
+                        if (topic.getTopicCategory() != null) {
+                            response.setCategory(topic.getTopicCategory().getCategoryName());
+                        }
+                        else response.setCategory(null);
+                        response.setLessonId(topic.getLesson().getId());
+
+                        return response;
+                    }
+            ).toList();
+
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get topic, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_COURSE, requestId);
+        }
+    }
+
+    @Override
     public TopicResponse getTopic(String requestId, String topicId)
     {
         try {
@@ -90,6 +127,7 @@ public class TopicService implements ITopicService
                 response.setCategory(topic.getTopicCategory().getCategoryName());
             }
             else response.setCategory(null);
+            response.setLessonId(topic.getLesson().getId());
 
             return response;
 

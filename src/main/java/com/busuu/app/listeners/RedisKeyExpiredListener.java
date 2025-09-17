@@ -1,6 +1,6 @@
 package com.busuu.app.listeners;
 
-import com.busuu.app.entities.enums.FriendShipStatus;
+import com.busuu.app.entities.enums.FriendshipStatus;
 import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.publisher.PresenceEventPublisher;
@@ -35,7 +35,7 @@ public class RedisKeyExpiredListener {
                 log.info("User {} offline detected via key expiration", userId);
                 userRepository.updateLastSeenAt(userId, Instant.now());
 
-                List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+                List<String> friends = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
 
                 //  Publish event for friends
                 presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.OFFLINE, friends);

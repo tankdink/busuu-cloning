@@ -2,6 +2,7 @@ package com.busuu.app.entities;
 
 import com.busuu.app.entities.progresses.LessonProgress;
 import com.busuu.app.entities.questions.Question;
+import com.busuu.app.entities.topics.Topic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -69,4 +70,8 @@ public class Lesson extends BaseEntity{
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<LessonProgress> lessonProgresses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Topic> topics = new ArrayList<>();
 }

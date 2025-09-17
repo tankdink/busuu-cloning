@@ -246,9 +246,7 @@ public class PostController
     }
 
 
-
-
-    @GetMapping(Constants.FRIEND)
+    @GetMapping(Constants.FRIENDSHIP)
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getFriendPosts(@RequestParam(value = "req-id", required = false) String requestId,
@@ -291,13 +289,15 @@ public class PostController
         }
     }
 
-    @GetMapping(Constants.CORRECTION + Constants.SELF_DATA)
+    @GetMapping(Constants.CORRECTION)
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getPostsContainSelfCorrection(@RequestParam(value = "req-id", required = false) String requestId,
 
                                                  @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size)
+                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+
+                                                 @RequestParam(value = "user-id", required = false) String userId)
     {
 
         try {
@@ -307,7 +307,7 @@ public class PostController
             }
 
             //Call get posts list service
-            Page<PostResponse> postsList = postService.getPostsContainSelfCorrection(requestId, page, size);
+            Page<PostResponse> postsList = postService.getPostsContainUserCorrection(requestId, page, size, userId);
             Object responseData = PagingResponse.<PostResponse>builder()
                     .totalPages(postsList.getTotalPages())
                     .objects(postsList.getContent())

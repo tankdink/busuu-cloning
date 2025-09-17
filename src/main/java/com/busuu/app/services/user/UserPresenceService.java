@@ -3,7 +3,7 @@ package com.busuu.app.services.user;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.PresenceFriendResponse;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.enums.FriendShipStatus;
+import com.busuu.app.entities.enums.FriendshipStatus;
 import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.UserRepository;
@@ -50,7 +50,7 @@ public class UserPresenceService {
                     .set("1", ONLINE_TTL_SECONDS, TimeUnit.SECONDS);
 
             //  Publish event for friends
-            List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+            List<String> friends = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
             presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.ONLINE, friends);
         } catch (Exception e) {
             log.error("requestId={},failed to update presence status of user, err={}", requestId, e.getMessage());
@@ -96,7 +96,7 @@ public class UserPresenceService {
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            List<String> friendIds = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+            List<String> friendIds = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
             if (friendIds.isEmpty()) {
                 return List.of();
             }

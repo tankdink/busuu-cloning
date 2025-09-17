@@ -1,6 +1,7 @@
 package com.busuu.app.entities.topics;
 
 import com.busuu.app.entities.BaseEntity;
+import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.notifications.Notification;
 import com.busuu.app.entities.posts.Post;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,6 +38,15 @@ public class Topic extends BaseEntity
     @Column(name = "video_description")
     private String videoDescription;
 
+    @Column(name = "header")
+    private String header;
+
+    @Column(name = "topic_question")
+    private String topicQuestion;
+
+    @Column(name = "hint")
+    private String hint;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "topic_type")
     private TopicType topicType;
@@ -49,6 +59,10 @@ public class Topic extends BaseEntity
     @Builder.Default
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "lesson_id")
+    private Lesson lesson;
 
 
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FriendResponse extends BaseResponse
+public class FriendshipResponse extends BaseResponse
 {
 
     @JsonProperty("user_id")

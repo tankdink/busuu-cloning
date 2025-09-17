@@ -1,0 +1,358 @@
+package com.busuu.app.services.friendship;
+
+import com.busuu.app.configs.constant.Constants;
+import com.busuu.app.dtos.responses.FriendshipResponse;
+import com.busuu.app.dtos.responses.UserLanguageResponse;
+import com.busuu.app.entities.Friendship;
+import com.busuu.app.entities.User;
+import com.busuu.app.entities.UserLanguage;
+import com.busuu.app.entities.enums.FriendshipStatus;
+import com.busuu.app.entities.enums.LearningStatus;
+import com.busuu.app.entities.enums.SpeakingStatus;
+import com.busuu.app.exceptions.DataNotFoundException;
+import com.busuu.app.exceptions.ErrorHandleException;
+import com.busuu.app.exceptions.ExistDataException;
+import com.busuu.app.repositories.FriendshipRepository;
+import com.busuu.app.repositories.UserLanguageRepository;
+import com.busuu.app.repositories.UserRepository;
+import com.busuu.app.specification.UserLanguageSpecification;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.math.ec.rfc7748.X448;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class FriendshipService implements IFriendshipService
+{
+
+    private final FriendshipRepository friendshipRepository;
+
+    private final UserRepository userRepository;
+
+    private final UserLanguageRepository userLanguageRepository;
+
+    private final ModelMapper modelMapper;
+
+
+    @Override
+    @Transactional
+    public String addFriendRequest(String requestId, String userId)
+    {
+
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            //Check valid userId, already friend/pending/rejected, add friend to self
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + userId ));
+
+            if (user.getId().equals(existingUser.getId())) throw new IllegalArgumentException("Cannot add friend to yourself!");
+
+
+            //Is already friend
+            boolean alreadyFrom = friendshipRepository.existsByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.ACCEPT);
+            boolean alreadyTo = friendshipRepository.existsByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.ACCEPT);
+            if (alreadyFrom || alreadyTo) throw new ExistDataException("You and that user is already friend!");
+
+            //Is having a pending invitation
+            boolean pendingFrom = friendshipRepository.existsByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.PENDING);
+            if ( pendingFrom ) throw new ExistDataException("You have already sent request to that user!");
+            boolean pendingTo = friendshipRepository.existsByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.PENDING);
+            if ( pendingTo ) throw new ExistDataException("Please respond the friend request from that user!");
+
+            //Is having a rejected invitation -> switch from and to, set PENDING if the rejection is from initial user; if the rejection is from toUser, delete that invitation and add a new request
+            Friendship rejectFrom = friendshipRepository.findByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.REJECT);
+            if ( rejectFrom != null)
+            {
+                rejectFrom.setStatus(FriendshipStatus.PENDING);
+                friendshipRepository.save(rejectFrom);
+                return "Send friend request to user " + existingUser.getFullName() + " successfully!";
+            }
+
+            Friendship rejectTo = friendshipRepository.findByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.REJECT);
+            if ( rejectTo != null)
+            {
+
+                User tempToUser = rejectTo.getFromUser();
+                rejectTo.setStatus(FriendshipStatus.PENDING);
+                rejectTo.setFromUser(rejectTo.getToUser());
+                rejectTo.setToUser(tempToUser);
+
+                friendshipRepository.save(rejectTo);
+
+                return "Send friend request to user " + existingUser.getFullName() + " successfully!";
+
+            }
+            else
+            {
+                //Adding relationship if no friendship exist
+                Friendship newFriendship = Friendship.builder()
+                        .id(UUID.randomUUID().toString())
+                        .fromUser(user)
+                        .toUser(existingUser)
+                        .build();
+
+                friendshipRepository.save(newFriendship);
+
+                return "Send friend request to user " + existingUser.getFullName() + " successfully!";
+
+            }
+
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to add relationship, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_ADD_FRIENDSHIP, requestId);
+        }
+
+
+    }
+
+    @Override
+    public String respondRequest(String requestId, String userId, String respond)
+    {
+        try {
+
+            if ( !respond.equalsIgnoreCase("accept") && !respond.equalsIgnoreCase("reject")) throw new IllegalArgumentException("Invalid respond! Must be \"accept\" or \"reject\"");
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            //Check valid userId, already friend/pending/rejected, add friend to self
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + userId ));
+
+            if (user.getId().equals(existingUser.getId())) throw new IllegalArgumentException("Cannot add friend to yourself!");
+
+            Friendship friendship = friendshipRepository.findByFromUserAndToUser(existingUser, user);
+            if ( friendship == null ) throw new DataNotFoundException("You and that user do not have any friend invitation!");
+            else
+            {
+                FriendshipStatus friendshipStatus = friendship.getStatus();
+                if ( friendshipStatus.equals(FriendshipStatus.ACCEPT) || friendshipStatus.equals(FriendshipStatus.REJECT) ) throw new IllegalArgumentException("You have already respond the friend invitation from that user!");
+                else
+                {
+                    friendship.setStatus(FriendshipStatus.valueOf(respond.toUpperCase()));
+                    friendshipRepository.save(friendship);
+                    return "Respond friend request to user " + existingUser.getFullName() + " successfully!";
+                }
+            }
+
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to respond invitation, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_ADD_FRIENDSHIP, requestId);
+        }
+    }
+
+    @Override
+    public FriendshipResponse getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String country)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
+            List<String> friendList = friendshipRepository.findFriendIdsWithFilter(user.getId(), FriendshipStatus.ACCEPT, searchValue, country);
+
+            FriendshipResponse response = FriendshipResponse.builder()
+                    .userId(userId)
+                    .friendIds(friendList)
+                    .build();
+
+            return response;
+
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to get friend list, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_FRIENDSHIP, requestId);
+        }
+    }
+
+    @Override
+    public FriendshipResponse getFriendsByUserId(String userId)
+    {
+        try {
+
+            List<String> friendIds = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
+
+            FriendshipResponse response = FriendshipResponse.builder()
+                    .userId(userId)
+                    .friendIds(friendIds)
+                    .build();
+
+            return response;
+
+
+        } catch (Exception e) {
+            log.error("request failed to get friend list, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_FRIENDSHIP, "Internal request" );
+        }
+    }
+
+    @Override
+    public List<String> getRandomList(String requestId)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            //Get speaking and learning language of self
+            List<String> learning = new ArrayList<>();
+            List<String> speaking = new ArrayList<>();
+
+            List<UserLanguage> userLanguages = userLanguageRepository.findByUserId(user.getId());
+
+            for (UserLanguage userLanguage : userLanguages)
+            {
+
+                if (userLanguage.getLearningStatus().equals(LearningStatus.IN_PROGRESS)) learning.add(userLanguage.getLanguage().getName());
+                if (!userLanguage.getSpeakingStatus().equals(SpeakingStatus.NO_PROFICIENCY)) speaking.add(userLanguage.getLanguage().getName());
+
+            }
+
+
+            Specification<UserLanguage> spec = UserLanguageSpecification.getSpecification(learning, speaking);
+            List<UserLanguageResponse> responseList = userLanguageRepository.findAll(spec).stream().map(
+                    userLanguage ->  {
+
+                        UserLanguageResponse res = modelMapper.map(userLanguage, UserLanguageResponse.class);
+                        res.setLanguageId(userLanguage.getLanguage().getId());
+                        res.setUserId(userLanguage.getUser().getId());
+
+                        return res;
+                    }
+            ).toList(); //This list is unmodifiable
+
+            //Get user id from list
+            List<String> userIdList = new ArrayList<>();
+            for (UserLanguageResponse userLanguage : responseList) userIdList.add(userLanguage.getUserId());
+
+            //Remove duplicate and friends
+            Set<String> set = new HashSet<>(userIdList);
+            List<String> response = new ArrayList<>(set);
+            response.remove(user.getId());
+
+            List<String> friendIds = userRepository.findFriendIds(user.getId(), FriendshipStatus.ACCEPT);
+            for (String friendId : friendIds) response.remove(friendId);
+
+            return randomize(response);
+
+        } catch (Exception e) {
+            log.error("requestId=" + requestId + ",failed to get friend list, err=" + e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_FRIENDSHIP, requestId);
+        }
+    }
+
+    @Override
+    public String getFriendshipStatus(String requestId, String userId)
+    {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            //Check valid userId, already friend/pending/rejected, add friend to self
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + userId ));
+
+            if (user.getId().equals(existingUser.getId())) throw new IllegalArgumentException("Cannot get status to yourself!");
+
+
+            //Is already friend
+            boolean alreadyFrom = friendshipRepository.existsByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.ACCEPT);
+            boolean alreadyTo = friendshipRepository.existsByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.ACCEPT);
+            if (alreadyFrom || alreadyTo) return "ACCEPTED";
+
+
+            //Is having a pending invitation
+            boolean pendingFrom = friendshipRepository.existsByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.PENDING);
+            if ( pendingFrom ) return "INVITATION_SENT";
+            boolean pendingTo = friendshipRepository.existsByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.PENDING);
+            if ( pendingTo ) return "PENDING_RESPOND";
+
+            return "NONE";
+
+        } catch (Exception e) {
+            log.error("requestId=" + requestId + ",failed to get friend status, err=" + e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_FRIENDSHIP, requestId);
+
+
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteFriend(String requestId, String userId)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+
+            //Check valid userId, not friend, delete to self
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + userId ));
+
+            if (user.getId().equals(existingUser.getId())) throw new IllegalArgumentException("Cannot process to yourself!");
+
+            //Is not friend
+            Friendship alreadyFrom = friendshipRepository.findByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.ACCEPT);
+            Friendship alreadyTo = friendshipRepository.findByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.ACCEPT);
+            if (alreadyFrom == null && alreadyTo == null) throw new ExistDataException("You and that user is not friend!");
+
+            if (alreadyFrom != null) friendshipRepository.delete(alreadyFrom);
+            else friendshipRepository.delete(alreadyTo);
+
+        } catch (Exception e) {
+            log.error("requestId="+requestId+",failed to delete friend, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_DELETE_FRIENDSHIP, requestId);
+        }
+    }
+
+    public List<String> randomize(List<String> list)
+    {
+
+        if (list.size() <= 5) {
+            return list;
+        }
+
+        //Response list
+        List<String> resultList = new ArrayList<>(5);
+
+        //Shuffle the copy list
+        List<String> copy = new ArrayList<>(list);
+        Collections.shuffle(copy);
+
+        //Add the first 5 elements of the shuffled list to result list
+        for (int i = 0; i < 5; i++) resultList.add(copy.get(i));
+
+        return resultList;
+
+    }
+}

@@ -8,6 +8,7 @@ import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserLoginDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
+import com.busuu.app.dtos.responses.UserInfoResponse;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.Role;
 import com.busuu.app.entities.Token;
@@ -291,6 +292,20 @@ public class UserService implements IUserService {
             User existingUser = userRepository.findById(userId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
             return modelMapper.map(existingUser, UserResponse.class);
+        } catch (Exception e) {
+            log.error("requestId={},failed to get user by id, err={}", requestId, e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_USER, requestId);
+        }
+    }
+
+    @Override
+    public UserInfoResponse getUserInfoById(String requestId, String userId)
+    {
+        try {
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
+            return modelMapper.map(existingUser, UserInfoResponse.class);
         } catch (Exception e) {
             log.error("requestId={},failed to get user by id, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,

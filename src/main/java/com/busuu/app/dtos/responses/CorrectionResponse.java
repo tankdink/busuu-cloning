@@ -21,9 +21,6 @@ public class CorrectionResponse extends BaseResponse
     @JsonProperty("correction_id")
     private String id;
 
-    @JsonProperty("subject_text")
-    private String subjectText;
-
     @JsonProperty("correction_audio_name")
     private String correctionAudioName;
 

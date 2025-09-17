@@ -2,11 +2,7 @@ package com.busuu.app.entities.notifications;
 
 import com.busuu.app.entities.BaseEntity;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.corrections.Correction;
 import com.busuu.app.entities.posts.Post;
-import com.busuu.app.entities.posts.PostType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,15 +10,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "notification")
@@ -40,23 +32,19 @@ public class Notification extends BaseEntity
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "from_user_id")
-    private User fromUser;
-
-    @ManyToOne
-    @JoinColumn(name = "from_post_id")
-    private Post fromPost;
+    @Column(name = "destination_id")
+    private String destinationId;
 
     @Column(name = "message")
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type")
-    private NotificationType notificationType;
+    @Builder.Default
+    @Column(name = "status")
+    private NotificationStatus status = NotificationStatus.UNREAD;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private Status status;
+    @Column(name = "type")
+    private NotificationType type;
 
 }

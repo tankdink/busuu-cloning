@@ -4,6 +4,7 @@ import com.busuu.app.dtos.requests.user.UserActionPasswordDTO;
 import com.busuu.app.dtos.requests.user.UserDTO;
 import com.busuu.app.dtos.requests.user.UserLoginDTO;
 import com.busuu.app.dtos.requests.user.UserUpdateDTO;
+import com.busuu.app.dtos.responses.UserInfoResponse;
 import com.busuu.app.dtos.responses.UserResponse;
 import com.busuu.app.entities.User;
 import com.busuu.app.exceptions.DataNotFoundException;
@@ -28,6 +29,8 @@ public interface IUserService {
     Page<UserResponse> getUsersByRole (String requestId, String roleName, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String isActive);
 
     UserResponse getUserById (String requestId, String userId);
+
+    UserInfoResponse getUserInfoById (String requestId, String userId);
 
     int generateOTP(String requestId, String email) throws DataNotFoundException;
 

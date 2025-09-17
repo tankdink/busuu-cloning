@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -91,12 +90,12 @@ public class User extends BaseEntity implements UserDetails {
     @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<FriendShip> fromUsers = new ArrayList<>();
+    private List<Friendship> fromUsers = new ArrayList<>();
     //... this user
     @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "toUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<FriendShip> toUsers = new ArrayList<>();
+    private List<Friendship> toUsers = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -171,15 +170,6 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Correction> corrections = new ArrayList<>();
 
-    //user is having a friend relationship with ...
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Friend> users;
-    //... this user
-    @JsonIgnore
-    @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Friend> friends;
-
     @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -189,11 +179,6 @@ public class User extends BaseEntity implements UserDetails {
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Notification> notificationUser = new ArrayList<>();
-
-    @JsonIgnore
-    @Builder.Default
-    @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Notification> notificationFromUser = new ArrayList<>();
 
 
     @Override

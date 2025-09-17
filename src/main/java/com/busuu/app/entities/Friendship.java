@@ -1,6 +1,6 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.enums.FriendShipStatus;
+import com.busuu.app.entities.enums.FriendshipStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,13 +16,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "friend_ship")
+@Table(name = "friendship")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FriendShip extends BaseEntity {
+public class Friendship extends BaseEntity {
 
     @Id
     @Column(name = "friend_ship_id")
@@ -39,5 +39,5 @@ public class FriendShip extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     @Builder.Default
-    private FriendShipStatus status = FriendShipStatus.PENDING;
+    private FriendshipStatus status = FriendshipStatus.PENDING;
 }
