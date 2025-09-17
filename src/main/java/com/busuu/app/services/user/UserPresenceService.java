@@ -5,6 +5,7 @@ import com.busuu.app.dtos.responses.PresenceFriendResponse;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.enums.FriendShipStatus;
 import com.busuu.app.entities.enums.PresenceStatus;
+import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.publisher.PresenceEventPublisher;
@@ -142,9 +143,13 @@ public class UserPresenceService {
                 String pattern = buildPattern(fid);
                 boolean isOnline = redissonClient.getKeys().getKeysByPattern(pattern, 1).iterator().hasNext();
 
+                User friendDetail = userRepository.findById(fid)
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + fid));
+
                 result.add(PresenceFriendResponse.builder()
                         .userId(fid)
                         .status(isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE)
+                        .lastSeenAt(friendDetail.getLastSeenAt())
                         .build());
             }
 
