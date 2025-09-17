@@ -8,10 +8,10 @@ import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.publisher.PresenceEventPublisher;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RBatch;
-import org.redisson.api.RFuture;
+import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 import org.springframework.http.HttpStatus;
@@ -20,9 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -38,20 +36,28 @@ public class UserPresenceService {
 
     private static final long ONLINE_TTL_SECONDS = 60;
 
-    private static final String PRESENCE_KEY = "user:presence:%s";
+    private static final String PRESENCE_KEY = "user:presence:%s:%s";
 
-    public void setOnline(String requestId) {
+    private static final String PRESENCE_PATTERN = "user:presence:%s";
+
+    public void setOnline(String requestId, String sessionId, String userId) {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            String userId = user.getId();
+            if (Strings.isNullOrEmpty(userId)) {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                User user = (User) auth.getPrincipal();
+                userId = user.getId();
+            }
 
-            redissonClient.getBucket(buildKey(userId), StringCodec.INSTANCE)
+            String key = buildKey(userId, sessionId);
+
+            boolean wasOffline = !isOnline(requestId, userId);
+            redissonClient.getBucket(key, StringCodec.INSTANCE)
                     .set("1", ONLINE_TTL_SECONDS, TimeUnit.SECONDS);
 
-            //  Publish event for friends
-            List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
-            presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.ONLINE, friends);
+            if (wasOffline) {
+                List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+                presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.ONLINE, friends);
+            }
         } catch (Exception e) {
             log.error("requestId={},failed to update presence status of user, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -60,13 +66,37 @@ public class UserPresenceService {
 
     }
 
-    public void refreshPresence(String requestId) {
+    public void setOffline(String requestId, String sessionId, String userId) {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            String userId = user.getId();
+            if (Strings.isNullOrEmpty(userId)) {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                User user = (User) auth.getPrincipal();
+                userId = user.getId();
+            }
 
-            redissonClient.getBucket(buildKey(userId), StringCodec.INSTANCE)
+            String key = buildKey(userId, sessionId);
+            redissonClient.getBucket(key, StringCodec.INSTANCE).delete();
+
+            if (!isOnline(requestId, userId)) {
+                List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+                presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.OFFLINE, friends);
+            }
+        } catch (Exception e) {
+            log.error("requestId={},failed to update presence status of user, err={}", requestId, e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_UPDATE_PRESENCE_STATUS, requestId);
+        }
+    }
+
+    public void refreshPresence(String requestId, String sessionId, String userId) {
+        try {
+            if (Strings.isNullOrEmpty(userId)) {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                User user = (User) auth.getPrincipal();
+                userId = user.getId();
+            }
+
+            redissonClient.getBucket(buildKey(userId, sessionId), StringCodec.INSTANCE)
                     .set("1", ONLINE_TTL_SECONDS, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("requestId={},failed to update presence status of user, err={}", requestId, e.getMessage());
@@ -76,13 +106,17 @@ public class UserPresenceService {
     }
 
 
-    public boolean isOnline(String requestId) {
+    public boolean isOnline(String requestId, String userId) {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            String userId = user.getId();
+            if (Strings.isNullOrEmpty(userId)) {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                User user = (User) auth.getPrincipal();
+                userId = user.getId();
+            }
 
-            return redissonClient.getBucket(buildKey(userId), StringCodec.INSTANCE).isExists();
+            RKeys keys = redissonClient.getKeys();
+            Iterable<String> iter = keys.getKeysByPattern("user:presence:" + userId + ":*");
+            return iter.iterator().hasNext();
         } catch (Exception e){
             log.error("requestId={},failed to get presence status of user, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -101,25 +135,16 @@ public class UserPresenceService {
                 return List.of();
             }
 
-            // Use pipeline (batch)
-            RBatch batch = redissonClient.createBatch();
-            Map<String, RFuture<Object>> futures = new HashMap<>();
-
-            for (String fid : friendIds) {
-                String key = buildKey(fid);
-                futures.put(fid, batch.getBucket(key, StringCodec.INSTANCE).getAsync());
-            }
-
-            batch.execute();
-
             List<PresenceFriendResponse> result = new ArrayList<>();
+            RKeys rKeys = redissonClient.getKeys();
+
             for (String fid : friendIds) {
-                Object value = futures.get(fid).getNow();
-                PresenceStatus status = (value != null) ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE;
+                String pattern = buildPattern(fid);
+                boolean isOnline = redissonClient.getKeys().getKeysByPattern(pattern, 1).iterator().hasNext();
 
                 result.add(PresenceFriendResponse.builder()
                         .userId(fid)
-                        .status(status)
+                        .status(isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE)
                         .build());
             }
 
@@ -131,7 +156,11 @@ public class UserPresenceService {
         }
     }
 
-    private String buildKey(String userId) {
-        return String.format(PRESENCE_KEY, userId);
+    private String buildKey(String userId, String sessionId) {
+        return String.format(PRESENCE_KEY, userId, sessionId);
+    }
+
+    private String buildPattern(String userId) {
+        return String.format(PRESENCE_PATTERN, userId);
     }
 }

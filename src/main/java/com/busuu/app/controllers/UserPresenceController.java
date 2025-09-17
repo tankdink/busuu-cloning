@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +37,7 @@ public class UserPresenceController {
 
     private final LocalizationUtils localizationUtils;
 
+
     @PutMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -41,7 +46,7 @@ public class UserPresenceController {
             requestId = UUID.randomUUID().toString();
         }
 
-        userPresenceService.setOnline(requestId);
+        userPresenceService.setOnline(requestId, requestId, null);
 
         return ResponseEntity.ok(
                 Response.builder()
@@ -59,7 +64,7 @@ public class UserPresenceController {
             requestId = UUID.randomUUID().toString();
         }
 
-        boolean isOnline = userPresenceService.isOnline(requestId);
+        boolean isOnline = userPresenceService.isOnline(requestId, null);
 
         return ResponseEntity.ok(
                 Response.builder()
@@ -77,7 +82,7 @@ public class UserPresenceController {
             requestId = UUID.randomUUID().toString();
         }
 
-        userPresenceService.refreshPresence(requestId);
+        userPresenceService.refreshPresence(requestId, requestId, null);
 
         return ResponseEntity.ok(
                 Response.builder()

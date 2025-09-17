@@ -1,5 +1,6 @@
 package com.busuu.app.configs;
 
+import com.busuu.app.configs.security.CustomHandshakeHandler;
 import com.busuu.app.configs.security.StompChannelInterceptor;
 import com.busuu.app.configs.security.WebSocketAuthInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints (StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
+                .setHandshakeHandler(new CustomHandshakeHandler())
                 .addInterceptors(webSocketAuthInterceptor)
                 .withSockJS();
     }
+
 }

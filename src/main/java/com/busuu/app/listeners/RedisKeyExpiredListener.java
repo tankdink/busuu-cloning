@@ -4,6 +4,7 @@ import com.busuu.app.entities.enums.FriendShipStatus;
 import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.publisher.PresenceEventPublisher;
+import com.busuu.app.services.user.UserPresenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
 @Slf4j
@@ -23,6 +25,8 @@ public class RedisKeyExpiredListener {
     private final UserRepository userRepository;
     private final RedissonClient redissonClient;
 
+    private final UserPresenceService userPresenceService;
+
     private final PresenceEventPublisher presenceEventPublisher;
 
     @Bean
@@ -31,14 +35,26 @@ public class RedisKeyExpiredListener {
             log.info("Expired event received: channel={}, msg={}", channel, msg);
 
             if (msg.startsWith("user:presence:")) {
-                String userId = msg.replace("user:presence:", "");
-                log.info("User {} offline detected via key expiration", userId);
-                userRepository.updateLastSeenAt(userId, Instant.now());
+                String[] parts = msg.split(":");
+                if (parts.length < 4) {
+                    log.warn("Invalid expired key format: {}", msg);
+                    return;
+                }
+                String userId = parts[2];
+                String sessionId = parts[3];
 
-                List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+                log.info("User {} offline detected via key expiration, sessionId={}", userId, sessionId);
 
-                //  Publish event for friends
-                presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.OFFLINE, friends);
+                String requestId = UUID.randomUUID().toString();
+
+                boolean stillOnline = userPresenceService.isOnline(requestId, userId);
+                if (!stillOnline) {
+                    userRepository.updateLastSeenAt(userId, Instant.now());
+                    List<String> friends = userRepository.findFriendIds(userId, FriendShipStatus.ACCEPT);
+                    presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.OFFLINE, friends);
+                } else {
+                    log.info("User {} still has active sessions, skip OFFLINE event", userId);
+                }
             }
         };
 
@@ -48,5 +64,6 @@ public class RedisKeyExpiredListener {
 
         return listener;
     }
+
 
 }

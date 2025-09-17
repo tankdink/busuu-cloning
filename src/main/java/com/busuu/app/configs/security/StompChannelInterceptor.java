@@ -12,6 +12,8 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -24,7 +26,8 @@ public class StompChannelInterceptor implements ChannelInterceptor {
 
         if (accessor != null && StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
             String destination = accessor.getDestination();
-            String userId = (String) accessor.getSessionAttributes().get("userId");
+            Principal principal = accessor.getUser();
+            String userId = principal.getName();
 
             if (destination == null || userId == null) {
                 log.warn("Missing destination or userId in SUBSCRIBE");
