@@ -79,7 +79,7 @@ public class CorrectionService implements ICorrectionService
                 existingCorrection = correctionRepository.findById(correctionDTO.getCorrectionId())
                         .orElseThrow(() -> new DataNotFoundException("Cannot find correction with ID " + correctionDTO.getCorrectionId()));
 
-                if (existingCorrection.getCorrection() != null) throw new IllegalArgumentException("Correction cannot belong to a correction having father is another correction! Only allow post - correction - reply correction hierarchy!");
+//               if (existingCorrection.getCorrection() != null) throw new IllegalArgumentException("Correction cannot belong to a correction having father is another correction! Only allow post - correction - reply correction hierarchy!");
 
 //                if (user.getId().equals(existingCorrection.getUser().getId()))
 //                    throw new IllegalArgumentException("Cannot reply to your correction!");
