@@ -23,19 +23,38 @@ public interface FriendshipRepository extends JpaRepository<Friendship, String>,
 
     Friendship findByFromUserAndToUser(User fromUser, User toUser);
 
-    @Query("SELECT CASE WHEN fs.fromUser.id = :userId THEN fs.toUser.id ELSE fs.fromUser.id END " +
-            "FROM Friendship fs " +
-            "JOIN User fu ON fs.fromUser.id = fu.id " +
-            "JOIN User tu ON fs.toUser.id = tu.id " +
-            "WHERE (fs.fromUser.id = :userId OR fs.toUser.id = :userId) " +
-            "AND fs.status = :friendshipStatus " +
-            "AND (:searchValue IS NULL OR fu.fullName LIKE %:searchValue% OR tu.fullName LIKE %:searchValue%) " +
-            "AND (:country IS NULL OR fu.country = :country OR tu.country = :country) " +
-            "ORDER BY fu.fullName, tu.fullName")
+    @Query("""
+            SELECT DISTINCT 
+            CASE WHEN fs.fromUser.id = :userId THEN fs.toUser.id ELSE fs.fromUser.id END 
+            FROM Friendship fs 
+            JOIN fs.fromUser fu 
+            JOIN fs.toUser tu 
+            LEFT JOIN fu.userLanguages fuul 
+            LEFT JOIN tu.userLanguages tuul 
+            WHERE (fs.fromUser.id = :userId OR fs.toUser.id = :userId) 
+                AND fs.status = :friendshipStatus 
+                AND (
+                       :searchValue IS NULL
+                       OR (
+                            fs.fromUser.id = :userId 
+                            AND LOWER(tu.fullName) LIKE LOWER(CONCAT('%', :searchValue, '%'))
+                          )
+                       OR (
+                            fs.toUser.id = :userId 
+                            AND LOWER(fu.fullName) LIKE LOWER(CONCAT('%', :searchValue, '%'))
+                          )
+                       )
+                AND (
+                    :languageId IS NULL 
+                        OR (fuul.language.id = :languageId AND fuul.speakingStatus <> NO_PROFICIENCY) 
+                        OR (tuul.language.id = :languageId AND tuul.speakingStatus <> NO_PROFICIENCY) 
+                    )
+            """)
     List<String> findFriendIdsWithFilter(@Param("userId") String userId,
                                          @Param("friendshipStatus") FriendshipStatus friendshipStatus,
                                          @Param("searchValue") String searchValue,
-                                         @Param("country") String country);
+                                         @Param("languageId") String languageId);
+
 
 
 }

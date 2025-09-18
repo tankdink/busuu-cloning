@@ -180,7 +180,7 @@ public class FriendshipService implements IFriendshipService
     }
 
     @Override
-    public FriendshipResponse getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String country)
+    public FriendshipResponse getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String languageId)
     {
         try {
 
@@ -188,7 +188,7 @@ public class FriendshipService implements IFriendshipService
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            List<String> friendList = friendshipRepository.findFriendIdsWithFilter(user.getId(), FriendshipStatus.ACCEPT, searchValue, country);
+            List<String> friendList = friendshipRepository.findFriendIdsWithFilter(user.getId(), FriendshipStatus.ACCEPT, searchValue, languageId);
 
             FriendshipResponse response = FriendshipResponse.builder()
                     .userId(userId)

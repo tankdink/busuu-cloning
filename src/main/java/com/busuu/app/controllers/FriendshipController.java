@@ -39,14 +39,14 @@ public class FriendshipController
                                                 @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
                                                 @RequestParam(value = "search-value",required = false) String searchValue,
 
-                                                @RequestParam(value = "country",required = false) String country)
+                                                @RequestParam(value = "language-id",required = false) String languageId)
     {
         try {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
 
-            FriendshipResponse response = friendService.getFriends(requestId, sortBy, sortDirection, searchValue, country);
+            FriendshipResponse response = friendService.getFriends(requestId, sortBy, sortDirection, searchValue, languageId);
 
             return ResponseEntity.ok(
                     Response.builder()
