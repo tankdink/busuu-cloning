@@ -17,7 +17,7 @@ public interface IPostService
 
     Page<PostResponse> getSelfPost(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String country);
 
-    List<PostResponse> getByUserId(String requestId, String userId);
+    Page<PostResponse> getByUserId(String requestId, String userId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String country);
 
     Page<PostResponse> getByFriendlist(String requestId, int page, int size);
 

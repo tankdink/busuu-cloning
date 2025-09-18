@@ -164,7 +164,17 @@ public class PostController
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> getPostByUserId(@RequestParam(value = "req-id", required = false) String requestId,
-                                            @PathVariable("id") String userId)
+                                                    @PathVariable("id") String userId,
+
+                                                    @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                    @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+
+                                                    @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                                    @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
+                                                    @RequestParam(value = "search-value", required = false) String searchValue,
+
+                                                    @RequestParam(value = "post-type", required = false) String postType,
+                                                    @RequestParam(value = "language", required = false) String language)
     {
 
         try {
@@ -174,14 +184,20 @@ public class PostController
             }
 
             //Call get posts by user ID service
-            List<PostResponse> postList = postService.getByUserId(requestId, userId);
+            Page<PostResponse> postList = postService.getByUserId(requestId, userId, page, size, sortBy, sortDirection, searchValue, postType, language);
+            Object responseData = PagingResponse.<PostResponse>builder()
+                    .totalPages(postList.getTotalPages())
+                    .objects(postList.getContent())
+                    .totalObjects(postList.getTotalElements())
+                    .build();
+
 
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
                             .status(HttpStatus.OK.value())
-                            .data(postList)
+                            .data(responseData)
                             .build()
             );
 

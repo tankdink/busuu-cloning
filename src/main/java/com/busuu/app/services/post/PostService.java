@@ -216,7 +216,7 @@ public class PostService implements IPostService
     }
 
     @Override
-    public List<PostResponse> getByUserId(String requestId, String userId)
+    public Page<PostResponse> getByUserId(String requestId, String userId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String language)
     {
 
         try {
@@ -224,9 +224,19 @@ public class PostService implements IPostService
             User existingUser = userRepository.findById(userId)
                     .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + userId ));
 
-            List<Post> posts = postRepository.findByUserId(userId, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Pageable pageable = PageRequest.of(page, size);
 
-            return posts.stream().map(post ->
+            if (language == null || language.isEmpty())
+            {
+                UserLanguage languageLearning = userLanguageRepository.findByUserIdAndIsLearning(existingUser.getId(), true);
+                if ( languageLearning == null ) language = "English";
+                else language = languageLearning.getLanguage().getName();
+
+            }
+
+            Page<Post> posts = postRepository.findAll(PostSpecification.getSpecification(postType, language, sortBy, sortDirection, userId), pageable);
+
+            return posts.map(post ->
             {
                 PostResponse postResponse = modelMapper.map(post, PostResponse.class);
                 postResponse.setUserId(post.getUser().getId());
@@ -238,7 +248,7 @@ public class PostService implements IPostService
 
                 return postResponse;
 
-            }).toList();
+            });
 
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get posts list, err="+e.getMessage());
@@ -247,6 +257,7 @@ public class PostService implements IPostService
         }
 
     }
+
 
     @Override
     public Page<PostResponse> getByFriendlist(String requestId, int page, int size)
@@ -268,7 +279,7 @@ public class PostService implements IPostService
 
             for (String id : idList)
             {
-                List<PostResponse> friendPost = getByUserId("Internal request", id);
+                List<PostResponse> friendPost = getByUserId(id);
                 response.addAll(friendPost);
             }
 
@@ -303,8 +314,9 @@ public class PostService implements IPostService
 
             if (language == null || language.isEmpty())
             {
-                Language languageLearning = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true).getLanguage();
-                language = languageLearning.getName();
+                UserLanguage languageLearning = userLanguageRepository.findByUserIdAndIsLearning(user.getId(), true);
+                if ( languageLearning == null ) language = "English";
+                else language = languageLearning.getLanguage().getName();
 
             }
 
@@ -433,4 +445,37 @@ public class PostService implements IPostService
         if (!resourceType.equals(requiredType)) throw new InvalidFileException("Invalid file type: required: " + requiredType + " but get: " + resourceType);
 
     }
+
+    public List<PostResponse> getByUserId(String userId)
+    {
+
+        try {
+
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + userId ));
+
+            List<Post> posts = postRepository.findByUserId(userId, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+            return posts.stream().map(post ->
+            {
+                PostResponse postResponse = modelMapper.map(post, PostResponse.class);
+                postResponse.setUserId(post.getUser().getId());
+                postResponse.setLanguageId(post.getLanguage().getId());
+
+                long correctionCount = correctionRepository.countByPostId(post.getId());
+                postResponse.setCorrectionCount(correctionCount);
+                postResponse.setTopicId(post.getTopic().getId());
+
+                return postResponse;
+
+            }).toList();
+
+        } catch (Exception e) {
+            log.error("failed to get posts list, err="+e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_GET_POST, "Internal request");
+        }
+
+    }
+
 }
