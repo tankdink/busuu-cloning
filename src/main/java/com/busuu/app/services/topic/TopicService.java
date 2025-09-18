@@ -64,7 +64,7 @@ public class TopicService implements ITopicService
                             response.setCategory(topic.getTopicCategory().getCategoryName());
                         }
                         else response.setCategory(null);
-                        response.setLessonId(topic.getLesson().getId());
+                        if (topic.getLesson() != null) response.setLessonId(topic.getLesson().getId());
 
                         return response;
                     }
@@ -99,7 +99,7 @@ public class TopicService implements ITopicService
                             response.setCategory(topic.getTopicCategory().getCategoryName());
                         }
                         else response.setCategory(null);
-                        response.setLessonId(topic.getLesson().getId());
+                        if (topic.getLesson() != null) response.setLessonId(topic.getLesson().getId());
 
                         return response;
                     }
@@ -127,7 +127,7 @@ public class TopicService implements ITopicService
                 response.setCategory(topic.getTopicCategory().getCategoryName());
             }
             else response.setCategory(null);
-            response.setLessonId(topic.getLesson().getId());
+            if (topic.getLesson() != null) response.setLessonId(topic.getLesson().getId());
 
             return response;
 
