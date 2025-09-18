@@ -372,7 +372,7 @@ public class PostService implements IPostService
             {
 
                 Post post = correction.getPost();
-                responseTemp.add(post);
+                if (!post.getUser().getId().equals(userId)) responseTemp.add(post);
 
             }
 

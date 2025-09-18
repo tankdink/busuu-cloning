@@ -8,6 +8,7 @@ import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.corrections.Correction;
 import com.busuu.app.entities.enums.FriendshipStatus;
+import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.entities.notifications.Notification;
 import com.busuu.app.entities.notifications.NotificationStatus;
 import com.busuu.app.entities.notifications.NotificationType;
@@ -18,6 +19,7 @@ import com.busuu.app.repositories.CorrectionRepository;
 import com.busuu.app.repositories.NotificationRepository;
 import com.busuu.app.repositories.PostRepository;
 import com.busuu.app.repositories.UserRepository;
+import com.busuu.app.services.publisher.NotificationEventPublisher;
 import com.busuu.app.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +51,8 @@ public class NotificationService implements INotificationService
     private final PostRepository postRepository;
 
     private final CorrectionRepository correctionRepository;
+
+    private final NotificationEventPublisher notificationEventPublisher;
 
 
     @Override
@@ -129,8 +133,9 @@ public class NotificationService implements INotificationService
 
             if (giveNotification)
             {
+                UUID uuid = UUID.randomUUID();
                 Notification newNotification = Notification.builder()
-                        .id(UUID.randomUUID().toString())
+                        .id(uuid.toString())
                         .user(user)
                         .destinationId(destinationId)
                         .message(message)
@@ -138,6 +143,10 @@ public class NotificationService implements INotificationService
                         .build();
 
                 notificationRepository.save(newNotification);
+
+                //Socket
+                notificationEventPublisher.publishNotification(uuid.toString(), destinationId, message, notificationType, user.getId());
+
             }
 
 

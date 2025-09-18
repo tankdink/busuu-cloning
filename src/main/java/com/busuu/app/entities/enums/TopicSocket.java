@@ -8,7 +8,8 @@ import java.util.Arrays;
 @Getter
 public enum TopicSocket {
     PRESENCE("presence"),
-    CHAT("chat");
+    CHAT("chat"),
+    NOTIFICATION("notifications");
 
     private final String value;
 

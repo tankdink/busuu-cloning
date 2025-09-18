@@ -24,7 +24,8 @@ public class NotificationResponse extends BaseResponse
     private String message;
 
     @JsonProperty("status")
-    private NotificationStatus status;
+    @Builder.Default
+    private NotificationStatus status = NotificationStatus.UNREAD;
 
     @JsonProperty("type")
     private NotificationType type;

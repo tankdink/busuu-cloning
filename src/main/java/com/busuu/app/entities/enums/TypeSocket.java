@@ -1,5 +1,8 @@
 package com.busuu.app.entities.enums;
 
-public enum TypeSocket {
-    PRESENCE_CHANGE
+public enum TypeSocket
+{
+    PRESENCE_CHANGE,
+
+    NOTIFICATION
 }
