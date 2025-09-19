@@ -4,6 +4,7 @@ package com.busuu.app.controllers;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.PresenceFriendResponse;
 import com.busuu.app.dtos.responses.Response;
+import com.busuu.app.dtos.responses.UserInfoResponse;
 import com.busuu.app.services.user.UserPresenceService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
@@ -96,7 +97,7 @@ public class UserPresenceController {
             requestId = UUID.randomUUID().toString();
         }
 
-        List<PresenceFriendResponse> res = userPresenceService.getFriendsStatus(requestId);
+        List<UserInfoResponse> res = userPresenceService.getFriendsStatus(requestId);
 
         return ResponseEntity.ok(
                 Response.builder()
