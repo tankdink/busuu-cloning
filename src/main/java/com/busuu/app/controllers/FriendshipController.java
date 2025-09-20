@@ -3,6 +3,7 @@ package com.busuu.app.controllers;
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.FriendshipResponse;
 import com.busuu.app.dtos.responses.Response;
+import com.busuu.app.dtos.responses.UserInfoResponse;
 import com.busuu.app.services.friendship.IFriendshipService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
@@ -46,7 +47,7 @@ public class FriendshipController
                 requestId = UUID.randomUUID().toString();
             }
 
-            FriendshipResponse response = friendService.getFriends(requestId, sortBy, sortDirection, searchValue, languageId);
+            List<UserInfoResponse> response = friendService.getFriends(requestId, sortBy, sortDirection, searchValue, languageId);
 
             return ResponseEntity.ok(
                     Response.builder()

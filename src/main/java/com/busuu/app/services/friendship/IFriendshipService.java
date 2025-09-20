@@ -2,6 +2,7 @@ package com.busuu.app.services.friendship;
 
 
 import com.busuu.app.dtos.responses.FriendshipResponse;
+import com.busuu.app.dtos.responses.UserInfoResponse;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface IFriendshipService
 
     String respondRequest(String requestId, String userId, String respond);
 
-    FriendshipResponse getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String country);
+    List<UserInfoResponse> getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String country);
 
     FriendshipResponse getFriendsByUserId(String userId);
 

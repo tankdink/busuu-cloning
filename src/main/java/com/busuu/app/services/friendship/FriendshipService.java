@@ -2,12 +2,14 @@ package com.busuu.app.services.friendship;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.FriendshipResponse;
+import com.busuu.app.dtos.responses.UserInfoResponse;
 import com.busuu.app.dtos.responses.UserLanguageResponse;
 import com.busuu.app.entities.Friendship;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.UserLanguage;
 import com.busuu.app.entities.enums.FriendshipStatus;
 import com.busuu.app.entities.enums.LearningStatus;
+import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.entities.enums.SpeakingStatus;
 import com.busuu.app.entities.notifications.NotificationType;
 import com.busuu.app.exceptions.DataNotFoundException;
@@ -22,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.ec.rfc7748.X448;
 import org.modelmapper.ModelMapper;
+import org.redisson.api.RKeys;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -51,6 +55,14 @@ public class FriendshipService implements IFriendshipService
     private final UserLanguageRepository userLanguageRepository;
 
     private final ModelMapper modelMapper;
+
+    private final RedissonClient redissonClient;
+
+    private static final long ONLINE_TTL_SECONDS = 60;
+
+    private static final String PRESENCE_KEY = "user:presence:%s:%s";
+
+    private static final String PRESENCE_PATTERN = "user:presence:%s";
 
 
     @Override
@@ -180,7 +192,7 @@ public class FriendshipService implements IFriendshipService
     }
 
     @Override
-    public FriendshipResponse getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String languageId)
+    public List<UserInfoResponse> getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String languageId)
     {
         try {
 
@@ -188,14 +200,28 @@ public class FriendshipService implements IFriendshipService
             User user = (User) auth.getPrincipal();
             String userId = user.getId();
 
-            List<String> friendList = friendshipRepository.findFriendIdsWithFilter(user.getId(), FriendshipStatus.ACCEPT, searchValue, languageId);
+            List<String> friendIds = friendshipRepository.findFriendIdsWithFilter(userId, FriendshipStatus.ACCEPT, searchValue, languageId);
+            if (friendIds.isEmpty()) {
+                return List.of();
+            }
 
-            FriendshipResponse response = FriendshipResponse.builder()
-                    .userId(userId)
-                    .friendIds(friendList)
-                    .build();
+            List<UserInfoResponse> result = new ArrayList<>();
+            RKeys rKeys = redissonClient.getKeys();
 
-            return response;
+            for (String fid : friendIds) {
+                String pattern = buildPattern(fid);
+                boolean isOnline = redissonClient.getKeys().getKeysByPattern(pattern, 1).iterator().hasNext();
+
+                User friendDetail = userRepository.findById(fid)
+                        .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + fid));
+
+                UserInfoResponse userInfoResponse = modelMapper.map(friendDetail, UserInfoResponse.class);
+                userInfoResponse.setStatus(isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE);
+                userInfoResponse.setLastSeenAt(friendDetail.getLastSeenAt());
+                result.add(userInfoResponse);
+            }
+
+            return result;
 
 
         } catch (Exception e) {
@@ -400,5 +426,13 @@ public class FriendshipService implements IFriendshipService
 
         return resultList;
 
+    }
+
+    private String buildKey(String userId, String sessionId) {
+        return String.format(PRESENCE_KEY, userId, sessionId);
+    }
+
+    private String buildPattern(String userId) {
+        return String.format(PRESENCE_PATTERN, userId);
     }
 }
