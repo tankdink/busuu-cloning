@@ -2,6 +2,7 @@ package com.busuu.app.services.user;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.PresenceFriendResponse;
+import com.busuu.app.dtos.responses.UserInfoResponse;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.enums.FriendshipStatus;
 import com.busuu.app.entities.enums.PresenceStatus;
@@ -12,6 +13,7 @@ import com.busuu.app.services.publisher.PresenceEventPublisher;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
@@ -40,6 +42,8 @@ public class UserPresenceService {
     private static final String PRESENCE_KEY = "user:presence:%s:%s";
 
     private static final String PRESENCE_PATTERN = "user:presence:%s";
+
+    private final ModelMapper modelMapper;
 
     public void setOnline(String requestId, String sessionId, String userId) {
         try {
@@ -125,7 +129,7 @@ public class UserPresenceService {
         }
     }
 
-    public List<PresenceFriendResponse> getFriendsStatus(String requestId) {
+    public List<UserInfoResponse> getFriendsStatus(String requestId) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
@@ -136,7 +140,7 @@ public class UserPresenceService {
                 return List.of();
             }
 
-            List<PresenceFriendResponse> result = new ArrayList<>();
+            List<UserInfoResponse> result = new ArrayList<>();
             RKeys rKeys = redissonClient.getKeys();
 
             for (String fid : friendIds) {
@@ -146,11 +150,10 @@ public class UserPresenceService {
                 User friendDetail = userRepository.findById(fid)
                         .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + fid));
 
-                result.add(PresenceFriendResponse.builder()
-                        .userId(fid)
-                        .status(isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE)
-                        .lastSeenAt(friendDetail.getLastSeenAt())
-                        .build());
+                UserInfoResponse userInfoResponse = modelMapper.map(friendDetail, UserInfoResponse.class);
+                userInfoResponse.setStatus(isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE);
+                userInfoResponse.setLastSeenAt(friendDetail.getLastSeenAt());
+                result.add(userInfoResponse);
             }
 
             return result;

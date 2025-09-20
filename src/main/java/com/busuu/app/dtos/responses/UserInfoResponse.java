@@ -1,6 +1,5 @@
 package com.busuu.app.dtos.responses;
-
-import com.busuu.app.entities.Role;
+import com.busuu.app.entities.enums.PresenceStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,9 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
 import java.time.Instant;
-import java.util.List;
 
 
 @Getter
@@ -40,4 +37,8 @@ public class UserInfoResponse extends BaseResponse {
 
     private String country;
 
+    @JsonProperty("last_seen_at")
+    private Instant lastSeenAt;
+
+    private PresenceStatus status;
 }
