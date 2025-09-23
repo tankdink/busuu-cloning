@@ -35,6 +35,9 @@ public class Notification extends BaseEntity
     @Column(name = "destination_id")
     private String destinationId;
 
+    @Column(name = "actor_id")
+    private String actorId;
+
     @Column(name = "message")
     private String message;
 

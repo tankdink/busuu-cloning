@@ -28,12 +28,13 @@ public class NotificationEventPublisher {
     private final SimpMessagingTemplate messagingTemplate;
 
     // Send events
-    public void publishNotification(String notificationId, String destinationId, String message, NotificationType type, String toUser) {
+    public void publishNotification(String notificationId, String destinationId, String actorId, String message, NotificationType type, String toUser) {
             SocketPayload<NotificationResponse> payload = SocketPayload.<NotificationResponse>builder()
                 .messageId(UUID.randomUUID().toString())
                 .data(NotificationResponse.builder()
                         .id(notificationId)
                         .destinationId(destinationId)
+                        .actorId(actorId)
                         .message(message)
                         .type(type)
                         .build())

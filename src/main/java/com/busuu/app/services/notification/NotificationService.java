@@ -63,10 +63,11 @@ public class NotificationService implements INotificationService
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User userActor = (User) auth.getPrincipal();
+            String actorId = userActor.getId();
 
             boolean giveNotification = true;
             String message = "";
-            User user = null;
+            User toUser = null;
 
             switch (notificationType)
             {
@@ -74,10 +75,10 @@ public class NotificationService implements INotificationService
                 case FRIEND_REQUESTED:
                 {
                     User destinationUser = userRepository.findById(destinationId)
-                            .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + destinationId ));
+                            .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID"));
 
                     message = "User " + userActor.getFullName() + " has sent you a friend request";
-                    user = destinationUser;
+                    toUser = destinationUser;
 
                     break;
                 }
@@ -85,10 +86,10 @@ public class NotificationService implements INotificationService
                 case FRIEND_ACCEPTED:
                 {
                     User destinationUser = userRepository.findById(destinationId)
-                            .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID " + destinationId ));
+                            .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID"));
 
                     message = "User " + userActor.getFullName() + " has accepted your friend request";
-                    user = destinationUser;
+                    toUser = destinationUser;
 
                     break;
                 }
@@ -96,10 +97,10 @@ public class NotificationService implements INotificationService
                 case POST_CORRECTED:
                 {
                     Post destinationPost = postRepository.findById(destinationId)
-                            .orElseThrow( ()-> new DataNotFoundException("Cannot find post with ID " + destinationId ));
+                            .orElseThrow( ()-> new DataNotFoundException("Cannot find post with ID"));
 
                     message = "User " + userActor.getFullName() + " has corrected your post";
-                    user = destinationPost.getUser();
+                    toUser = destinationPost.getUser();
 
                     break;
                 }
@@ -107,10 +108,12 @@ public class NotificationService implements INotificationService
                 case CORRECTION_LIKED:
                 {
                     Correction destinationCorrection = correctionRepository.findById(destinationId)
-                            .orElseThrow( ()-> new DataNotFoundException("Cannot find post with ID " + destinationId ));
+                            .orElseThrow( ()-> new DataNotFoundException("Cannot find post with ID"));
+
+                    destinationId = destinationCorrection.getPost().getId();
 
                     message = "User " + userActor.getFullName() + " has liked your correction";
-                    user = destinationCorrection.getUser();
+                    toUser = destinationCorrection.getUser();
 
                     break;
                 }
@@ -118,12 +121,14 @@ public class NotificationService implements INotificationService
                 case CORRECTION_REPLIED:
                 {
                     Correction destinationCorrection = correctionRepository.findById(destinationId)
-                             .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID " + destinationId ));
+                             .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID"));
+
+                    destinationId = destinationCorrection.getPost().getId();
 
                     message = "User " + userActor.getFullName() + " has replied your correction";
 
                     if (destinationCorrection.getUser().getId().equals(userActor.getId())) giveNotification = false;
-                    user = destinationCorrection.getUser();
+                    toUser = destinationCorrection.getUser();
 
                     break;
                 }
@@ -136,8 +141,9 @@ public class NotificationService implements INotificationService
                 UUID uuid = UUID.randomUUID();
                 Notification newNotification = Notification.builder()
                         .id(uuid.toString())
-                        .user(user)
+                        .user(toUser)
                         .destinationId(destinationId)
+                        .actorId(actorId)
                         .message(message)
                         .type(notificationType)
                         .build();
@@ -145,7 +151,7 @@ public class NotificationService implements INotificationService
                 notificationRepository.save(newNotification);
 
                 //Socket
-                notificationEventPublisher.publishNotification(uuid.toString(), destinationId, message, notificationType, user.getId());
+                notificationEventPublisher.publishNotification(uuid.toString(), destinationId, actorId, message, notificationType, toUser.getId());
 
             }
 
@@ -174,6 +180,7 @@ public class NotificationService implements INotificationService
 
             return notificationRepository.findByUserId(userId, PageRequest.of(page, size, sort)).map(
                     notification -> modelMapper.map(notification, NotificationResponse.class)
+
             );
 
         } catch (Exception e) {

@@ -20,6 +20,9 @@ public class NotificationResponse extends BaseResponse
     @JsonProperty("destination_id")
     private String destinationId;
 
+    @JsonProperty("actor_id")
+    private String actorId;
+
     @JsonProperty("message")
     private String message;
 
