@@ -35,7 +35,7 @@ public class NotificationEventPublisher {
                         .id(notificationId)
                         .destinationId(destinationId)
                         .actorId(actorId)
-                        .message(message)
+                        .message(messageResponse)
                         .type(type)
                         .build())
                 .timestamp(Instant.now())
