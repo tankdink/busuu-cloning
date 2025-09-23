@@ -126,7 +126,9 @@ public class NotificationService implements INotificationService
                     Correction destinationCorrection = correctionRepository.findById(destinationId)
                              .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID"));
 
-                    destinationId = destinationCorrection.getCorrection().getPost().getId();
+                    if (destinationCorrection.getPost() != null) destinationId = destinationCorrection.getPost().getId();
+                    else destinationId = destinationCorrection.getCorrection().getPost().getId();
+
 
                     message = " has replied your correction";
 
