@@ -175,7 +175,7 @@ public class NotificationService implements INotificationService
             String userId = user.getId();
 
             Sort sort = Sort.by(
-                    Sort.Order.asc("status"),
+                    Sort.Order.desc("status"),
                     Sort.Order.desc("createdAt")
             );
 
@@ -188,7 +188,8 @@ public class NotificationService implements INotificationService
         log.error("Failed to add notification, err="+e.getMessage());
         throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                 Constants.ERROR_CODE.ERR_GET_NOTIFICATION, requestId);
-}
+        }
+
     }
 
     @Override

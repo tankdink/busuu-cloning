@@ -17,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +43,8 @@ public class NotificationEventPublisher {
                 .timestamp(Instant.now())
                 .type(TypeSocket.NOTIFICATION)
                 .build();
+
+        payload.getData().setCreatedAt(LocalDateTime.now());
 
         String destination = "/topic/" + TopicSocket.NOTIFICATION.getValue() + "." + toUser;
         messagingTemplate.convertAndSend(destination, payload);
