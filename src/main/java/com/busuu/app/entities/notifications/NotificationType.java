@@ -9,7 +9,7 @@ public enum NotificationType
 
     POST_CORRECTED,
 
-    CORRECTION_LIKED,
+    CORRECTION_REACTION,
 
     CORRECTION_REPLIED
 

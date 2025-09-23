@@ -13,6 +13,7 @@ import com.busuu.app.entities.notifications.Notification;
 import com.busuu.app.entities.notifications.NotificationStatus;
 import com.busuu.app.entities.notifications.NotificationType;
 import com.busuu.app.entities.posts.Post;
+import com.busuu.app.entities.reactions.ReactionType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.CorrectionRepository;
@@ -57,7 +58,7 @@ public class NotificationService implements INotificationService
 
     @Override
     @Transactional
-    public void addNotification(String destinationId, NotificationType notificationType)
+    public void addNotification(String destinationId, NotificationType notificationType, ReactionType reactionType)
     {
         try {
 
@@ -109,15 +110,15 @@ public class NotificationService implements INotificationService
                     break;
                 }
                 //DestinationId: Post
-                case CORRECTION_LIKED:
+                case CORRECTION_REACTION:
                 {
                     Correction destinationCorrection = correctionRepository.findById(destinationId)
                             .orElseThrow( ()-> new DataNotFoundException("Cannot find post with ID"));
 
                     destinationId = destinationCorrection.getPost().getId();
 
-                    message = "User " + userActor.getFullName() + " has liked your correction";
-                    messageResponse = " has liked your correction";
+                    message = "User " + userActor.getFullName() + " has " + reactionType.name().toLowerCase() +  "d your correction";
+                    messageResponse = " has " + reactionType.name().toLowerCase() +  "d your correction";
                     toUser = destinationCorrection.getUser();
 
                     break;

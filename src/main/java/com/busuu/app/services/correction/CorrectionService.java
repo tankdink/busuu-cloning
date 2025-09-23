@@ -137,8 +137,8 @@ public class CorrectionService implements ICorrectionService
             correctionResponse.setLikeCount(0);
             correctionResponse.setDislikeCount(0);
 
-            if ( existingPost != null ) notificationService.addNotification(existingPost.getId(), NotificationType.POST_CORRECTED);
-            else notificationService.addNotification(existingCorrection.getId(), NotificationType.CORRECTION_REPLIED);
+            if ( existingPost != null ) notificationService.addNotification(existingPost.getId(), NotificationType.POST_CORRECTED, null);
+            else notificationService.addNotification(existingCorrection.getId(), NotificationType.CORRECTION_REPLIED, null);
 
             return correctionResponse;
 
@@ -346,7 +346,7 @@ public class CorrectionService implements ICorrectionService
 
                 newReaction = reactionRepository.save(newReaction);
 
-                if (newReaction.getReactionType().equals(ReactionType.LIKE)) notificationService.addNotification(newReaction.getCorrection().getId(), NotificationType.CORRECTION_LIKED);
+                notificationService.addNotification(newReaction.getCorrection().getId(), NotificationType.CORRECTION_REACTION, newReaction.getReactionType());
 
             }
 

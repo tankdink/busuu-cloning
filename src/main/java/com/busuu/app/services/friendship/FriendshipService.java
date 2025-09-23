@@ -98,7 +98,7 @@ public class FriendshipService implements IFriendshipService
                         .build();
 
                 friendshipRepository.save(newFriendship);
-                notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED);
+                notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED, null);
 
                 return "Send friend request to user " + existingUser.getFullName() + " successfully!";
             }
@@ -124,7 +124,7 @@ public class FriendshipService implements IFriendshipService
                         {
                             friendship.setStatus(FriendshipStatus.PENDING);
                             friendshipRepository.save(friendship);
-                            notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED);
+                            notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED, null);
                             return "Send friend request to user " + existingUser.getFullName() + " successfully!";
                         }
                         else
@@ -135,7 +135,7 @@ public class FriendshipService implements IFriendshipService
                             friendship.setToUser(tempToUser);
 
                             friendshipRepository.save(friendship);
-                            notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED);
+                            notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED, null);
 
                             return "Send friend request to user " + existingUser.getFullName() + " successfully!";
                         }
@@ -178,7 +178,7 @@ public class FriendshipService implements IFriendshipService
                 {
                     friendship.setStatus(FriendshipStatus.valueOf(respond.toUpperCase()));
                     friendshipRepository.save(friendship);
-                    notificationService.addNotification(userId, NotificationType.FRIEND_ACCEPTED);
+                    notificationService.addNotification(userId, NotificationType.FRIEND_ACCEPTED, null);
                     return "Respond friend request to user " + existingUser.getFullName() + " successfully!";
                 }
             }

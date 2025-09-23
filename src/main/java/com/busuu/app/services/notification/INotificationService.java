@@ -5,6 +5,7 @@ import com.busuu.app.entities.User;
 import com.busuu.app.entities.notifications.Notification;
 import com.busuu.app.entities.notifications.NotificationStatus;
 import com.busuu.app.entities.notifications.NotificationType;
+import com.busuu.app.entities.reactions.ReactionType;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 public interface INotificationService
 {
 
-    void addNotification(String destinationId, NotificationType notificationType);
+    void addNotification(String destinationId, NotificationType notificationType, ReactionType reactionType);
 
     Page<NotificationResponse> getSelfNotification(String requestId, int page, int size);
 
