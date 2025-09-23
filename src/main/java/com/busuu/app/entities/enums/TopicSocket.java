@@ -9,7 +9,8 @@ import java.util.Arrays;
 public enum TopicSocket {
     PRESENCE("presence"),
     CHAT("chat"),
-    NOTIFICATION("notifications");
+    NOTIFICATION("notifications"),
+    REQUEST("requests");
 
     private final String value;
 

@@ -19,6 +19,7 @@ import com.busuu.app.repositories.FriendshipRepository;
 import com.busuu.app.repositories.UserLanguageRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.notification.NotificationService;
+import com.busuu.app.services.publisher.FriendRequestEventPublisher;
 import com.busuu.app.specification.UserLanguageSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +65,8 @@ public class FriendshipService implements IFriendshipService
 
     private static final String PRESENCE_PATTERN = "user:presence:%s";
 
+    private final FriendRequestEventPublisher  friendRequestEventPublisher;
+
 
     @Override
     @Transactional
@@ -99,6 +102,7 @@ public class FriendshipService implements IFriendshipService
 
                 friendshipRepository.save(newFriendship);
                 notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED, null);
+                friendRequestEventPublisher.publishFriendRequest(userId);
 
                 return "Send friend request to user " + existingUser.getFullName() + " successfully!";
             }
@@ -125,6 +129,7 @@ public class FriendshipService implements IFriendshipService
                             friendship.setStatus(FriendshipStatus.PENDING);
                             friendshipRepository.save(friendship);
                             notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED, null);
+                            friendRequestEventPublisher.publishFriendRequest(userId);
                             return "Send friend request to user " + existingUser.getFullName() + " successfully!";
                         }
                         else
@@ -136,6 +141,7 @@ public class FriendshipService implements IFriendshipService
 
                             friendshipRepository.save(friendship);
                             notificationService.addNotification(userId, NotificationType.FRIEND_REQUESTED, null);
+                            friendRequestEventPublisher.publishFriendRequest(userId);
 
                             return "Send friend request to user " + existingUser.getFullName() + " successfully!";
                         }

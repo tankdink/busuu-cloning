@@ -4,5 +4,7 @@ public enum TypeSocket
 {
     PRESENCE_CHANGE,
 
-    NOTIFICATION
+    NOTIFICATION,
+
+    REQUEST
 }
