@@ -184,7 +184,7 @@ public class FriendshipService implements IFriendshipService
                 {
                     friendship.setStatus(FriendshipStatus.valueOf(respond.toUpperCase()));
                     friendshipRepository.save(friendship);
-                    notificationService.addNotification(userId, NotificationType.FRIEND_ACCEPTED, null);
+                    if ( FriendshipStatus.valueOf(respond.toUpperCase()).equals(FriendshipStatus.ACCEPT) ) notificationService.addNotification(userId, NotificationType.FRIEND_ACCEPTED, null);
                     return "Respond friend request to user " + existingUser.getFullName() + " successfully!";
                 }
             }
