@@ -1,6 +1,7 @@
 package com.busuu.app.dtos.responses;
 
 import com.busuu.app.entities.Role;
+import com.busuu.app.entities.enums.PresenceStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,6 +58,8 @@ public class UserResponse extends BaseResponse {
 
     @JsonProperty("last_seen_at")
     private Instant lastSeenAt;
+
+    private PresenceStatus status;
 
     @JsonProperty("roles")
     private List<Role> roles;
