@@ -109,7 +109,7 @@ public class NotificationService implements INotificationService
                 case CORRECTION_REACTION:
                 {
                     Correction destinationCorrection = correctionRepository.findById(destinationId)
-                            .orElseThrow( ()-> new DataNotFoundException("Cannot find post with ID"));
+                            .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID"));
 
                     destinationId = destinationCorrection.getPost().getId();
 
@@ -124,7 +124,7 @@ public class NotificationService implements INotificationService
                     Correction destinationCorrection = correctionRepository.findById(destinationId)
                              .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID"));
 
-                    destinationId = destinationCorrection.getPost().getId();
+                    destinationId = destinationCorrection.getCorrection().getPost().getId();
 
                     message = " has replied your correction";
 
