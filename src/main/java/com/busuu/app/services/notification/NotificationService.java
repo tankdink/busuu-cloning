@@ -67,6 +67,7 @@ public class NotificationService implements INotificationService
 
             boolean giveNotification = true;
             String message = "";
+            String messageResponse = "";
             User toUser = null;
 
             switch (notificationType)
@@ -78,6 +79,7 @@ public class NotificationService implements INotificationService
                             .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID"));
 
                     message = "User " + userActor.getFullName() + " has sent you a friend request";
+                    messageResponse = " has sent you a friend request";
                     toUser = destinationUser;
 
                     break;
@@ -89,6 +91,7 @@ public class NotificationService implements INotificationService
                             .orElseThrow( ()-> new DataNotFoundException("Cannot find user with ID"));
 
                     message = "User " + userActor.getFullName() + " has accepted your friend request";
+                    messageResponse = " has accepted your friend request";
                     toUser = destinationUser;
 
                     break;
@@ -100,6 +103,7 @@ public class NotificationService implements INotificationService
                             .orElseThrow( ()-> new DataNotFoundException("Cannot find post with ID"));
 
                     message = "User " + userActor.getFullName() + " has corrected your post";
+                    messageResponse = " has corrected your post";
                     toUser = destinationPost.getUser();
 
                     break;
@@ -113,6 +117,7 @@ public class NotificationService implements INotificationService
                     destinationId = destinationCorrection.getPost().getId();
 
                     message = "User " + userActor.getFullName() + " has liked your correction";
+                    messageResponse = " has liked your correction";
                     toUser = destinationCorrection.getUser();
 
                     break;
@@ -126,6 +131,7 @@ public class NotificationService implements INotificationService
                     destinationId = destinationCorrection.getPost().getId();
 
                     message = "User " + userActor.getFullName() + " has replied your correction";
+                    messageResponse = " has replied your correction";
 
                     if (destinationCorrection.getUser().getId().equals(userActor.getId())) giveNotification = false;
                     toUser = destinationCorrection.getUser();
@@ -151,7 +157,7 @@ public class NotificationService implements INotificationService
                 notificationRepository.save(newNotification);
 
                 //Socket
-                notificationEventPublisher.publishNotification(uuid.toString(), destinationId, actorId, message, notificationType, toUser.getId());
+                notificationEventPublisher.publishNotification(uuid.toString(), destinationId, actorId, messageResponse, notificationType, toUser.getId());
 
             }
 
