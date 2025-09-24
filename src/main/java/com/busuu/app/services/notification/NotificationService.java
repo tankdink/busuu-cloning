@@ -214,6 +214,7 @@ public class NotificationService implements INotificationService
     }
 
     @Override
+    @Transactional
     public NotificationResponse changeStatus(String requestId, String notificationId)
     {
         try {
@@ -227,6 +228,32 @@ public class NotificationService implements INotificationService
             NotificationResponse response = modelMapper.map(notificationRepository.save(existsNotification),  NotificationResponse.class);
 
             return response;
+
+        } catch (Exception e) {
+            log.error("Failed to change notification status, err=" + e.getMessage());
+            throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ERROR_CODE.ERR_CHANGE_STATUS_NOTIFICATION, requestId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void changeAllStatus(String requestId)
+    {
+        try {
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            String userId = user.getId();
+
+            List<Notification> unreadList = notificationRepository.findByUserIdAndStatus(userId, NotificationStatus.UNREAD);
+
+            for (Notification notification : unreadList)
+            {
+                notification.setStatus(NotificationStatus.READ);
+                notificationRepository.save(notification);
+            }
+
 
         } catch (Exception e) {
             log.error("Failed to add notification, err=" + e.getMessage());
