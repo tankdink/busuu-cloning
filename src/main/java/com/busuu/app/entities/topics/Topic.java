@@ -2,8 +2,8 @@ package com.busuu.app.entities.topics;
 
 import com.busuu.app.entities.BaseEntity;
 import com.busuu.app.entities.Lesson;
-import com.busuu.app.entities.notifications.Notification;
-import com.busuu.app.entities.posts.Post;
+import com.busuu.app.entities.Post;
+import com.busuu.app.entities.enums.TopicType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,12 +13,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "topic")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class Topic extends BaseEntity
 {
+
     @Id
     @Column(name = "topic_id")
     private String id;
@@ -63,6 +65,5 @@ public class Topic extends BaseEntity
     @ManyToOne
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
-
 
 }

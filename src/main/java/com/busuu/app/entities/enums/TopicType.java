@@ -1,4 +1,4 @@
-package com.busuu.app.entities.topics;
+package com.busuu.app.entities.enums;
 
 public enum TopicType
 {

@@ -1,28 +1,19 @@
 package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.requests.level.LevelDTO;
-import com.busuu.app.dtos.responses.LevelResponse;
-import com.busuu.app.dtos.responses.PagingResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.dtos.responses.TopicResponse;
-import com.busuu.app.entities.Level;
-import com.busuu.app.services.level.ILevelService;
 import com.busuu.app.services.topic.ITopicService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +31,7 @@ public class TopicController {
 
     @GetMapping()
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getTopics(@RequestParam(value = "req-id", required = false) String requestId,
 
                                               @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -51,7 +42,8 @@ public class TopicController {
                                               @RequestParam(value = "search-value", required = false) String searchValue,
 
                                               @RequestParam(value = "topic-type", required = false) String topicType,
-                                              @RequestParam(value = "topic-category", required = false) String topicCategory) {
+                                              @RequestParam(value = "topic-category", required = false) String topicCategory)
+    {
 
         try {
 
@@ -61,12 +53,6 @@ public class TopicController {
 
             //Call get all topics service
             List<TopicResponse> topicsList = topicService.getTopicsByType(requestId, topicType, page, size, sortBy, sortDirection, searchValue, topicCategory);
-
-//            Object responseData = PagingResponse.<TopicResponse>builder()
-//                    .totalPages(topicsList.getTotalPages())
-//                    .objects(topicsList.getContent())
-//                    .totalObjects(topicsList.getTotalElements())
-//                    .build();
 
             //Return response
             return ResponseEntity.ok().body(
@@ -91,10 +77,13 @@ public class TopicController {
 
     @GetMapping(value = Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getTopic(@RequestParam(value = "req-id", required = false) String requestId,
-                                               @PathVariable("id") String topicId) {
+                                               @PathVariable("id") String topicId)
+    {
+
         try {
+
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -107,8 +96,9 @@ public class TopicController {
                             .status(HttpStatus.OK.value())
                             .build()
             );
+
         } catch (Exception e) {
-            log.error("Error when get topic, " + e.getMessage());
+            log.error("Error when getting topic, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
@@ -118,12 +108,16 @@ public class TopicController {
         }
     }
 
+
     @GetMapping(value = Constants.LESSON + Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getTopicByLessonId(@RequestParam(value = "req-id", required = false) String requestId,
-                                             @PathVariable("id") String lessonId) {
+                                                       @PathVariable("id") String lessonId)
+    {
+
         try {
+
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -136,8 +130,9 @@ public class TopicController {
                             .status(HttpStatus.OK.value())
                             .build()
             );
+
         } catch (Exception e) {
-            log.error("Error when get topic, " + e.getMessage());
+            log.error("Error when getting topic, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
@@ -146,5 +141,4 @@ public class TopicController {
             );
         }
     }
-
 }

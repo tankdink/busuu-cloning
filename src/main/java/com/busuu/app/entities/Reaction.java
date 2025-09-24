@@ -1,9 +1,7 @@
-package com.busuu.app.entities.reactions;
+package com.busuu.app.entities;
 
 
-import com.busuu.app.entities.BaseEntity;
-import com.busuu.app.entities.corrections.Correction;
-import com.busuu.app.entities.User;
+import com.busuu.app.entities.enums.ReactionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

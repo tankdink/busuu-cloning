@@ -1,25 +1,19 @@
 package com.busuu.app.services.publisher;
 
 import com.busuu.app.dtos.responses.NotificationResponse;
-import com.busuu.app.dtos.responses.PresenceFriendResponse;
 import com.busuu.app.dtos.socket.SocketPayload;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.entities.enums.TopicSocket;
 import com.busuu.app.entities.enums.TypeSocket;
-import com.busuu.app.entities.notifications.Notification;
-import com.busuu.app.entities.notifications.NotificationType;
+import com.busuu.app.entities.enums.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
 import java.util.UUID;
 
 @Service

@@ -1,8 +1,6 @@
 package com.busuu.app.entities;
 
 
-import com.busuu.app.entities.posts.Post;
-import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

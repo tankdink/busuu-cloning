@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -31,18 +30,21 @@ public class FriendshipController
 
     private final LocalizationUtils localizationUtils;
 
+
     @GetMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getFriends(@RequestParam(value = "req-id", required = false) String requestId,
 
-                                                @RequestParam(value = "sort-by", required = false) List<String> sortBy,
-                                                @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
-                                                @RequestParam(value = "search-value",required = false) String searchValue,
+                                               @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                               @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
+                                               @RequestParam(value = "search-value",required = false) String searchValue,
 
-                                                @RequestParam(value = "language-id",required = false) String languageId)
+                                               @RequestParam(value = "language-id",required = false) String languageId)
     {
+
         try {
+
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -56,8 +58,9 @@ public class FriendshipController
                             .status(HttpStatus.OK.value())
                             .build()
             );
+
         } catch (Exception e) {
-            log.error("Error when get friend list, " + e.getMessage());
+            log.error("Error when getting friend list, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
@@ -70,10 +73,13 @@ public class FriendshipController
 
     @DeleteMapping(value = Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> deleteFriend(@RequestParam(value = "req-id", required = false) String requestId,
-                                                  @PathVariable("id") String userId) {
+                                                  @PathVariable("id") String userId)
+    {
+
         try {
+
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -85,8 +91,9 @@ public class FriendshipController
                             .status(HttpStatus.OK.value())
                             .build()
             );
+
         } catch (Exception e) {
-            log.error("Error when delete friend, " + e.getMessage());
+            log.error("Error when deleting friend, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.DELETE_DATA_FAILED) + ": " + e.getMessage())
@@ -96,6 +103,7 @@ public class FriendshipController
         }
     }
 
+
     @GetMapping(Constants.RANDOM)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -103,6 +111,7 @@ public class FriendshipController
     {
 
         try {
+
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -116,8 +125,9 @@ public class FriendshipController
                             .status(HttpStatus.OK.value())
                             .build()
             );
+
         } catch (Exception e) {
-            log.error("Error when get user list, " + e.getMessage());
+            log.error("Error when getting user list, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
@@ -127,13 +137,16 @@ public class FriendshipController
         }
     }
 
+
     @GetMapping(Constants.STATS + Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getFriendshipStatus(@RequestParam(value = "req-id", required = false) String requestId,
-                                                  @PathVariable("id") String userId)
+                                                        @PathVariable("id") String userId)
     {
+
         try {
+
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -147,8 +160,9 @@ public class FriendshipController
                             .status(HttpStatus.OK.value())
                             .build()
             );
+
         } catch (Exception e) {
-            log.error("Error when get friend status, " + e.getMessage());
+            log.error("Error when getting friend status, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
@@ -158,12 +172,15 @@ public class FriendshipController
         }
     }
 
+
     @GetMapping(Constants.PENDING)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getPendingRequest(@RequestParam(value = "req-id", required = false) String requestId)
     {
+
         try {
+
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
@@ -177,8 +194,9 @@ public class FriendshipController
                             .status(HttpStatus.OK.value())
                             .build()
             );
+
         } catch (Exception e) {
-            log.error("Error when get pending request, " + e.getMessage());
+            log.error("Error when getting pending request, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
                             .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
@@ -188,34 +206,39 @@ public class FriendshipController
         }
     }
 
+
     @PostMapping(Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<Response> addOrRespondFriendshipRequest(@RequestParam(value = "req-id", required = false) String requestId,
                                                                   @PathVariable("id") String userId,
-                                                                  @RequestParam(value = "respond", required = false) String respond) {
+                                                                  @RequestParam(value = "respond", required = false) String respond)
+    {
+
         try {
+
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
             }
+
             String response = null;
 
             if (respond == null || respond.isEmpty()) response = friendService.addFriendRequest(requestId, userId);
             else response = friendService.respondRequest(requestId, userId, respond);
 
-
             return ResponseEntity.ok(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_SUCCESSFULLY))
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_SUCCESSFULLY))
                             .data(response)
                             .status(HttpStatus.OK.value())
                             .build()
             );
+
         } catch (Exception e) {
-            log.error("Error when add friend request, " + e.getMessage());
+            log.error("Error when adding/responding friend request, " + e.getMessage());
             return ResponseEntity.badRequest().body(
                     Response.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessagesKey.GET_DATA_FAILED) + ": " + e.getMessage())
+                            .message(localizationUtils.getLocalizedMessage(MessagesKey.INSERT_DATA_FAILED) + ": " + e.getMessage())
                             .status(HttpStatus.BAD_REQUEST.value())
                             .build()
             );

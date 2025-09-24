@@ -2,7 +2,7 @@ package com.busuu.app.specification;
 
 import com.busuu.app.entities.topics.Topic;
 import com.busuu.app.entities.topics.TopicCategory;
-import com.busuu.app.entities.topics.TopicType;
+import com.busuu.app.entities.enums.TopicType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -25,7 +25,7 @@ public class TopicSpecification
 {
 
     //For filter with List<String>
-    private static final Set<String> FILTER_FIELDS = Set.of("videoCategory");
+    //private static final Set<String> FILTER_FIELDS = Set.of("videoCategory");
     private static final Set<String> SORT_FIELDS = Set.of("createdAt", "updatedAt");
 
     public static Specification<Topic> getSpecification(
@@ -82,15 +82,13 @@ public class TopicSpecification
                 predicates.add(cb.equal(cb.lower(categoryJoin.get("categoryName")), topicCategory.toLowerCase()));
             }
 
-
-
             //Global search (LIKE SEARCH)
             if (searchValue != null && !searchValue.isEmpty())
             {
 
                 String val = null;
-                String[] range = null;
-                Boolean isDateInput = false;
+                //String[] range = null;
+                boolean isDateInput = false;
 
                 //Process for date-time and date input
 
@@ -112,9 +110,8 @@ public class TopicSpecification
                 //For search exact (cb.equal)
                 //String val = searchValue.toLowerCase();
 
-                Predicate createdAtPredicate = null;
-                Predicate updatedAtPredicate = null;
-
+                Predicate createdAtPredicate;
+                Predicate updatedAtPredicate;
 
                 if (isDateInput)
                 {
@@ -136,12 +133,10 @@ public class TopicSpecification
 
                 }
 
-
                 predicates.add(cb.or(
                         createdAtPredicate,
                         updatedAtPredicate));
             }
-
 
 
             //Sorting
@@ -159,7 +154,6 @@ public class TopicSpecification
                     if (!direction.equals("asc") && !direction.equals("desc")) {
                         throw new IllegalArgumentException("Unsupported sort direction: " + direction + "; Support sort by: asc, desc");
                     }
-
 
                     if (!SORT_FIELDS.contains(sortColumn)) {
                         throw new IllegalArgumentException("Unsupported sort column: " + sortColumn + "; Support filter by: " + SORT_FIELDS);
@@ -191,7 +185,6 @@ public class TopicSpecification
 
             //Avoid duplicate case
             orders.add(cb.asc(root.get("id")));
-
 
             query.orderBy(orders);
 

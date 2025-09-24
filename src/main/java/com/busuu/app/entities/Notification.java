@@ -1,8 +1,7 @@
-package com.busuu.app.entities.notifications;
+package com.busuu.app.entities;
 
-import com.busuu.app.entities.BaseEntity;
-import com.busuu.app.entities.User;
-import com.busuu.app.entities.posts.Post;
+import com.busuu.app.entities.enums.NotificationStatus;
+import com.busuu.app.entities.enums.NotificationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,17 +12,20 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "notification")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class Notification extends BaseEntity
 {
+
     @Id
     @Column(name = "notification_id")
     private String id;

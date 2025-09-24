@@ -2,14 +2,13 @@ package com.busuu.app.services.topicCategory;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.entities.topics.TopicCategory;
-import com.busuu.app.entities.topics.TopicType;
+import com.busuu.app.entities.enums.TopicType;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.TopicCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -20,9 +19,11 @@ public class TopicCategoryService implements ITopicCategoryService
 
     private final TopicCategoryRepository topicCategoryRepository;
 
+
     @Override
     public List<TopicCategory> getTopicCategories(String requestId, String topicType)
     {
+
         try {
 
             if (topicType == null) return topicCategoryRepository.findAll();
@@ -30,16 +31,15 @@ public class TopicCategoryService implements ITopicCategoryService
             {
                 try {
 
-                    TopicType type;
+                    TopicType type = TopicType.valueOf(topicType.toUpperCase());
 
-                    type = TopicType.valueOf(topicType.toUpperCase());
+                } catch (Exception e) {
 
-                } catch (Exception e)
-                {
                     throw new IllegalArgumentException("Illegal topic type! Must be \"IMAGE\" or \"VIDEO\" (ignore case) ");
                 }
 
                 return topicCategoryRepository.findByTopicType(TopicType.valueOf(topicType.toUpperCase()));
+
             }
 
         } catch (Exception e) {

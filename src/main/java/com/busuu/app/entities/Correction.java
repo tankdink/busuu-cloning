@@ -1,10 +1,5 @@
-package com.busuu.app.entities.corrections;
+package com.busuu.app.entities;
 
-import com.busuu.app.entities.BaseEntity;
-import com.busuu.app.entities.User;
-import com.busuu.app.entities.notifications.Notification;
-import com.busuu.app.entities.posts.Post;
-import com.busuu.app.entities.reactions.Reaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -64,7 +59,8 @@ public class Correction extends BaseEntity
 
     @JsonIgnore
     @OneToMany(mappedBy = "correction", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Correction> corrections;
+    private List<Correction> corrections = new ArrayList<>();
+
     //Self relation
     @ManyToOne
     @JoinColumn(name = "parent_correction_id")

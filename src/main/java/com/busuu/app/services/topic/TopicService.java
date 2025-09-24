@@ -2,9 +2,8 @@ package com.busuu.app.services.topic;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.responses.TopicResponse;
-import com.busuu.app.entities.Lesson;
 import com.busuu.app.entities.topics.Topic;
-import com.busuu.app.entities.topics.TopicType;
+import com.busuu.app.entities.enums.TopicType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.LessonRepository;
@@ -13,9 +12,6 @@ import com.busuu.app.specification.TopicSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,17 +35,17 @@ public class TopicService implements ITopicService
     @Override
     public List<TopicResponse> getTopicsByType(String requestId, String topicType, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String topicCategory) throws DataNotFoundException
     {
+
         try {
 
             try {
 
-                TopicType type;
+                TopicType type = TopicType.valueOf(topicType.toUpperCase());
 
-                type = TopicType.valueOf(topicType.toUpperCase());
+            } catch (Exception e) {
 
-            } catch (Exception e)
-            {
                 throw new IllegalArgumentException("Illegal topic type! Must be \"IMAGE\" or \"VIDEO\" (ignore case) ");
+
             }
 
             //Pageable pageable = PageRequest.of(page, size);
@@ -72,23 +68,22 @@ public class TopicService implements ITopicService
 
             return randomize(responseList);
 
-
         } catch (Exception e) {
             log.error("requestId=" + requestId + ",failed to get topics by type, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_TOPIC, requestId);
         }
-
     }
 
     @Override
-    public List<TopicResponse> getTopicsByLessonId(String requestId, String lessonId) {
+    public List<TopicResponse> getTopicsByLessonId(String requestId, String lessonId)
+    {
+
         try {
 
             boolean existingLesson = lessonRepository.existsById(lessonId);
 
             if (!existingLesson) throw new DataNotFoundException("No lesson found with id " + lessonId);
-
 
             return topicRepository.findByLessonId(lessonId).stream().map(
                     topic ->
@@ -105,7 +100,6 @@ public class TopicService implements ITopicService
                     }
             ).toList();
 
-
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get topic, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -113,9 +107,11 @@ public class TopicService implements ITopicService
         }
     }
 
+
     @Override
     public TopicResponse getTopic(String requestId, String topicId)
     {
+
         try {
 
             Topic topic = topicRepository.findById(topicId)
@@ -127,6 +123,7 @@ public class TopicService implements ITopicService
                 response.setCategory(topic.getTopicCategory().getCategoryName());
             }
             else response.setCategory(null);
+
             if (topic.getLesson() != null) response.setLessonId(topic.getLesson().getId());
 
             return response;

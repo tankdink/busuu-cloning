@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -32,9 +31,10 @@ public class TopicCategoryController
 
     private final LocalizationUtils localizationUtils;
 
+
     @GetMapping()
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getTopicCategories(@RequestParam(value = "req-id", required = false) String requestId,
                                                        @RequestParam(value = "topic-type", required = false) String topicType)
     {

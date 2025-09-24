@@ -22,7 +22,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Friendship extends BaseEntity {
+public class Friendship extends BaseEntity
+{
 
     @Id
     @Column(name = "friend_ship_id")
@@ -40,4 +41,5 @@ public class Friendship extends BaseEntity {
     @Column(name = "status")
     @Builder.Default
     private FriendshipStatus status = FriendshipStatus.PENDING;
+
 }

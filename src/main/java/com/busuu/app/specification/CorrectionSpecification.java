@@ -1,9 +1,9 @@
 package com.busuu.app.specification;
 
-import com.busuu.app.entities.corrections.Correction;
+import com.busuu.app.entities.Correction;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.posts.Post;
+import com.busuu.app.entities.Post;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -12,7 +12,6 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +27,8 @@ public class CorrectionSpecification
             String userId
     ) {
 
-        return (Root<Correction> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+        return (Root<Correction> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+        {
 
             //Predicate act like a single condition
             List<Predicate> predicates = new ArrayList<>();
@@ -38,11 +38,11 @@ public class CorrectionSpecification
             Join<Post, Language> languageJoin = postJoin.join("language", JoinType.LEFT);
             Join<Correction, User> userJoin = root.join("user", JoinType.LEFT);
 
-
             //Get posts by user first
             if (userId != null && !userId.isEmpty()) {
                 predicates.add(cb.equal(userJoin.get("id"), userId));
             }
+
 
             //Filter then search then sort
 
@@ -51,11 +51,8 @@ public class CorrectionSpecification
                 predicates.add(cb.equal(cb.lower(languageJoin.get("name")), language.toLowerCase()));
             }
 
-
-
             //Sorting
             List<Order> orders = new ArrayList<>();
-
             if (sortBy != null && !sortBy.isEmpty())
             {
                 for (int i = 0; i < sortBy.size(); i++)
@@ -99,6 +96,5 @@ public class CorrectionSpecification
             return cb.and(predicates.toArray(new Predicate[0]));
 
         };
-
     }
 }

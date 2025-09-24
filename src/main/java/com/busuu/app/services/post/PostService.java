@@ -8,15 +8,14 @@ import com.busuu.app.dtos.responses.PostResponse;
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
 import com.busuu.app.entities.UserLanguage;
-import com.busuu.app.entities.corrections.Correction;
-import com.busuu.app.entities.posts.Post;
-import com.busuu.app.entities.posts.PostType;
+import com.busuu.app.entities.Correction;
+import com.busuu.app.entities.Post;
+import com.busuu.app.entities.enums.PostType;
 import com.busuu.app.entities.topics.Topic;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.InvalidFileException;
 import com.busuu.app.repositories.CorrectionRepository;
-import com.busuu.app.repositories.LanguageRepository;
 import com.busuu.app.repositories.PostRepository;
 import com.busuu.app.repositories.TopicRepository;
 import com.busuu.app.repositories.UserLanguageRepository;
@@ -39,7 +38,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -62,8 +60,6 @@ public class PostService implements IPostService
     private final PostRepository postRepository;
 
     private final UserRepository userRepository;
-
-    private final LanguageRepository languageRepository;
 
     private final CorrectionRepository correctionRepository;
 
@@ -90,30 +86,10 @@ public class PostService implements IPostService
             Topic topic = topicRepository.findById(postDTO.getTopicId())
                     .orElseThrow(() -> new DataNotFoundException("Cannot find topic with ID = " + postDTO.getTopicId()));
 
-
-            //Check valid file
-//            if (postDTO.getSubjectVideo() != null) checkFile(postDTO.getSubjectVideo(), "video");
-//            if (postDTO.getSubjectImg() != null) checkFile(postDTO.getSubjectImg(), "image");
             if (postDTO.getPostAudio() != null) checkFile(postDTO.getPostAudio(), "audio");
-
-
 
             //MultipartFile process
             CloudinaryResponse cloudinaryResponse = null;
-
-            //Subject video
-//            if (postDTO.getSubjectVideo() != null) cloudinaryResponse = uploadFile(postDTO.getSubjectVideo());
-//            if (cloudinaryResponse != null) {
-//                newPost.setSubjectVideoUrl(cloudinaryResponse.getUrl());
-//                newPost.setSubjectVideoName(cloudinaryResponse.getPublicId());
-//            }
-
-            //Subject image
-//            if (postDTO.getSubjectImg() != null) cloudinaryResponse = uploadFile(postDTO.getSubjectImg());
-//            if (cloudinaryResponse != null) {
-//                newPost.setSubjectImageUrl(cloudinaryResponse.getUrl());
-//                newPost.setSubjectImageName(cloudinaryResponse.getPublicId());
-//            }
 
             //Post audio
             if (postDTO.getPostAudio() != null) cloudinaryResponse = uploadFile(postDTO.getPostAudio());
@@ -148,9 +124,11 @@ public class PostService implements IPostService
         }
     }
 
+
     @Override
     public Page<PostResponse> getPosts(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String language)
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -189,11 +167,11 @@ public class PostService implements IPostService
         }
     }
 
+
     @Override
     public PostResponse getPost(String requestId, String postId)
     {
-        try
-        {
+        try {
 
             Post post = postRepository.findById(postId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Post with ID = " + postId));
@@ -214,6 +192,7 @@ public class PostService implements IPostService
                     Constants.ERROR_CODE.ERR_GET_POST, requestId);
         }
     }
+
 
     @Override
     public Page<PostResponse> getByUserId(String requestId, String userId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String language)
@@ -303,6 +282,7 @@ public class PostService implements IPostService
 
     }
 
+
     public Page<PostResponse> getSelfPost(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String postType, String language)
     {
         try {
@@ -346,6 +326,7 @@ public class PostService implements IPostService
 
     public Page<PostResponse> getPostsContainUserCorrection(String requestId, int page, int size, String userId)
     {
+
         try {
 
             if (userId == null || userId.isEmpty())
@@ -379,7 +360,6 @@ public class PostService implements IPostService
             //Remove duplicate
             Set<Post> set = new HashSet<>(responseTemp);
             List<Post> response = new ArrayList<>(set);
-
 
             List<PostResponse> res = response.stream().map(
                     post -> {
@@ -416,23 +396,29 @@ public class PostService implements IPostService
     }
 
 
-
     private CloudinaryResponse uploadFile(MultipartFile file) throws Exception
     {
+
         //Get file type
         String contentType = file.getContentType();
 
-        String resourceType = contentType.split("/")[0];
+        String resourceType;
+
+        if (contentType != null)
+            resourceType = contentType.split("/")[0];
+        else
+            throw new IllegalArgumentException("ContentType of file must not be null");
 
         //Upload
         UploadCloudinaryUtil.assertAllowed(file, resourceType);
         String fileName = UploadCloudinaryUtil.getFileName(file.getOriginalFilename());
-        CloudinaryResponse response = uploadCloudinaryService.uploadFile(file, fileName, resourceType);
-        return response;
+        return uploadCloudinaryService.uploadFile(file, fileName, resourceType);
+
     }
 
-    private void checkFile(MultipartFile file, String requiredType) throws Exception
+    private void checkFile(MultipartFile file, String requiredType)
     {
+
         //Get file type
         String contentType = file.getContentType(); //Return like e.g. "image/png", "video/mp4", ...
         if (contentType == null || !contentType.contains("/")) {

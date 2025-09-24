@@ -25,6 +25,5 @@ public interface IFriendshipService
 
     void deleteFriend(String requestId, String friendId);
 
-
 }
 

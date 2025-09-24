@@ -1,10 +1,6 @@
 package com.busuu.app.entities;
 
-import com.busuu.app.entities.corrections.Correction;
-import com.busuu.app.entities.notifications.Notification;
-import com.busuu.app.entities.posts.Post;
 import com.busuu.app.entities.progresses.*;
-import com.busuu.app.entities.reactions.Reaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

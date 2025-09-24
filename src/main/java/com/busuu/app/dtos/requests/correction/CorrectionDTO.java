@@ -2,7 +2,6 @@ package com.busuu.app.dtos.requests.correction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,6 +32,5 @@ public class CorrectionDTO
     @JsonProperty("comment")
     @NotBlank(message = "Comment cannot be blank")
     private String comment;
-
 
 }

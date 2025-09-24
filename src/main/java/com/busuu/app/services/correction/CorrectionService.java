@@ -4,16 +4,15 @@ import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.correction.CorrectionDTO;
 import com.busuu.app.dtos.responses.CloudinaryResponse;
 import com.busuu.app.dtos.responses.CorrectionResponse;
-import com.busuu.app.entities.corrections.Correction;
+import com.busuu.app.entities.Correction;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.notifications.NotificationType;
-import com.busuu.app.entities.posts.Post;
-import com.busuu.app.entities.posts.PostType;
-import com.busuu.app.entities.reactions.Reaction;
-import com.busuu.app.entities.reactions.ReactionType;
+import com.busuu.app.entities.enums.NotificationType;
+import com.busuu.app.entities.Post;
+import com.busuu.app.entities.enums.PostType;
+import com.busuu.app.entities.Reaction;
+import com.busuu.app.entities.enums.ReactionType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
-import com.busuu.app.exceptions.ExistDataException;
 import com.busuu.app.exceptions.InvalidFileException;
 import com.busuu.app.repositories.CorrectionRepository;
 import com.busuu.app.repositories.PostRepository;
@@ -35,7 +34,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -62,6 +60,7 @@ public class CorrectionService implements ICorrectionService
     @Transactional
     public CorrectionResponse insertCorrection(String requestId, CorrectionDTO correctionDTO) 
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -80,6 +79,7 @@ public class CorrectionService implements ICorrectionService
 
             if (correctionDTO.getCorrectionId() != null)
             {
+
                 existingCorrection = correctionRepository.findById(correctionDTO.getCorrectionId())
                         .orElseThrow(() -> new DataNotFoundException("Cannot find correction with ID " + correctionDTO.getCorrectionId()));
 
@@ -87,8 +87,10 @@ public class CorrectionService implements ICorrectionService
 
 //                if (user.getId().equals(existingCorrection.getUser().getId()))
 //                    throw new IllegalArgumentException("Cannot reply to your correction!");
+
             }
-            else {
+            else
+            {
 
                 existingPost = postRepository.findById(correctionDTO.getPostId())
                         .orElseThrow(() -> new DataNotFoundException("Cannot find post with ID " + correctionDTO.getPostId()));
@@ -105,8 +107,7 @@ public class CorrectionService implements ICorrectionService
             }
 
             if (correctionDTO.getCorrectionAudio() != null && correctionDTO.getCorrectionText() != null ) throw new IllegalArgumentException("Both Correction audio and Correction text cannot exist at the same time");
-            //if (correctionDTO.getCorrectionAudio() == null && correctionDTO.getCorrectionText() == null ) throw new IllegalArgumentException("Either Correction audio and Correction must be exist");
-
+            //if (correctionDTO.getCorrectionAudio() == null && correctionDTO.getCorrectionText() == null ) throw new IllegalArgumentException("Either Correction audio and Correction must be existed");
 
             //Check valid file
             if (correctionDTO.getCorrectionAudio() != null) checkFile(correctionDTO.getCorrectionAudio(), "audio");
@@ -114,14 +115,12 @@ public class CorrectionService implements ICorrectionService
             //MultipartFile process
             CloudinaryResponse cloudinaryResponse = null;
 
-
             //Correction audio
             if (correctionDTO.getCorrectionAudio() != null) cloudinaryResponse = uploadFile(correctionDTO.getCorrectionAudio());
             if (cloudinaryResponse != null) {
                 newCorrection.setCorrectionAudioUrl(cloudinaryResponse.getUrl());
                 newCorrection.setCorrectionAudioName(cloudinaryResponse.getPublicId());
             }
-
             //Get and set user/posts
             newCorrection.setUser(user);
             newCorrection.setPost(existingPost);
@@ -149,11 +148,12 @@ public class CorrectionService implements ICorrectionService
         }
     }
 
+
     @Override
     public CorrectionResponse getCorrection(String requestId, String correctionId)
     {
-        try
-        {
+
+        try {
 
             Correction correction = correctionRepository.findById(correctionId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find Correction with ID = " + correctionId));
@@ -185,9 +185,11 @@ public class CorrectionService implements ICorrectionService
         }
     }
 
+
     @Override
     public List<CorrectionResponse> getByUserId(String requestId, String userId)
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -197,6 +199,7 @@ public class CorrectionService implements ICorrectionService
 
             return corrections.stream().map(correction ->
             {
+
                 CorrectionResponse correctionResponse = modelMapper.map(correction, CorrectionResponse.class);
                 correctionResponse.setUserId(correction.getUser().getId());
                 correctionResponse.setPostId(correction.getPost() != null ? correction.getPost().getId() : null);
@@ -212,7 +215,6 @@ public class CorrectionService implements ICorrectionService
                 correctionResponse.setDislikeCount(dislikeCount);
                 correctionResponse.setReplyIds(getReplyList(correctionResponse.getId()));
 
-
                 return correctionResponse;
 
             }).toList();
@@ -224,9 +226,11 @@ public class CorrectionService implements ICorrectionService
         }
     }
 
+
     @Override
     public List<CorrectionResponse> getByPostId(String requestId, String postId)
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -262,6 +266,7 @@ public class CorrectionService implements ICorrectionService
         }
     }
 
+
     @Override
     public Page<CorrectionResponse> getSelfCorrection(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String language)
     {
@@ -296,7 +301,7 @@ public class CorrectionService implements ICorrectionService
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get corrections, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_GET_POST, requestId);
+                    Constants.ERROR_CODE.ERR_GET_CORRECTION, requestId);
         }
     }
 
@@ -304,6 +309,7 @@ public class CorrectionService implements ICorrectionService
     @Transactional
     public CorrectionResponse reaction(String requestId, String correctionId, String reaction)
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -321,12 +327,13 @@ public class CorrectionService implements ICorrectionService
 
                 reactionType = ReactionType.valueOf(reaction.toUpperCase());
 
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
+
                 throw new IllegalArgumentException("Illegal reaction! Must be \"LIKE\" or \"DISLIKE\" (ignore case) ");
+
             }
 
-            Reaction newReaction = null;
+            Reaction newReaction;
 
             Reaction existingReaction = reactionRepository.findByUserIdAndCorrectionId(user.getId(), correctionId);
             if (existingReaction != null)
@@ -350,7 +357,6 @@ public class CorrectionService implements ICorrectionService
 
             }
 
-
             CorrectionResponse correctionResponse = modelMapper.map(existingCorrection, CorrectionResponse.class);
             correctionResponse.setUserId(user.getId());
             correctionResponse.setPostId(existingCorrection.getPost() != null ? existingCorrection.getPost().getId() : null);
@@ -368,33 +374,40 @@ public class CorrectionService implements ICorrectionService
         } catch (DataNotFoundException e) {
             log.error("requestId="+requestId+",failed to add reaction, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    Constants.ERROR_CODE.ERR_GET_POST, requestId);
+                    Constants.ERROR_CODE.ERR_ADD_REACTION, requestId);
         }
-
 
     }
 
+
     private List<String> getReplyList(String correctionId)
     {
+
         return correctionRepository.findByCorrectionId(correctionId).stream().map(Correction::getId).toList();
+
     }
 
     private CloudinaryResponse uploadFile(MultipartFile file) throws Exception
     {
+
         //Get file type
         String contentType = file.getContentType();
 
-        String resourceType = contentType.split("/")[0];
+        String resourceType;
+
+        if (contentType != null) resourceType = contentType.split("/")[0];
+        else throw new IllegalArgumentException("ContentType pf file must not be null");
 
         //Upload
         UploadCloudinaryUtil.assertAllowed(file, resourceType);
         String fileName = UploadCloudinaryUtil.getFileName(file.getOriginalFilename());
-        CloudinaryResponse response = uploadCloudinaryService.uploadFile(file, fileName, resourceType);
-        return response;
+        return uploadCloudinaryService.uploadFile(file, fileName, resourceType);
+
     }
 
-    private void checkFile(MultipartFile file, String requiredType) throws Exception
+    private void checkFile(MultipartFile file, String requiredType)
     {
+
         //Get file type
         String contentType = file.getContentType(); //Return like e.g. "image/png", "video/mp4", ...
         if (contentType == null || !contentType.contains("/")) {

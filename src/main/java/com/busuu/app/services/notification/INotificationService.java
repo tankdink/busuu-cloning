@@ -1,14 +1,9 @@
 package com.busuu.app.services.notification;
 
 import com.busuu.app.dtos.responses.NotificationResponse;
-import com.busuu.app.entities.User;
-import com.busuu.app.entities.notifications.Notification;
-import com.busuu.app.entities.notifications.NotificationStatus;
-import com.busuu.app.entities.notifications.NotificationType;
-import com.busuu.app.entities.reactions.ReactionType;
+import com.busuu.app.entities.enums.NotificationType;
+import com.busuu.app.entities.enums.ReactionType;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 public interface INotificationService
 {

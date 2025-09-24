@@ -3,7 +3,6 @@ package com.busuu.app.services.correction;
 import com.busuu.app.dtos.requests.correction.CorrectionDTO;
 import com.busuu.app.dtos.responses.CorrectionResponse;
 import org.springframework.data.domain.Page;
-
 import java.util.List;
 
 public interface ICorrectionService
@@ -20,6 +19,5 @@ public interface ICorrectionService
     Page<CorrectionResponse> getSelfCorrection(String requestId, int page, int size, List<String> sortBy, List<String> sortDirection, String searchValue, String language);
 
     CorrectionResponse reaction(String requestId, String correctionId, String reaction);
-
 
 }

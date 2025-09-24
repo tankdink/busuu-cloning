@@ -1,6 +1,6 @@
 package com.busuu.app.dtos.responses;
 
-import com.busuu.app.entities.posts.PostType;
+import com.busuu.app.entities.enums.PostType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

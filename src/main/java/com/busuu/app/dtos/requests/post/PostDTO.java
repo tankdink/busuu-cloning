@@ -21,17 +21,6 @@ public class PostDTO
     @Pattern(regexp = "TEXT|AUDIO", message = "Invalid posts type. Must be 'TEXT' or 'AUDIO' (uppercase required).")
     private String postTypes;
 
-//    @JsonProperty("subject_text")
-//    @NotBlank(message = "Subject text cannot be null")
-//    private String subjectText;
-
-
-//    @JsonProperty("subject_img")
-//    private MultipartFile subjectImg;
-//
-//    @JsonProperty("subject_video")
-//    private MultipartFile subjectVideo;
-
     @JsonProperty("post_audio")
     private MultipartFile postAudio;
 

@@ -11,7 +11,7 @@ import com.busuu.app.entities.enums.FriendshipStatus;
 import com.busuu.app.entities.enums.LearningStatus;
 import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.entities.enums.SpeakingStatus;
-import com.busuu.app.entities.notifications.NotificationType;
+import com.busuu.app.entities.enums.NotificationType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.exceptions.ExistDataException;
@@ -23,9 +23,7 @@ import com.busuu.app.services.publisher.FriendRequestEventPublisher;
 import com.busuu.app.specification.UserLanguageSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.math.ec.rfc7748.X448;
 import org.modelmapper.ModelMapper;
-import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -33,7 +31,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -59,13 +56,11 @@ public class FriendshipService implements IFriendshipService
 
     private final RedissonClient redissonClient;
 
-    private static final long ONLINE_TTL_SECONDS = 60;
-
-    private static final String PRESENCE_KEY = "user:presence:%s:%s";
-
     private static final String PRESENCE_PATTERN = "user:presence:%s";
 
-    private final FriendRequestEventPublisher  friendRequestEventPublisher;
+    private final FriendRequestEventPublisher friendRequestEventPublisher;
+
+    //private static final String PRESENCE_KEY = "user:presence:%s:%s";
 
 
     @Override
@@ -84,7 +79,7 @@ public class FriendshipService implements IFriendshipService
 
             if (user.getId().equals(existingUser.getId())) throw new IllegalArgumentException("Cannot add friend to yourself!");
 
-            Friendship friendship = null;
+            Friendship friendship;
             Friendship friendshipDirect = friendshipRepository.findByFromUserAndToUser(user, existingUser);
             Friendship friendshipReverse = friendshipRepository.findByFromUserAndToUser(existingUser, user);
 
@@ -124,6 +119,7 @@ public class FriendshipService implements IFriendshipService
                     //Is having reject request
                     case REJECT:
                     {
+
                         if ( friendship.getFromUser().getId().equals(user.getId()))
                         {
                             friendship.setStatus(FriendshipStatus.PENDING);
@@ -145,22 +141,27 @@ public class FriendshipService implements IFriendshipService
 
                             return "Send friend request to user " + existingUser.getFullName() + " successfully!";
                         }
+
                     }
+
                     default: return "Invalid status!";
+
                 }
             }
 
         } catch (Exception e) {
-            log.error("requestId="+requestId+",failed to add relationship, err="+e.getMessage());
+            log.error("requestId="+requestId+", failed to add relationship, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CREATE_FRIENDSHIP, requestId);
         }
-
     }
 
+
     @Override
+    @Transactional
     public String respondRequest(String requestId, String userId, String respond)
     {
+
         try {
 
             if ( !respond.equalsIgnoreCase("accept") && !respond.equalsIgnoreCase("reject")) throw new IllegalArgumentException("Invalid respond! Must be \"accept\" or \"reject\"");
@@ -212,7 +213,7 @@ public class FriendshipService implements IFriendshipService
             }
 
             List<UserInfoResponse> result = new ArrayList<>();
-            RKeys rKeys = redissonClient.getKeys();
+            //RKeys rKeys = redissonClient.getKeys();
 
             for (String fid : friendIds) {
                 String pattern = buildPattern(fid);
@@ -229,14 +230,12 @@ public class FriendshipService implements IFriendshipService
 
             return result;
 
-
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get friend list, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_FRIENDSHIP, requestId);
         }
     }
-
 
 
     @Override
@@ -246,13 +245,10 @@ public class FriendshipService implements IFriendshipService
 
             List<String> friendIds = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
 
-            FriendshipResponse response = FriendshipResponse.builder()
+           return FriendshipResponse.builder()
                     .userId(userId)
                     .friendIds(friendIds)
                     .build();
-
-            return response;
-
 
         } catch (Exception e) {
             log.error("request failed to get friend list, err="+e.getMessage());
@@ -264,6 +260,7 @@ public class FriendshipService implements IFriendshipService
     @Override
     public FriendshipResponse getPendingRequest(String requestId)
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -274,14 +271,10 @@ public class FriendshipService implements IFriendshipService
             List<String> userIdList = new ArrayList<>();
             for (Friendship friendship : friendList) userIdList.add(friendship.getFromUser().getId());
 
-
-            FriendshipResponse response = FriendshipResponse.builder()
+            return FriendshipResponse.builder()
                     .userId(user.getId())
                     .friendIds(userIdList)
                     .build();
-
-            return response;
-
 
         } catch (Exception e) {
             log.error("request failed to get pending friend list, err="+e.getMessage());
@@ -293,6 +286,7 @@ public class FriendshipService implements IFriendshipService
     @Override
     public List<String> getRandomList(String requestId)
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -306,12 +300,9 @@ public class FriendshipService implements IFriendshipService
 
             for (UserLanguage userLanguage : userLanguages)
             {
-
                 if (userLanguage.getLearningStatus().equals(LearningStatus.IN_PROGRESS)) learning.add(userLanguage.getLanguage().getName());
                 if (!userLanguage.getSpeakingStatus().equals(SpeakingStatus.NO_PROFICIENCY)) speaking.add(userLanguage.getLanguage().getName());
-
             }
-
 
             Specification<UserLanguage> spec = UserLanguageSpecification.getSpecification(learning, speaking);
             List<UserLanguageResponse> responseList = userLanguageRepository.findAll(spec).stream().map(
@@ -346,10 +337,12 @@ public class FriendshipService implements IFriendshipService
         }
     }
 
+
     @Override
     public String getFriendshipStatus(String requestId, String userId)
     {
         try {
+
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
 
@@ -364,7 +357,6 @@ public class FriendshipService implements IFriendshipService
             boolean alreadyTo = friendshipRepository.existsByFromUserAndToUserAndStatus(existingUser, user, FriendshipStatus.ACCEPT);
             if (alreadyFrom || alreadyTo) return "ACCEPTED";
 
-
             //Is having a pending invitation
             boolean pendingFrom = friendshipRepository.existsByFromUserAndToUserAndStatus(user, existingUser, FriendshipStatus.PENDING);
             if ( pendingFrom ) return "INVITATION_SENT";
@@ -377,11 +369,9 @@ public class FriendshipService implements IFriendshipService
             log.error("requestId=" + requestId + ",failed to get friend status, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_GET_FRIENDSHIP, requestId);
-
-
         }
-
     }
+
 
     @Override
     @Transactional
@@ -434,11 +424,12 @@ public class FriendshipService implements IFriendshipService
 
     }
 
-    private String buildKey(String userId, String sessionId) {
-        return String.format(PRESENCE_KEY, userId, sessionId);
-    }
-
     private String buildPattern(String userId) {
         return String.format(PRESENCE_PATTERN, userId);
     }
+
+//    private String buildKey(String userId, String sessionId) {
+//        return String.format(PRESENCE_KEY, userId, sessionId);
+//    }
+
 }

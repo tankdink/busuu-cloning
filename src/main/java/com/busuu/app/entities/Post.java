@@ -1,10 +1,6 @@
-package com.busuu.app.entities.posts;
+package com.busuu.app.entities;
 
-import com.busuu.app.entities.BaseEntity;
-import com.busuu.app.entities.corrections.Correction;
-import com.busuu.app.entities.Language;
-import com.busuu.app.entities.User;
-import com.busuu.app.entities.notifications.Notification;
+import com.busuu.app.entities.enums.PostType;
 import com.busuu.app.entities.topics.Topic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
@@ -12,7 +8,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -23,7 +18,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +30,7 @@ import java.util.List;
 @Builder
 public class Post extends BaseEntity
 {
+
     @Id
     @Column(name = "post_id")
     private String id;
@@ -43,21 +38,6 @@ public class Post extends BaseEntity
     @Enumerated(EnumType.STRING)
     @Column(name = "post_type")
     private PostType postType;
-
-//    @Column(name = "subject_text")
-//    private String subjectText;
-//
-//    @Column(name = "subject_img_name")
-//    private String subjectImageName;
-//
-//    @Column(name = "subject_img_url")
-//    private String subjectImageUrl;
-//
-//    @Column(name = "subject_video_name")
-//    private String subjectVideoName;
-//
-//    @Column(name = "subject_video_url")
-//    private String subjectVideoUrl;
 
     @Column(name = "post_audio_name")
     private String postAudioName;
@@ -84,7 +64,5 @@ public class Post extends BaseEntity
     @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Correction> corrections = new ArrayList<>();
-
-
 
 }

@@ -28,7 +28,6 @@ public class Constants {
     public static final String PRESENCE ="/presence";
     public static final String HEARTBEAT = "/heartbeat";
     public static final String PENDING = "/pending";
-
     public static final String QUESTION = "/questions";
     public static final String FILE = "/file";
     public static final String ANSWER = "/answers";
@@ -59,7 +58,6 @@ public class Constants {
     public static final String REVIEW = "/review";
     public static final String STATS = "/stats";
     public static final String FRIENDS = "/friends";
-
     public static final String PATH_PARAM_ID = "/{id}";
     public static final String PATH_PARAM_USER = "/user";
     public static final String PATH_PARAM_POST = "/posts";
@@ -79,7 +77,6 @@ public class Constants {
         public static final String FACEBOOK = "facebook";
         public static final String GOOGLE = "google";
     }
-
 
     public static class ERROR_CODE {
         public static final String ERR_UNAUTHORIZED = "ERR_UNAUTHORIZED";
@@ -122,12 +119,13 @@ public class Constants {
         public static final String ERR_UPDATE_LEVEL_BY_ID = "ERR_UPDATE_LEVEL_BY_ID";
         public static final String ERR_DELETE_LEVEL_BY_ID = "ERR_DELETE_LEVEL_BY_ID";
 
+        // Word
         public static final String ERR_CREATE_WORD = "ERR_CREATE_WORD";
         public static final String ERR_GET_WORD = "ERR_GET_WORD";
         public static final String ERR_UPDATE_WORD = "ERR_UPDATE_WORD";
         public static final String ERR_DELETE_WORD = "ERR_DELETE_WORD";
 
-        //Chapter
+        // Chapter
         public static final String ERR_CREATE_NEW_CHAPTER = "ERR_CREATE_NEW_CHAPTER";
         public static final String ERR_GET_ALL_CHAPTER = "ERR_GET_ALL_CHAPTER";
         public static final String ERR_GET_CHAPTER_BY_ID = "ERR_GET_CHAPTER_BY_ID";
@@ -159,14 +157,14 @@ public class Constants {
         public static final String ERR_UPDATE_ORDERING_PART = "ERR_UPDATE_ORDERING_PART";
         public static final String ERR_DELETE_ORDERING_PART = "ERR_DELETE_ORDERING_PART";
 
-        //Language
+        // Language
         public static final String ERR_CREATE_NEW_LANGUAGE = "ERR_CREATE_NEW_LANGUAGE";
         public static final String ERR_GET_ALL_LANGUAGE = "ERR_GET_ALL_LANGUAGE";
         public static final String ERR_GET_LANGUAGE_BY_ID = "ERR_GET_LANGUAGE_BY_ID";
         public static final String ERR_UPDATE_LANGUAGE_BY_ID = "ERR_UPDATE_LANGUAGE_BY_ID";
         public static final String ERR_DELETE_LANGUAGE_BY_ID = "ERR_DELETE_LANGUAGE_BY_ID";
 
-        //Grammar
+        // Grammar
         public static final String ERR_CREATE_NEW_GRAMMAR = "ERR_CREATE_NEW_GRAMMAR";
         public static final String ERR_GET_ALL_GRAMMAR = "ERR_GET_ALL_GRAMMAR";
         public static final String ERR_GET_GRAMMAR_BY_ID = "ERR_GET_GRAMMAR_BY_ID";
@@ -174,7 +172,7 @@ public class Constants {
         public static final String ERR_UPDATE_GRAMMAR_BY_ID = "ERR_UPDATE_GRAMMAR_BY_ID";
         public static final String ERR_DELETE_GRAMMAR_BY_ID = "ERR_DELETE_GRAMMAR_BY_ID";
 
-        //Grammar section
+        // Grammar section
         public static final String ERR_CREATE_NEW_GRAMMAR_SECTION = "ERR_CREATE_NEW_GRAMMAR_SECTION";
         public static final String ERR_GET_ALL_GRAMMAR_SECTION = "ERR_GET_ALL_GRAMMAR_SECTION";
         public static final String ERR_GET_GRAMMAR_SECTION_BY_ID = "ERR_GET_GRAMMAR_SECTION_BY_ID";
@@ -186,7 +184,6 @@ public class Constants {
         public static final String ERR_GET_PROGRESS = "ERR_GET_PROGRESS";
         public static final String ERR_UPSERT_PROGRESS = "ERR_UPSERT_PROGRESS";
         public static final String ERR_DELETE_PROGRESS = "ERR_DELETE_PROGRESS";
-
 
         // Topic
         public static final String ERR_GET_TOPIC = "ERR_GET_TOPIC";
@@ -202,11 +199,13 @@ public class Constants {
         public static final String ERR_CREATE_NEW_CORRECTION = "ERR_CREATE_NEW_CORRECTION";
         public static final String ERR_GET_CORRECTION = "ERR_GET_CORRECTION";
 
+        // Reaction
+        public static final String ERR_ADD_REACTION = "ERR_ADD_REACTION";
+
         // Friendship
         public static final String ERR_CREATE_FRIENDSHIP = "ERR_ADD_FRIEND";
         public static final String ERR_GET_FRIENDSHIP = "ERR_ADD_FRIEND";
         public static final String ERR_DELETE_FRIENDSHIP = "ERR_ADD_FRIEND";
-
 
         // Notification
         public static final String ERR_CREATE_NOTIFICATION = "ERR_CREATE_NOTIFICATION";

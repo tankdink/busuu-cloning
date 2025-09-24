@@ -2,18 +2,14 @@ package com.busuu.app.services.notification;
 
 
 import com.busuu.app.configs.constant.Constants;
-import com.busuu.app.dtos.responses.FriendshipResponse;
 import com.busuu.app.dtos.responses.NotificationResponse;
-import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.corrections.Correction;
-import com.busuu.app.entities.enums.FriendshipStatus;
-import com.busuu.app.entities.enums.PresenceStatus;
-import com.busuu.app.entities.notifications.Notification;
-import com.busuu.app.entities.notifications.NotificationStatus;
-import com.busuu.app.entities.notifications.NotificationType;
-import com.busuu.app.entities.posts.Post;
-import com.busuu.app.entities.reactions.ReactionType;
+import com.busuu.app.entities.Correction;
+import com.busuu.app.entities.Notification;
+import com.busuu.app.entities.enums.NotificationStatus;
+import com.busuu.app.entities.enums.NotificationType;
+import com.busuu.app.entities.Post;
+import com.busuu.app.entities.enums.ReactionType;
 import com.busuu.app.exceptions.DataNotFoundException;
 import com.busuu.app.exceptions.ErrorHandleException;
 import com.busuu.app.repositories.CorrectionRepository;
@@ -21,7 +17,6 @@ import com.busuu.app.repositories.NotificationRepository;
 import com.busuu.app.repositories.PostRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.publisher.NotificationEventPublisher;
-import com.busuu.app.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -33,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +54,7 @@ public class NotificationService implements INotificationService
     @Transactional
     public void addNotification(String destinationId, NotificationType notificationType, ReactionType reactionType)
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -139,6 +134,7 @@ public class NotificationService implements INotificationService
                 }
 
                 default: break;
+
             }
 
             if (giveNotification)
@@ -159,15 +155,13 @@ public class NotificationService implements INotificationService
                 notificationEventPublisher.publishNotification(uuid.toString(), destinationId, actorId, message, notificationType, toUser.getId());
 
             }
-
-
         } catch (Exception e) {
             log.error("Failed to add notification, err="+e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CREATE_NOTIFICATION, "Internal request");
         }
-
     }
+
 
     @Override
     public Page<NotificationResponse> getSelfNotification(String requestId, int page, int size)
@@ -189,22 +183,23 @@ public class NotificationService implements INotificationService
             );
 
         } catch (Exception e) {
-        log.error("Failed to add notification, err="+e.getMessage());
+        log.error("Failed to get notification, err="+e.getMessage());
         throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                 Constants.ERROR_CODE.ERR_GET_NOTIFICATION, requestId);
         }
-
     }
 
     @Override
+    @Transactional
     public void deleteNotification(String requestId, String notificationId)
     {
+
         try {
 
             Notification existsNotification = notificationRepository.findById(notificationId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find notification with ID = " + notificationId));
 
-            notificationRepository.deleteById(notificationId);
+            notificationRepository.delete(existsNotification);
 
         } catch (Exception e) {
             log.error("Failed to add notification, err=" + e.getMessage());
@@ -240,6 +235,7 @@ public class NotificationService implements INotificationService
     @Transactional
     public void changeAllStatus(String requestId)
     {
+
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -254,9 +250,8 @@ public class NotificationService implements INotificationService
                 notificationRepository.save(notification);
             }
 
-
         } catch (Exception e) {
-            log.error("Failed to add notification, err=" + e.getMessage());
+            log.error("Failed to change notification status, err=" + e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     Constants.ERROR_CODE.ERR_CHANGE_STATUS_NOTIFICATION, requestId);
         }
@@ -271,5 +266,6 @@ public class NotificationService implements INotificationService
         String userId = user.getId();
 
         return notificationRepository.countByUserIdAndStatus(userId, NotificationStatus.UNREAD);
+
     }
 }

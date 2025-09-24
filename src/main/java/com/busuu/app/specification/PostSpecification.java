@@ -2,8 +2,8 @@ package com.busuu.app.specification;
 
 import com.busuu.app.entities.Language;
 import com.busuu.app.entities.User;
-import com.busuu.app.entities.posts.Post;
-import com.busuu.app.entities.posts.PostType;
+import com.busuu.app.entities.Post;
+import com.busuu.app.entities.enums.PostType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -12,7 +12,6 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +30,8 @@ public class PostSpecification
             String userId
     ) {
 
-        return (Root<Post> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+        return (Root<Post> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+        {
 
             //Predicate act like a single condition
             List<Predicate> predicates = new ArrayList<>();
@@ -39,7 +39,6 @@ public class PostSpecification
             //Join
             Join<Post, Language> languageJoin = root.join("language", JoinType.LEFT);
             Join<Post, User> userJoin = root.join("user", JoinType.LEFT);
-
 
             //Filter
             //Filter by user first
@@ -128,6 +127,5 @@ public class PostSpecification
             return cb.and(predicates.toArray(new Predicate[0]));
 
         };
-
     }
 }

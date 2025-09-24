@@ -1,4 +1,4 @@
-package com.busuu.app.entities.posts;
+package com.busuu.app.entities.enums;
 
 public enum PostType
 {

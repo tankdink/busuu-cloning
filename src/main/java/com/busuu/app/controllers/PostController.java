@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -39,12 +38,14 @@ public class PostController
 
     private final LocalizationUtils localizationUtils;
 
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> postPost(@RequestParam(value = "req-id", required = false) String requestId,
-                                                  @Valid @ModelAttribute PostDTO newPostDTO)
+                                             @Valid @ModelAttribute PostDTO newPostDTO)
     {
+
         try {
 
             if (requestId == null || requestId.isEmpty()) {
@@ -74,20 +75,22 @@ public class PostController
         }
     }
 
+
     @GetMapping()
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getPosts(@RequestParam(value = "req-id", required = false) String requestId,
 
-                                              @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                              @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                             @RequestParam(value = "size", defaultValue = "10", required = false) int size,
 
-                                              @RequestParam(value = "sort-by", required = false) List<String> sortBy,
-                                              @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
-                                              @RequestParam(value = "search-value", required = false) String searchValue,
+                                             @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                             @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
+                                             @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                              @RequestParam(value = "post-type", required = false) String postType,
-                                              @RequestParam(value = "language", required = false) String language) {
+                                             @RequestParam(value = "post-type", required = false) String postType,
+                                             @RequestParam(value = "language", required = false) String language)
+    {
 
         try {
 
@@ -125,9 +128,9 @@ public class PostController
 
     @GetMapping(Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getPost(@RequestParam(value = "req-id", required = false) String requestId,
-                                               @PathVariable("id") String postId)
+                                            @PathVariable("id") String postId)
     {
 
         try {
@@ -159,9 +162,10 @@ public class PostController
         }
     }
 
+
     @GetMapping(Constants.PATH_PARAM_USER + Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getPostByUserId(@RequestParam(value = "req-id", required = false) String requestId,
                                                     @PathVariable("id") String userId,
 
@@ -190,7 +194,6 @@ public class PostController
                     .totalObjects(postList.getTotalElements())
                     .build();
 
-
             //Return response
             return ResponseEntity.ok().body(
                     Response.builder()
@@ -211,20 +214,21 @@ public class PostController
         }
     }
 
+
     @GetMapping(Constants.SELF_DATA)
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getSelfPosts(@RequestParam(value = "req-id", required = false) String requestId,
 
-                                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                             @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size,
 
-                                             @RequestParam(value = "sort-by", required = false) List<String> sortBy,
-                                             @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
-                                             @RequestParam(value = "search-value", required = false) String searchValue,
+                                                 @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                                 @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
+                                                 @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                             @RequestParam(value = "post-type", required = false) String postType,
-                                             @RequestParam(value = "language", required = false) String language) {
+                                                 @RequestParam(value = "post-type", required = false) String postType,
+                                                 @RequestParam(value = "language", required = false) String language) {
 
         try {
 
@@ -263,11 +267,11 @@ public class PostController
 
     @GetMapping(Constants.FRIENDSHIP)
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getFriendPosts(@RequestParam(value = "req-id", required = false) String requestId,
 
-                                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                             @RequestParam(value = "size", defaultValue = "10", required = false) int size)
+                                                   @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                   @RequestParam(value = "size", defaultValue = "10", required = false) int size)
     {
 
         try {
@@ -303,6 +307,7 @@ public class PostController
             );
         }
     }
+
 
     @GetMapping(Constants.CORRECTION)
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
@@ -348,5 +353,4 @@ public class PostController
             );
         }
     }
-
 }

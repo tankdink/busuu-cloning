@@ -3,7 +3,6 @@ package com.busuu.app.services.post;
 import com.busuu.app.dtos.requests.post.PostDTO;
 import com.busuu.app.dtos.responses.PostResponse;
 import org.springframework.data.domain.Page;
-
 import java.util.List;
 
 public interface IPostService

@@ -2,13 +2,10 @@ package com.busuu.app.controllers;
 
 import com.busuu.app.configs.constant.Constants;
 import com.busuu.app.dtos.requests.correction.CorrectionDTO;
-import com.busuu.app.dtos.requests.post.PostDTO;
 import com.busuu.app.dtos.responses.CorrectionResponse;
 import com.busuu.app.dtos.responses.PagingResponse;
-import com.busuu.app.dtos.responses.PostResponse;
 import com.busuu.app.dtos.responses.Response;
 import com.busuu.app.services.correction.ICorrectionService;
-import com.busuu.app.services.post.IPostService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -42,11 +38,12 @@ public class CorrectionController
 
     private final LocalizationUtils localizationUtils;
 
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> postCorrection(@RequestParam(value = "req-id", required = false) String requestId,
-                                                  @Valid @ModelAttribute CorrectionDTO newCorrectionDTO)
+                                                   @Valid @ModelAttribute CorrectionDTO newCorrectionDTO)
     {
         try {
 
@@ -77,12 +74,13 @@ public class CorrectionController
         }
     }
 
+
     @PostMapping(Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> addReaction(@RequestParam(value = "req-id", required = false) String requestId,
-                                                 @PathVariable("id") String correctionId,
-                                                 @RequestParam(value = "reaction") String reaction)
+                                                @PathVariable("id") String correctionId,
+                                                @RequestParam(value = "reaction") String reaction)
     {
         try {
 
@@ -116,9 +114,9 @@ public class CorrectionController
 
     @GetMapping(Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getCorrection(@RequestParam(value = "req-id", required = false) String requestId,
-                                               @PathVariable("id") String correctionId)
+                                                  @PathVariable("id") String correctionId)
     {
 
         try {
@@ -150,11 +148,12 @@ public class CorrectionController
         }
     }
 
+
     @GetMapping(Constants.PATH_PARAM_USER + Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getCorrectionByUserId(@RequestParam(value = "req-id", required = false) String requestId,
-                                            @PathVariable("id") String userId)
+                                                          @PathVariable("id") String userId)
     {
 
         try {
@@ -186,9 +185,10 @@ public class CorrectionController
         }
     }
 
+
     @GetMapping(Constants.PATH_PARAM_POST + Constants.PATH_PARAM_ID)
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getCorrectionByPostId(@RequestParam(value = "req-id", required = false) String requestId,
                                                           @PathVariable("id") String postId)
     {
@@ -222,19 +222,21 @@ public class CorrectionController
         }
     }
 
+
     @GetMapping(Constants.SELF_DATA)
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getSelfCorrection(@RequestParam(value = "req-id", required = false) String requestId,
 
-                                                 @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                                 @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                      @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                      @RequestParam(value = "size", defaultValue = "10", required = false) int size,
 
-                                                 @RequestParam(value = "sort-by", required = false) List<String> sortBy,
-                                                 @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
-                                                 @RequestParam(value = "search-value", required = false) String searchValue,
+                                                      @RequestParam(value = "sort-by", required = false) List<String> sortBy,
+                                                      @RequestParam(value = "sort-dir", required = false) List<String> sortDirection,
+                                                      @RequestParam(value = "search-value", required = false) String searchValue,
 
-                                                 @RequestParam(value = "language", required = false) String language) {
+                                                      @RequestParam(value = "language", required = false) String language)
+    {
 
         try {
 
@@ -269,5 +271,4 @@ public class CorrectionController
             );
         }
     }
-
 }
