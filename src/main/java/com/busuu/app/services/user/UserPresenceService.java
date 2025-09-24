@@ -41,7 +41,7 @@ public class UserPresenceService {
 
     private static final String PRESENCE_KEY = "user:presence:%s:%s";
 
-    private static final String PRESENCE_PATTERN = "user:presence:%s";
+    private static final String PRESENCE_PATTERN = "user:presence:%s:*";
 
     private final ModelMapper modelMapper;
 
