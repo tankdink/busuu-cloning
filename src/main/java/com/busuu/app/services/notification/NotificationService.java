@@ -107,8 +107,11 @@ public class NotificationService implements INotificationService
                             .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID"));
 
                     if (destinationCorrection.getPost() != null) destinationId = destinationCorrection.getPost().getId();
-                    else destinationId = destinationCorrection.getCorrection().getPost().getId();
-
+                    else if (destinationCorrection.getCorrection().getPost() != null) destinationId = destinationCorrection.getCorrection().getPost().getId();
+                    else if (destinationCorrection.getCorrection().getCorrection().getPost() != null) destinationId = destinationCorrection.getCorrection().getCorrection().getPost().getId();
+                    else if (destinationCorrection.getCorrection().getCorrection().getCorrection().getPost() != null)  destinationId = destinationCorrection.getCorrection().getCorrection().getCorrection().getPost().getId();
+                    else if (destinationCorrection.getCorrection().getCorrection().getCorrection().getCorrection().getPost() != null) destinationId = destinationCorrection.getCorrection().getCorrection().getCorrection().getCorrection().getPost().getId();
+                    else destinationId = destinationCorrection.getCorrection().getCorrection().getCorrection().getCorrection().getCorrection().getPost().getId();
 
                     message = " has " + reactionType.name().toLowerCase() +  "d your correction";
                     toUser = destinationCorrection.getUser();
@@ -122,8 +125,11 @@ public class NotificationService implements INotificationService
                              .orElseThrow( ()-> new DataNotFoundException("Cannot find correction with ID"));
 
                     if (destinationCorrection.getPost() != null) destinationId = destinationCorrection.getPost().getId();
-                    else destinationId = destinationCorrection.getCorrection().getPost().getId();
-
+                    else if (destinationCorrection.getCorrection().getPost() != null) destinationId = destinationCorrection.getCorrection().getPost().getId();
+                    else if (destinationCorrection.getCorrection().getCorrection().getPost() != null) destinationId = destinationCorrection.getCorrection().getCorrection().getPost().getId();
+                    else if (destinationCorrection.getCorrection().getCorrection().getCorrection().getPost() != null)  destinationId = destinationCorrection.getCorrection().getCorrection().getCorrection().getPost().getId();
+                    else if (destinationCorrection.getCorrection().getCorrection().getCorrection().getCorrection().getPost() != null) destinationId = destinationCorrection.getCorrection().getCorrection().getCorrection().getCorrection().getPost().getId();
+                    else destinationId = destinationCorrection.getCorrection().getCorrection().getCorrection().getCorrection().getCorrection().getPost().getId();
 
                     message = " has replied your correction";
 

@@ -84,7 +84,7 @@ public class CorrectionSpecification
             }
             else //Default sort
             {
-                orders.add(cb.desc(root.get("createdAt")));
+                orders.add(cb.asc(root.get("createdAt")));
             }
 
             //Avoid duplicate case
