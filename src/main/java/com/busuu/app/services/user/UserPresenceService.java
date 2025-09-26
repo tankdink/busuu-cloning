@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -83,6 +84,15 @@ public class UserPresenceService {
             redissonClient.getBucket(key, StringCodec.INSTANCE).delete();
 
             if (!isOnline(requestId, userId)) {
+
+                // Set last seen at for user
+                String finalUserId = userId;
+                User user = userRepository.findById(finalUserId)
+                        .orElseThrow(() -> new DataNotFoundException("Cannot found User with ID = " + finalUserId));
+
+                user.setLastSeenAt(Instant.now());
+                userRepository.save(user);
+
                 List<String> friends = userRepository.findFriendIds(userId, FriendshipStatus.ACCEPT);
                 presenceEventPublisher.publishPresenceChange(userId, PresenceStatus.OFFLINE, friends);
             }
@@ -120,7 +130,7 @@ public class UserPresenceService {
             }
 
             RKeys keys = redissonClient.getKeys();
-            Iterable<String> iter = keys.getKeysByPattern("user:presence:" + userId + ":*");
+            Iterable<String> iter = keys.getKeysByPattern(buildPattern(userId));
             return iter.iterator().hasNext();
         } catch (Exception e){
             log.error("requestId={},failed to get presence status of user, err={}", requestId, e.getMessage());

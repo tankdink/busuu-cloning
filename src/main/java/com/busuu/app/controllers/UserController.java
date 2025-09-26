@@ -16,6 +16,8 @@ import com.busuu.app.services.token.ITokenService;
 import com.busuu.app.services.user.IUserService;
 import com.busuu.app.utils.LocalizationUtils;
 import com.busuu.app.utils.MessagesKey;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -289,6 +291,7 @@ public class UserController {
 
     @GetMapping(Constants.DETAILS)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> getDetailUserFromToken (@RequestParam(value = "req-id", required = false) String requestId,
                                                             @RequestHeader("Authorization") String token) {
         try {
@@ -319,6 +322,7 @@ public class UserController {
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> updateUser (@RequestParam(value = "req-id", required = false) String requestId,
                                                 @ModelAttribute @Valid UserUpdateDTO userUpdateDTO,
                                                 BindingResult result) {
@@ -414,6 +418,7 @@ public class UserController {
 
     @PutMapping(Constants.CHANGE_PASSWORD)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> changePassword (@RequestParam(value = "req-id", required = false) String requestId,
                                                     @Valid @RequestBody UserActionPasswordDTO userActionPasswordDTO,
                                                     BindingResult result) {
@@ -462,6 +467,7 @@ public class UserController {
 
     @PutMapping(Constants.GENERATE_OTP)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> generateOTP(@RequestParam(value = "req-id", required = false) String requestId,
                                                 @RequestParam("email") String email) {
         try {
@@ -498,6 +504,7 @@ public class UserController {
 
     @PutMapping(Constants.CHECK_OTP)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> checkOTP(@RequestParam(value = "req-id", required = false) String requestId,
                                              @RequestParam("email") String email,
                                              @RequestParam("otp") String otp) {
@@ -535,6 +542,7 @@ public class UserController {
 
     @PutMapping(Constants.BLOCK + Constants.PATH_PARAM_ID)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> blockOrEnable(@RequestParam(value = "req-id", required = false) String requestId,
                                                   @PathVariable("id") String userId) {
 
@@ -563,7 +571,8 @@ public class UserController {
 
 
     @GetMapping(Constants.PATH_PARAM_ID)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<Response> getUserById (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String userId) {
         try {
@@ -591,6 +600,7 @@ public class UserController {
     }
 
     @GetMapping(Constants.PATH_PARAM_ID + Constants.INFO)
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Response> getUserInfoById (@RequestParam(value = "req-id", required = false) String requestId,
                                                  @PathVariable("id") String userId) {

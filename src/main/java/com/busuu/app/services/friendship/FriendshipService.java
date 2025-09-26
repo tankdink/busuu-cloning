@@ -9,7 +9,6 @@ import com.busuu.app.entities.User;
 import com.busuu.app.entities.UserLanguage;
 import com.busuu.app.entities.enums.FriendshipStatus;
 import com.busuu.app.entities.enums.LearningStatus;
-import com.busuu.app.entities.enums.PresenceStatus;
 import com.busuu.app.entities.enums.SpeakingStatus;
 import com.busuu.app.entities.enums.NotificationType;
 import com.busuu.app.exceptions.DataNotFoundException;
@@ -20,11 +19,11 @@ import com.busuu.app.repositories.UserLanguageRepository;
 import com.busuu.app.repositories.UserRepository;
 import com.busuu.app.services.notification.NotificationService;
 import com.busuu.app.services.publisher.FriendRequestEventPublisher;
+import com.busuu.app.services.user.UserPresenceService;
 import com.busuu.app.specification.UserLanguageSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.redisson.api.RedissonClient;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -44,23 +43,21 @@ import java.util.UUID;
 public class FriendshipService implements IFriendshipService
 {
 
-    private final FriendshipRepository friendshipRepository;
-
+    // Service
     private final NotificationService notificationService;
+    private final UserPresenceService userPresenceService;
 
+    // Repositories
+    private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
-
     private final UserLanguageRepository userLanguageRepository;
 
+    // Mapper
     private final ModelMapper modelMapper;
 
-    private final RedissonClient redissonClient;
-
-    private static final String PRESENCE_PATTERN = "user:presence:%s";
-
+    // Publisher
     private final FriendRequestEventPublisher friendRequestEventPublisher;
 
-    //private static final String PRESENCE_KEY = "user:presence:%s:%s";
 
 
     @Override
@@ -202,33 +199,7 @@ public class FriendshipService implements IFriendshipService
     public List<UserInfoResponse> getFriends(String requestId, List<String> sortBy, List<String> sortDirection, String searchValue, String languageId)
     {
         try {
-
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            String userId = user.getId();
-
-            List<String> friendIds = friendshipRepository.findFriendIdsWithFilter(userId, FriendshipStatus.ACCEPT, searchValue, languageId);
-            if (friendIds.isEmpty()) {
-                return List.of();
-            }
-
-            List<UserInfoResponse> result = new ArrayList<>();
-            //RKeys rKeys = redissonClient.getKeys();
-
-            for (String fid : friendIds) {
-                String pattern = buildPattern(fid);
-                boolean isOnline = redissonClient.getKeys().getKeysByPattern(pattern, 1).iterator().hasNext();
-
-                User friendDetail = userRepository.findById(fid)
-                        .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + fid));
-
-                UserInfoResponse userInfoResponse = modelMapper.map(friendDetail, UserInfoResponse.class);
-                userInfoResponse.setStatus(isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE);
-                userInfoResponse.setLastSeenAt(friendDetail.getLastSeenAt());
-                result.add(userInfoResponse);
-            }
-
-            return result;
+            return userPresenceService.getFriendsStatus(requestId);
 
         } catch (Exception e) {
             log.error("requestId="+requestId+",failed to get friend list, err="+e.getMessage());
@@ -423,13 +394,5 @@ public class FriendshipService implements IFriendshipService
         return resultList;
 
     }
-
-    private String buildPattern(String userId) {
-        return String.format(PRESENCE_PATTERN, userId);
-    }
-
-//    private String buildKey(String userId, String sessionId) {
-//        return String.format(PRESENCE_KEY, userId, sessionId);
-//    }
 
 }

@@ -58,21 +58,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService implements IUserService {
+
+    // Repositories
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
-    private final JwtTokenUtil jwtTokenUtil;
+
+    // Mapper
     private final ModelMapper modelMapper;
+
+    // Services
     private final IEmailService emailService;
     private final IUploadCloudinaryService uploadCloudinaryService;
-    private final LocalizationUtils localizationUtils;
-    private final RedissonClient redissonClient;
-    private static final long ONLINE_TTL_SECONDS = 60;
-    private static final String PRESENCE_KEY = "user:presence:%s:%s";
-    private static final String PRESENCE_PATTERN = "user:presence:%s";
+    private final UserPresenceService userPresenceService;
 
+    // Utils
+    private final LocalizationUtils localizationUtils;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -299,12 +303,8 @@ public class UserService implements IUserService {
             User existingUser = userRepository.findById(userId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
 
-            String pattern = buildPattern(userId);
-            boolean isOnline = redissonClient.getKeys().getKeysByPattern(pattern, 1).iterator().hasNext();
-
-
             UserResponse userResponse = modelMapper.map(existingUser, UserResponse.class);
-            userResponse.setStatus(isOnline ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE);
+            userResponse.setStatus(userPresenceService.isOnline(requestId, userId) ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE);
             userResponse.setLastSeenAt(existingUser.getLastSeenAt());
 
             return userResponse;
@@ -322,7 +322,9 @@ public class UserService implements IUserService {
         try {
             User existingUser = userRepository.findById(userId)
                     .orElseThrow(() -> new DataNotFoundException("Cannot find User with ID = " + userId));
-            return modelMapper.map(existingUser, UserInfoResponse.class);
+            UserInfoResponse res = modelMapper.map(existingUser, UserInfoResponse.class);
+            res.setStatus(userPresenceService.isOnline(requestId, userId) ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE);
+            return res;
         } catch (Exception e) {
             log.error("requestId={},failed to get user by id, err={}", requestId, e.getMessage());
             throw new ErrorHandleException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
@@ -490,9 +492,5 @@ public class UserService implements IUserService {
         String fileName = UploadCloudinaryUtil.getFileName(file.getOriginalFilename());
         CloudinaryResponse response = uploadCloudinaryService.uploadFile(file, fileName, "user");
         return response;
-    }
-
-    private String buildPattern(String userId) {
-        return String.format(PRESENCE_PATTERN, userId);
     }
 }
