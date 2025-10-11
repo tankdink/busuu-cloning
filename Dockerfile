@@ -1,17 +1,22 @@
-FROM maven:3.9.9-eclipse-temurin-21 AS builder
+FROM gradle:8.10.1-jdk17 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
+COPY gradlew gradlew.bat ./
+COPY gradle gradle
+COPY build.gradle settings.gradle ./
+
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+RUN chmod +x ./gradlew
 
-FROM eclipse-temurin:21-jdk-jammy
+RUN ./gradlew build -x test --no-daemon
+
+FROM eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
