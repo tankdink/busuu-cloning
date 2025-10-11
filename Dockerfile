@@ -8,9 +8,10 @@ COPY build.gradle settings.gradle ./
 
 COPY src ./src
 
+RUN chmod +x ./gradlew
+
 RUN ./gradlew build -x test --no-daemon
 
-# Stage 2: Run
 FROM eclipse-temurin:21-jdk-jammy
 
 WORKDIR /app
