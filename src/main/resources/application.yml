@@ -6,6 +6,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 2
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
   jpa:
     show-sql: true
     hibernate:
@@ -130,9 +136,9 @@ cache:
     cluster: ${REDIS_CLUSTER}
     server: ${REDIS_SERVER}
     db: ${REDIS_DB}
-    connection-pool-size: ${CONNECTION_POOL_SIZE:8}
-    connection-minimum-idle-size: ${CONNECTION_MINIMUM_IDE_SIZE:2}
-    subscription-connection-pool-size: ${SUBSCRIPTION_CONNECTION_POOL_SIZE:8}
+    connection-pool-size: ${CONNECTION_POOL_SIZE:2}
+    connection-minimum-idle-size: ${CONNECTION_MINIMUM_IDE_SIZE:1}
+    subscription-connection-pool-size: ${SUBSCRIPTION_CONNECTION_POOL_SIZE:2}
     ttl: 5
 
 services:
