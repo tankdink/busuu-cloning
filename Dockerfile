@@ -1,4 +1,4 @@
-FROM gradle:8.10.1-jdk21 AS builder
+FROM gradle:8.10.1-jdk17 AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN chmod +x ./gradlew
 
 RUN ./gradlew build -x test --no-daemon
 
-FROM eclipse-temurin:21-jdk-jammy
+FROM eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 
