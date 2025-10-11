@@ -146,4 +146,3 @@ services:
     endpoint: ${OPENAI_ENDPOINT}
     model: ${OPENAI_MODEL}
     api-key: ${OPENAI_API_KEY}
-
