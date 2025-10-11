@@ -439,6 +439,7 @@ public class UserService implements IUserService {
                         .googleAccountId(userLoginDTO.getGoogleAccountId())
                         .password("")
                         .isActive(true)
+                        .languageCode("en")
                         .build();
                 newUser = userRepository.save(newUser);
                 optionalUser = Optional.of(newUser);
@@ -463,6 +464,7 @@ public class UserService implements IUserService {
                         .facebookAccountId(userLoginDTO.getFacebookAccountId())
                         .password("")
                         .isActive(true)
+                        .languageCode("en")
                         .build();
 
                 newUser = userRepository.save(newUser);
