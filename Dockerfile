@@ -1,12 +1,18 @@
-# Build
 FROM gradle:8.10.1-jdk17 AS builder
 WORKDIR /app
-COPY build.gradle settings.gradle gradle gradlew ./
+
+#Copy wrapper + metadata 
+COPY gradlew ./
+COPY gradle/wrapper ./gradle/wrapper
+COPY build.gradle settings.gradle gradle.properties* ./
+
+#Prefetch deps (cache)
+RUN chmod +x gradlew && ./gradlew --no-daemon dependencies || true
+
+#Copy sources and build
 COPY src ./src
-RUN chmod +x ./gradlew
 RUN ./gradlew clean bootJar -x test --no-daemon
 
-# Run
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 ENV SERVER_PORT=8088
