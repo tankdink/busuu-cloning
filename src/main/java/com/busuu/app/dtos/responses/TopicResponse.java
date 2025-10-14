@@ -49,4 +49,9 @@ public class TopicResponse extends BaseResponse
     @JsonProperty("lesson_id")
     private String lessonId;
 
+
+    @JsonProperty("testing")
+    @Builder.Default
+    private String test = "Testing CI/CD";
+
 }
