@@ -3,10 +3,10 @@ name: CI/CD for Render Deployment
 on:
   push:
     branches:
-      - main
+      - new-main
   pull_request:
     branches:
-      - main
+      - new-main
 
 jobs:
   deploy:
@@ -23,3 +23,4 @@ jobs:
           curl -X POST "https://api.render.com/v1/services/srv-d3n3nu3uibrs73bfq9ug/deploys" \
           -H "Authorization: Bearer $RENDER_API_KEY" \
           -H "Accept: application/json"
+          -v
