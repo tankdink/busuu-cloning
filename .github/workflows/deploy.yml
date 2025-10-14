@@ -20,7 +20,9 @@ jobs:
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
           curl -X POST "https://api.render.com/v1/services/srv-d3n3nu3uibrs73bfq9ug/deploys" \
-          -H "Authorization: Bearer $RENDER_API_KEY" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Accept: application/json"
           -v
