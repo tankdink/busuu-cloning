@@ -3,10 +3,10 @@ name: CI/CD for Render Deployment
 on:
   push:
     branches:
-      - new-main
+      - new
   pull_request:
     branches:
-      - new-main
+      - new
 
 jobs:
   deploy:
